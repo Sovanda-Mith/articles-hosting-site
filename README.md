@@ -4,7 +4,7 @@
 2. Open terminal and run
 
 ```
-    sudo docker compose up -d
+    sudo docker compose up --build -d
 ```
 
 3. Give permission to the application
@@ -30,11 +30,3 @@
 ```
 
 You are now inside the container and you can now run commands in it
-
-```
-
-```
-
-```
-
-```
