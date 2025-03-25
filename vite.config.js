@@ -10,13 +10,23 @@ export default defineConfig({
         },
         port: 3000,
         host: true,
+        watch: {
+            usePolling: true,
+        }
     },
     plugins: [
         laravel({
-            input: ["resources/css/app.css", "resources/js/app.js"],
+            input: ["resources/css/app.css", "resources/js/app.ts"],
             refresh: true,
         }),
         tailwindcss(),
-        vue(),
+        vue({
+            template: {
+                transformAssetUrls: {
+                    base: null,
+                    includeAbsolute: false,
+                },
+            },
+        }),
     ],
 });

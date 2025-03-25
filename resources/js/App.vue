@@ -9,7 +9,11 @@
 </template>
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 const isTesting = ref<boolean>(true);
+
+onMounted(() => {
+    console.log('App.vue component mounted');
+});
 </script>
