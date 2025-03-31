@@ -1,4 +1,15 @@
 <template>
-    <div>Landing Page Unauthenticated</div>
+    <!-- <div>Landing Page Unauthenticated</div> -->
+     <Header />
+
 </template>
-<script setup lang="ts"></script>
+<script lang="ts">
+import Header from "../../../resources/components/landingPage_comp/Header.vue";
+
+export default {
+    components: {
+        Header,
+    }
+}
+</script>
+
