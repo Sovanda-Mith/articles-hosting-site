@@ -1,7 +1,7 @@
 <template>
     <div lang="ts">
-        <h1>Does it work?</h1>
-        <h2 v-if="isTesting">Yes</h2>
+        <h1 class="bg-green-600">Does it work?</h1>
+        <h2 v-if="isTesting" class="font-bold">Yes</h2>
     </div>
     <main>
         <RouterView />

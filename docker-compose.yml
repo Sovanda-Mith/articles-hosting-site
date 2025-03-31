@@ -9,11 +9,13 @@ services:
         working_dir: /var/www
         volumes:
             - ./:/var/www
-            - ./.env:/var/www/.env
+            - node_modules:/var/www/node_modules
         environment:
             - APP_ENV=local
         networks:
             - app-network
+        depends_on:
+            - node
 
     nginx:
         image: nginx:alpine
@@ -40,7 +42,7 @@ services:
         working_dir: /var/www/
         volumes:
             - ./:/var/www
-            - /var/www/node_modules
+            - node_modules:/var/www/node_modules
         networks:
             - app-network
 
@@ -67,3 +69,4 @@ networks:
 volumes:
     dbdata:
         driver: local
+    node_modules:
