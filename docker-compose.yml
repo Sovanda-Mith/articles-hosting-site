@@ -14,6 +14,8 @@ services:
             - APP_ENV=local
         networks:
             - app-network
+        ports:
+            - "0.0.0.0:80:80"
 
     nginx:
         image: nginx:alpine

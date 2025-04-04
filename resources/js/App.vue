@@ -1,34 +1,16 @@
 <template>
-    <div lang="ts">
-        <h1>Does it work?</h1>
-        <h2 v-if="isTesting">Yes</h2>
-    </div>
     <main>
+        <Header />
         <RouterView />
+        <Footer />
     </main>
 </template>
-<!-- <style scoped>
-    h1 {
-        color: red;
-    }
-    h2 {
-        color: green;
-    }
-    main {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100px;
-        background-color: #333;
-    }
-
-</style> -->
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import { ref, onMounted } from "vue";
+import Header from "../components/landingPage_comp/Header.vue";
+import Footer from "../components/landingPage_comp/Footer.vue";
 
-const isTesting = ref<boolean>(true);
 
 onMounted(() => {
     console.log('App.vue component mounted');
