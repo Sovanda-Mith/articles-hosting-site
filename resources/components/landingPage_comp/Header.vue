@@ -1,11 +1,24 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import '../../css/app.css';
+import { createRouter, createWebHistory } from 'vue-router';
+import Home from '../../js/pages/LandingPage.vue';
+import AboutUs from '../../js/pages/AboutusPage.vue';
 
 const isMenuOpen = ref(false);
 const toggleMenu = () => {
     isMenuOpen.value = !isMenuOpen.value;
 };
+
+const routes = [
+    { path: '/', component: Home },
+    { path: '/aboutus', component: AboutUs },
+];
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes,
+});
 </script>
 <template>
     <!-- Using Tailwind CSS for styling -->
@@ -20,9 +33,9 @@ const toggleMenu = () => {
         <div class="flex justify-center items-center gap-[40px] relative">
             <nav class="desktop-nav">
                 <ul class="flex justify-center items-center gap-[40px]">
-                    <li><a href="#" class="navList body-big">Home</a></li>
-                    <li><a href="#" class="navList body-big">About us</a></li>
-                    <li><a href="#" class="navList body-big">Contact</a></li>
+                    <li><router-link to="/" class="navList body-big" active-class="active">Home</router-link></li>
+                    <li><router-link to="/aboutus" class="navList body-big" active-class="active">About us</router-link></li>
+                    <li><router-link to="/contact" class="navList body-big" active-class="active">Contact</router-link></li>
                 </ul>
             </nav>
             <div class="w-[236px] h-[40px] gap-[40px] flex auth-buttons">
@@ -181,13 +194,16 @@ const toggleMenu = () => {
             width: 20px;
             height: 20px;
         }
+        .header{
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
     }
 
 </style>
 <script lang="ts">
 export default {
     name: "Header",
-
-
 }
 </script>

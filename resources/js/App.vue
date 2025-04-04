@@ -1,8 +1,8 @@
 <template>
     <main>
-        <Header />
+
         <RouterView />
-        <Footer />
+        
     </main>
 </template>
 <script setup lang="ts">
@@ -12,8 +12,5 @@ import Header from "../components/landingPage_comp/Header.vue";
 import Footer from "../components/landingPage_comp/Footer.vue";
 
 
-onMounted(() => {
-    console.log('App.vue component mounted');
-});
 </script>
 

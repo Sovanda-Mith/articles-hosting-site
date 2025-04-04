@@ -1,13 +1,25 @@
-import { createWebHistory, createRouter } from "vue-router";
+import { createWebHistory, createRouter, type RouteRecordRaw } from "vue-router";
 import NotFound from "./pages/NotFound.vue";
 
-const routes = [
+const routes: RouteRecordRaw[] = [ //specify type of route
     {
         path: "/",
-        component: () => import("./pages/LandingPage.vue"),
+        // component: () => import("./pages/LandingPage.vue"),
+        component:() => import("../js/pages/Landing_layout.vue"),
         meta: {
             title: "Home",
         },
+        children:[
+            {
+                path: "",
+                component: () => import("../js/pages/LandingPage.vue"),
+            },
+            {
+                path: "/aboutus",
+                component: () => import("../js/pages/AboutusPage.vue"),
+            }
+        ]
+
     },
     {
         path: "/:pathMatch(.*)",
