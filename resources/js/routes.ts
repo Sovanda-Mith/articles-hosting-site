@@ -22,6 +22,21 @@ const routes: RouteRecordRaw[] = [ //specify type of route
 
     },
     {
+        path: "/login",
+        component: () => import("../js/pages/LoginPage.vue"),
+        meta: {
+            title: "Login",
+        },
+
+    },
+    {
+        path:'/signin',
+        component:() => import("../js/pages/SigninPage.vue"),
+        meta:{
+            title: "Signin",
+        },
+    },
+    {
         path: "/:pathMatch(.*)",
         component: NotFound,
         meta: {
