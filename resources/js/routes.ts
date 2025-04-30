@@ -43,6 +43,20 @@ const routes: RouteRecordRaw[] = [ //specify type of route
             title: "Not Found",
         },
     },
+    {
+        path: "/profile",
+        component: () => import("../js/pages/ProfilePage.vue"),
+        meta: {
+            title: "My Profile",
+        },
+    },
+    {
+        path: "/viewer",
+        component: () => import("../js/pages/ViewerPofilePage.vue"),
+        meta: {
+            title: "User Profile",
+        },
+    },
 ];
 
 const router = createRouter({
