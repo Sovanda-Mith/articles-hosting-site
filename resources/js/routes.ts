@@ -78,6 +78,13 @@ const routes: RouteRecordRaw[] = [
             title: "Not Found",
         },
     },
+    {
+        path: "/feed",
+        component: () => import("../js/pages/FeedPage.vue"),
+        meta: {
+            title: "FeedPage",
+        }
+    }
 ];
 
 const router = createRouter({
