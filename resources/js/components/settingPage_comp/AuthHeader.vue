@@ -63,10 +63,10 @@
                         class="w-[30px] h-[30px]"
                     />
                 </router-link>
-                <router-link to="#">
+                <router-link to="/settings/account">
                     <img
                         src="@/assets/settingsPage_img/placeholderPf.png"
-                        alt="Placeholder Profile"
+                        alt="Profile"
                         class="w-[35px] h-[35px]"
                     />
                 </router-link>

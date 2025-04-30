@@ -9,7 +9,7 @@
         <div
             class="absolute right-[-75px] w-[2px] bg-black transition-all duration-300"
             :style="{
-                top: `${activeIndex * 72}px`,
+                top: `${activeIndicatorPosition}px`,
                 height: '50px',
             }"
         ></div>
@@ -17,12 +17,13 @@
         <!-- Categories -->
         <RouterLink
             v-for="(category, index) in categories"
-            :to="`/settings/${category.id}`"
             :key="category.id"
+            :to="`/settings/${category.id}`"
             class="h-[50px] flex items-center pl-4 cursor-pointer mb-[22px] last:mb-0"
             :class="{
-                'font-semibold text-black': activeIndex === index,
-                'text-gray-500': activeIndex !== index,
+                'font-semibold text-black':
+                    $route.path === `/settings/${category.id}`,
+                'text-gray-500': $route.path !== `/settings/${category.id}`,
             }"
             @click="activeIndex = index"
         >
@@ -32,7 +33,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const categories = [
     { id: "account", name: "Account" },
@@ -41,4 +45,24 @@ const categories = [
 ];
 
 const activeIndex = ref(0);
+
+const updateActiveIndex = () => {
+    const index = categories.findIndex(
+        (category) => `/settings/${category.id}` === route.path,
+    );
+    if (index !== -1) activeIndex.value = index;
+};
+
+// Call once on load
+updateActiveIndex();
+
+// Watch for route changes
+watch(
+    () => route.path,
+    () => {
+        updateActiveIndex();
+    },
+);
+
+const activeIndicatorPosition = computed(() => activeIndex.value * 72);
 </script>
