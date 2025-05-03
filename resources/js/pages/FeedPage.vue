@@ -1,6 +1,5 @@
-<template>
-    <main>
-<!-- 
+ <template>
+    <Header></Header>
         <div class="flex flex-col justify-center items-center">
 
             <div class="flex pl-72">
@@ -21,11 +20,17 @@
                     </div>
 
                     <div>
-                        <preview/>
-                        <preview/>
+                        <preview
+                            profile_img = "/feedpage_img/profile1.jpg"
+                            publisherName = "Sky_blue"
+                            title = "Nature Doesn't Rush, So Why Are You?"
+                            subtitle= "Overworked? Overwhelmed? Maybe You're Moving Too Fast."
+                            pub_date = "Mar 10"
+                            clapNum = "4.4k"
+                            commentNum = "129"
+                            preview_img =  "/feedpage_img/img1.jpg"
+                        />
                     </div>
-
-
                 </div>
 
                 <div class="flex flex-col w-[80%] pl-28 pr-72 ">
@@ -33,28 +38,33 @@
                         <button class="py-2 text-xl font-semibold border-black">Trending</button>
                     </div>
 
-
                     <div>
-                        <trending_preview/>
-                        <trending_preview/>
+                        <trending_preview
+                            profile_img = "/feedpage_img/profile1.jpg"
+                            publisherName="Sky_blue"
+                            title="Nature Doesn't Rush, So Why Are You?"
+                            pub_date="Mar 10"
+                        />
                     </div>
-
-
                 </div>
             </div>
-        </div> -->
+        </div>
+    <Footer></Footer>
+</template> 
 
+<script lang="ts">
+import Header from '../../components/landingPage_comp/Header.vue'; 
+import Footer from '../../components/landingPage_comp/Footer.vue';
+import preview from "../../../resources/components/feedpage_comp/preview.vue";
+import trending_preview from "../../../resources/components/feedpage_comp/trending_preview.vue";
 
-
-        <RouterView />
-        
-    </main>
-</template>
-<script setup lang="ts">
-import { RouterView } from "vue-router";
-import { ref, onMounted } from "vue";
-import Header from "../components/landingPage_comp/Header.vue";
-import Footer from "../components/landingPage_comp/Footer.vue";
-
+export default {
+    components: {
+        preview,
+        trending_preview,
+    }
+}
 </script>
 
+<style scoped>
+</style>
