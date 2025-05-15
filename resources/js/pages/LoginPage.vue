@@ -52,15 +52,16 @@
 
         <!-- Right panel -->
         <div class="w-full lg:w-1/2 bg-white p-6 md:p-12 flex flex-col justify-center">
-            <div class="max-w-md mx-auto w-full">
+            <div class="mx-auto w-full">
                 <!-- Sign in heading -->
                 <h4 class="mb-6 md:mb-8">Sign in</h4>
 
                 <!-- OR divider -->
-                <div class="flex items-center my-4 md:my-6"></div>
-                <div class="flex-grow h-px bg-gray-300"></div>
-                <span class="px-4 text-sm text-gray-500 font-medium">OR</span>
-                <div class="flex-grow h-px bg-gray-300"></div>
+                <div class="flex items-center my-4 md:my-6">
+                    <div class="flex-grow h-px bg-gray-300"></div>
+                    <span class="px-4 text-sm text-gray-500 font-medium">OR</span>
+                    <div class="flex-grow h-px bg-gray-300"></div>
+                </div>
             </div>
 
             <!-- Social sign in buttons -->
@@ -155,24 +156,30 @@
                 </Sheet>
 
                 <!-- log-in button -->
-                <div class="loginbtn_container">
-                    <a href="#" class="login_button type--C">
-                        <div class="button__line"></div>
-                        <div class="button__line"></div>
-                        <span class="button__text">LOGIN</span>
-                        <div class="button__drow1"></div>
-                        <div class="button__drow2"></div>
-                    </a>
-                </div>
+                <router-link to="/">
+                    <div class="loginbtn_container">
+                        <a href="#" class="login_button type--C">
+                            <div class="button__line"></div>
+                            <div class="button__line"></div>
+                            <span class="button__text">LOGIN</span>
+                            <div class="button__drow1"></div>
+                            <div class="button__drow2"></div>
+                        </a>
+                    </div>
+                </router-link>
+
 
             </div>
 
 
             <!-- Sign up link -->
-            <div class="mt-2 md:mt-4 body-1">
-                <span class="text-xs md:text-sm text-gray-600 ">Don't have an account?</span>
-                <a href="#" class=" md:text-sm text-blue-600 hover:underline ml-1">Sign up</a>
-            </div>
+            <router-link to="/signin">
+                <div class="mt-2 md:mt-4 body-1">
+                    <span class="text-xs md:text-sm text-gray-600 ">Don't have an account?</span>
+                    <a href="#" class=" md:text-sm text-blue-600 hover:underline ml-1">Sign up</a>
+                </div>
+            </router-link>
+
         </div>
     </div>
 

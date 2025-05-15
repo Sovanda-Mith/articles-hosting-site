@@ -5,64 +5,69 @@
 @import "tailwindcss";
 
 /* Quicksand Typography */
-h1, .text-h1 {
-    font-family: 'Quicksand', sans-serif;
+h1,
+.text-h1 {
+    font-family: "Quicksand", sans-serif;
     font-size: 96px;
     line-height: 1.2;
     font-weight: 700;
 }
 
-h2, .text-h2 {
-    font-family: 'Quicksand', sans-serif;
+h2,
+.text-h2 {
+    font-family: "Quicksand", sans-serif;
     font-size: 60px;
     line-height: 1.2;
     font-weight: 700;
 }
 
-h3, .text-h3 {
-    font-family: 'Quicksand', sans-serif;
+h3,
+.text-h3 {
+    font-family: "Quicksand", sans-serif;
     font-size: 48px;
     line-height: 1.2;
     font-weight: 700;
 }
 
-h4, .text-h4 {
-    font-family: 'Quicksand', sans-serif;
+h4,
+.text-h4 {
+    font-family: "Quicksand", sans-serif;
     font-size: 34px;
     line-height: 1.2;
     font-weight: 700;
 }
 
-h5, .text-h5 {
-    font-family: 'Quicksand', sans-serif;
+h5,
+.text-h5 {
+    font-family: "Quicksand", sans-serif;
     font-size: 24px;
     line-height: 1.2;
     font-weight: 700;
 }
 
 .body-big {
-    font-family: 'Quicksand', sans-serif;
+    font-family: "Quicksand", sans-serif;
     font-size: 18px;
     line-height: 1.5;
     font-weight: 500;
 }
 
 .body-1 {
-    font-family: 'Quicksand', sans-serif;
+    font-family: "Quicksand", sans-serif;
     font-size: 16px;
     line-height: 1.5;
     font-weight: 400;
 }
 
 .subtitle-2 {
-    font-family: 'Quicksand', sans-serif;
+    font-family: "Quicksand", sans-serif;
     font-size: 14px;
     line-height: 1.5;
     font-weight: 500;
 }
 
 button {
-    font-family: 'Quicksand', sans-serif;
+    font-family: "Quicksand", sans-serif;
     font-size: 14px;
     line-height: 1.2;
     font-weight: 700;
@@ -70,28 +75,27 @@ button {
 }
 
 .body-2 {
-    font-family: 'Quicksand', sans-serif;
+    font-family: "Quicksand", sans-serif;
     font-size: 14px;
     line-height: 1.5;
     font-weight: 400;
 }
 
 .caption {
-    font-family: 'Quicksand', sans-serif;
+    font-family: "Quicksand", sans-serif;
     font-size: 12px;
     line-height: 1.5;
     font-weight: 400;
 }
 
 .Overline {
-    font-family: 'Quicksand', sans-serif;
+    font-family: "Quicksand", sans-serif;
     font-size: 10px;
     line-height: 1.5;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 1.5px;
 }
-
 
 :root {
     --background: oklch(1 0 0);
@@ -204,10 +208,10 @@ button {
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
     }
 }
