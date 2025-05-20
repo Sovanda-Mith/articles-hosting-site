@@ -1,114 +1,108 @@
-import {
-    createWebHistory,
-    createRouter,
-    type RouteRecordRaw,
-} from "vue-router";
-import NotFound from "./pages/NotFound.vue";
+import { createWebHistory, createRouter, type RouteRecordRaw } from 'vue-router';
+import NotFound from './pages/NotFound.vue';
 
 const routes: RouteRecordRaw[] = [
-    //specify type of route
-    {
-        path: "/",
-        // component: () => import("./pages/LandingPage.vue"),
-        component: () => import("../js/pages/Landing_layout.vue"),
-        meta: {
-            title: "Home",
-        },
-        children: [
-            {
-                path: "",
-                component: () => import("../js/pages/LandingPage.vue"),
-            },
-            {
-                path: "/aboutus",
-                component: () => import("../js/pages/AboutusPage.vue"),
-            },
-        ],
+  //specify type of route
+  {
+    path: '/',
+    // component: () => import("./pages/LandingPage.vue"),
+    component: () => import('../js/pages/Landing_layout.vue'),
+    meta: {
+      title: 'Home',
     },
-    {
-        path: "/login",
-        component: () => import("../js/pages/LoginPage.vue"),
-        meta: {
-            title: "Login",
-        },
+    children: [
+      {
+        path: '',
+        component: () => import('../js/pages/LandingPage.vue'),
+      },
+      {
+        path: '/aboutus',
+        component: () => import('../js/pages/AboutusPage.vue'),
+      },
+    ],
+  },
+  {
+    path: '/login',
+    component: () => import('../js/pages/LoginPage.vue'),
+    meta: {
+      title: 'Login',
     },
-    {
-        path: "/signin",
-        component: () => import("../js/pages/SigninPage.vue"),
-        meta: {
-            title: "Signin",
-        },
+  },
+  {
+    path: '/signin',
+    component: () => import('../js/pages/SigninPage.vue'),
+    meta: {
+      title: 'Signin',
     },
-    {
-        path: "/settings",
-        component: () => import("../js/pages/settingPages/Settings.vue"),
-        meta: {
-            title: "Settings",
-        },
-        children: [
-            {
-                path: "account",
-                component: () => import("../js/pages/settingPages/Account.vue"),
-                meta: {
-                    title: "Account | Settings",
-                },
-            },
-            {
-                path: "notifications",
-                component: () =>
-                    import("../js/pages/settingPages/Notifications.vue"),
-                meta: {
-                    title: "Notifications | Settings",
-                },
-            },
-            {
-                path: "security",
-                component: () =>
-                    import("../js/pages/settingPages/Security.vue"),
-                meta: {
-                    title: "Security | Settings",
-                },
-            },
-        ],
+  },
+  {
+    path: '/settings',
+    component: () => import('../js/pages/settingPages/Settings.vue'),
+    meta: {
+      title: 'Settings',
     },
-    {
-        path: "/:pathMatch(.*)",
-        component: NotFound,
+    children: [
+      {
+        path: 'account',
+        component: () => import('../js/pages/settingPages/Account.vue'),
         meta: {
-            title: "Not Found",
+          title: 'Account | Settings',
         },
-    },
-    {
-        path: "/feed",
-        component: () => import("../js/pages/FeedPage.vue"),
+      },
+      {
+        path: 'notifications',
+        component: () => import('../js/pages/settingPages/Notifications.vue'),
         meta: {
-            title: "FeedPage",
+          title: 'Notifications | Settings',
         },
-    },
-    {
-        path: "/profile",
-        component: () => import("../js/pages/ProfilePage.vue"),
+      },
+      {
+        path: 'security',
+        component: () => import('../js/pages/settingPages/Security.vue'),
         meta: {
-            title: "My Profile",
+          title: 'Security | Settings',
         },
+      },
+    ],
+  },
+  {
+    path: '/:pathMatch(.*)',
+    component: NotFound,
+    meta: {
+      title: 'Not Found',
     },
-    {
-        path: "/viewer",
-        component: () => import("../js/pages/ViewerPofilePage.vue"),
-        meta: {
-            title: "User Profile",
-        },
+  },
+  {
+    path: '/feed',
+    component: () => import('../js/pages/FeedPage.vue'),
+    meta: {
+      title: 'FeedPage',
     },
+  },
+  {
+    path: '/profile',
+    component: () => import('../js/pages/ProfilePage.vue'),
+    meta: {
+      title: 'My Profile',
+    },
+  },
+  {
+    path: '/viewer',
+    component: () => import('../js/pages/ViewerPofilePage.vue'),
+    meta: {
+      title: 'User Profile',
+    },
+  },
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
+  history: createWebHistory(),
+  routes,
 });
 
 router.beforeEach((to, from, next) => {
-    document.title = (to.meta.title as string) || "Articles Hosting Site";
-    next();
+  document.title = (to.meta.title as string) || 'Articles Hosting Site';
+  next();
 });
 
 export default router;

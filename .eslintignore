@@ -1,0 +1,8 @@
+node_modules/
+dist/
+public/
+vendor/
+storage/
+bootstrap/
+.git/
+*.d.ts

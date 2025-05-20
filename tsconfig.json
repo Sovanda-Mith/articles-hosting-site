@@ -1,17 +1,13 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-            "@/*": ["resources/js/*"]
-        },
-        "allowJs": true,
-        "strict": false,
-        "types": ["vite/client"]
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["resources/js/*"]
     },
-    "extends": "@vue/tsconfig/tsconfig.dom.json",
-    "include": [
-        "resources/**/*.ts",
-        "resources/**/*.d.ts",
-        "resources/**/*.vue"
-    ]
+    "allowJs": true,
+    "strict": false,
+    "types": ["vite/client"]
+  },
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["resources/**/*.ts", "resources/**/*.d.ts", "resources/**/*.vue"]
 }
