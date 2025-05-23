@@ -2,7 +2,7 @@ import './bootstrap';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
-import router from './routes.ts';
+import router from './routes';
 // import "primeicons/primeicons.css";
 
 const pinia = createPinia();

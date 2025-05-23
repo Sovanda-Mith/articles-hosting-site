@@ -8,7 +8,7 @@ const routes: RouteRecordRaw[] = [
     // component: () => import("./pages/LandingPage.vue"),
     component: () => import('../js/pages/Landing_layout.vue'),
     meta: {
-      title: 'Home',
+      title: 'Bloggist',
     },
     children: [
       {

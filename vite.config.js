@@ -35,4 +35,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'resources/js'),
     },
   },
+  optimizeDeps: {
+    include: ['vee-validate', 'yup'],
+  },
 });

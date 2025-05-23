@@ -60,7 +60,7 @@
 </style>
 <script lang="ts">
   export default {
-    name: 'Section2',
+    name: 'Section_2',
     props: {
       title: {
         type: String,

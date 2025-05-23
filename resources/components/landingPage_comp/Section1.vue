@@ -146,7 +146,7 @@
 
 <script lang="ts">
   export default {
-    name: 'Section1',
+    name: 'Section_1',
     mounted() {
       // Use nextTick to ensure the DOM is fully rendered before setting up the observer
       this.$nextTick(() => {
