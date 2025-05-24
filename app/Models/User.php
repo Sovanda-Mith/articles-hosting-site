@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -22,6 +24,11 @@ class User extends Authenticatable
         'email',
         'password',
         'google_id',
+        'username',
+        'bio',
+        'pf_image',
+        'gender',
+        'is_admin',
     ];
 
     /**
@@ -46,4 +53,30 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Relationships to likes
+    */
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    public function likedArticles(): BelongsToMany
+    {
+        return $this->belongsToMany(Article::class, 'article_likes', 'user_id', 'article_id');
+    }
+
+    /**
+     * Relationships to comments
+    */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+    public function commentedArticles(): BelongsToMany
+    {
+        return $this->belongsToMany(Article::class, 'article_comments', 'user_id', 'article_id');
+    }
+
 }
