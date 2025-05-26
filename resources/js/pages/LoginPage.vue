@@ -16,6 +16,11 @@
 
   const username = ref('');
   const email = ref('');
+
+  const signInwithGoogle = () => {
+    // Use relative path instead of hardcoded URL for better flexibility across environments
+    window.location.href = '/auth/google/redirect';
+  };
 </script>
 <template>
   <div class="w-full min-h-screen flex flex-col-reverse lg:flex-row">
@@ -67,7 +72,7 @@
 
       <!-- Social sign in buttons -->
       <div class="space-y-3 md:space-y-4 mb-4 md:mb-6">
-        <button
+        <button @click="signInwithGoogle"
           class="flex items-center gap-2 justify-center w-full py-2 md:py-3 px-4 border border-gray-300 rounded-4xl hover:bg-gray-50 transition-colors"
         >
           <svg
