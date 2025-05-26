@@ -41,7 +41,7 @@
                             <div
                             v-for="(value, index) in data"
                             :key="index"
-                            class="flex flex-col items-center justify-end w-8"
+                            class="flex flex-col items-center justify-end w-8 -mb-7"
                             >
                             <!-- Value above bar -->
                             <span class="mb-1 text-sm text-gray-700">{{ value }}</span>
@@ -74,7 +74,7 @@
                         <thead class="bg-gray-100 text-gray-600 pt-0.5 pb-0.5">
                             <tr>
                             <th class="px-4 py-2 font-medium">#Rank</th>
-                            <th class="px-4 py-2 font-medium">Name</th>
+                            <th class="px-4 py-2 font-medium ">Name</th>
                             <th class="px-4 py-2 font-medium">Articles</th>
                             </tr>
                         </thead>
