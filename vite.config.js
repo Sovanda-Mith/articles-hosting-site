@@ -5,12 +5,24 @@ import vue from "@vitejs/plugin-vue";
 import path from "path";
 
 export default defineConfig({
+    // server: {
+    //     hmr: {
+    //         host: "0.0.0.0",
+    //     },
+    //     port: 3000,
+    //     host: true,
+    //     watch: {
+    //         usePolling: true,
+    //     },
+    // },
     server: {
-        hmr: {
-            host: "0.0.0.0",
+         hmr: {
+        host: "localhost", // or your machine IP if needed externally
+        protocol: "ws",
+        port: 3000,
         },
         port: 3000,
-        host: true,
+        host: "0.0.0.0", // <- This is important for Docker
         watch: {
             usePolling: true,
         },
