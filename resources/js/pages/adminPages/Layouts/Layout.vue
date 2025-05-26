@@ -7,7 +7,7 @@
             <div class="h-16 border-b-1 w-full">
                 <Header></Header>
             </div>
-            <div class="p-5">
+            <div class="p-5 bg-blue-50 h-full">
                 <router-view />
             </div>
             

@@ -6,7 +6,10 @@
         </div>
         <div class="flex justify-center items-center">
             <div class="text-lg font-medium mr-2">Hello, Admin</div>
-            <img src="../../../../../../public/landingPage_img/teamAvatar.png" alt="" class="w-8 h-8 rounded-full object-cover border-[1.5px] border-sky-600" >
+            <router-link to="/admin/account" class="w-auto h-auto">
+                <img src="../../../../../../public/landingPage_img/teamAvatar.png" alt="" class="w-8 h-8 rounded-full object-cover border-[1.5px] border-sky-600" >
+            </router-link>
+            
         </div>
     </div>
 </template>
