@@ -3,7 +3,7 @@
         <div class="w-1/6 bg-gray-800 h-full">
             <Menu></Menu>
         </div>
-        <div class="w-5/6 flex flex-col h-full ">
+        <div class="w-5/6 flex flex-col h-full justify-start">
             <div class="h-16 border-b-1 w-full">
                 <Header></Header>
             </div>
