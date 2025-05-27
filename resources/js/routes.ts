@@ -48,8 +48,29 @@ const routes: RouteRecordRaw[] = [ //specify type of route
         component: () => import("../js/pages/FeedPage.vue"),
         meta: {
             title: "FeedPage",
+        },
+        children: [
+            {
+                path: "", 
+                redirect: "/feed/foryou"
+            },
+            {
+                path: "foryou",
+                component: () => import("../js/pages/Foryoupage.vue")
+            },
+            {
+                path: "following",
+                component: () => import("../js/pages/FollowingPage.vue")
+            },
+        ]
+    },
+    {
+        path: "/feed/trending",
+        component: () => import("../js/pages/TrendingPage.vue"),
+        meta: {
+            title: "TrendingPage"
         }
-    }
+    },
 ];
 
 const router = createRouter({
