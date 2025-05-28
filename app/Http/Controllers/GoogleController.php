@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -39,10 +40,10 @@ class GoogleController extends Controller
               // Create new user with all required fields
               $user = $this->createNewUser($googleUser);
           }
-          
+
           dd($user);
 
-            // Log the user in
+            // // Log the user in
             // Auth::login($user);
 
             // // Redirect to intended page or dashboard
@@ -74,6 +75,10 @@ class GoogleController extends Controller
         $profileImagePath = $this->downloadGoogleProfileImage($googleUser->avatar, $username);
       }
 
+      // Get the user role ID dynamically
+      $userRole = Role::where('name', 'user')->first();
+      $roleId = $userRole ? $userRole->role_id : 1; // Fallback to 1 if role not found
+
       return User::create([
           'name' => $googleUser->name,
           'email' => $googleUser->email,
@@ -83,6 +88,7 @@ class GoogleController extends Controller
           'bio' => null,
           'pf_image' => $profileImagePath,
           'is_admin' => false,
+          'role_id' => $roleId,
       ]);
     }
 
