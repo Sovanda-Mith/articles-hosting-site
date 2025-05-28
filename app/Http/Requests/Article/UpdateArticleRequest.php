@@ -11,7 +11,10 @@ class UpdateArticleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        $article = $this->route('article');
+        $validated = $this->user()->id === $article->user_id;
+
+        return $article && $validated;
     }
 
     /**
@@ -22,7 +25,11 @@ class UpdateArticleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image',
+            'status' => 'required|in:draft,published',
         ];
     }
 }

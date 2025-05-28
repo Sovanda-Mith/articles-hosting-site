@@ -11,7 +11,14 @@ class StoreArticleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // Check if the user is authenticated
+        $validated['user_id'] = auth()->id();
+        if ($validated['user_id']) {
+            return true;
+        }else {
+            // If not authenticated, return false
+            return false;
+        }
     }
 
     /**
@@ -22,7 +29,11 @@ class StoreArticleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image',
+            'status' => 'in:draft,published',
         ];
     }
 }
