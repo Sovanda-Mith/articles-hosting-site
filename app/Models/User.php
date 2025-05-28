@@ -30,6 +30,7 @@ class User extends Authenticatable
         'pf_image',
         'gender',
         'is_admin',
+        'role_id',
     ];
 
     /**
