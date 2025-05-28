@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex flex-col justify-start overflow-y-auto">
+  <div class="h-full flex flex-col justify-start overflow-y-auto bg-white">
      <!-- Toolbar -->
   <div class="flex justify-between items-center p-4 bg-white shadow rounded-t-lg">
     <div class="flex gap-2">
@@ -154,7 +154,7 @@
   </div>
 
   <!-- Pagination -->
-  <div class="flex justify-between items-center p-4 bg-white rounded-b-lg border-t">
+  <div class="flex justify-between items-center p-4 bg-white rounded-b-lg border-t mt-auto">
     <button @click="prevPage" :disabled="page === 1"
       class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50">
       Previous
