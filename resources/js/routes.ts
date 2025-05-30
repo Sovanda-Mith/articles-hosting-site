@@ -92,7 +92,54 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: 'User Profile',
     },
+    
+    // Admin routes
+    {
+        path: "/admin",
+        component: () => import("../js/pages/adminPages/Layouts/Layout.vue"),
+        meta: {
+            title: "Admin",
+        },
+        children: [
+            {
+                path: "",
+                component: () => import("../js/pages/adminPages/Dashboard/Dashboard.vue"),
+                meta: {
+                    title: "Dashboard",
+                },
+            },
+            {
+                path: "user",
+                component: () => import("../js/pages/adminPages/User/User.vue"),
+                meta: {
+                    title: "User",
+                },
+            },
+            {
+                path: "article",
+                component: () => import("../js/pages/adminPages/Article/Article.vue"),
+                meta: {
+                    title: "Article",
+                },
+            },
+            {
+                path: "report",
+                component: () => import("../js/pages/adminPages/Report/Report.vue"),
+                meta: {
+                    title: "Report",
+                },
+            },
+            {
+                path: "account",
+                component: () => import("../js/pages/adminPages/Account/Account.vue"),
+                meta: {
+                    title: "Account",
+                },
+            },
+        ],
+    },
   },
+
 ];
 
 const router = createRouter({
