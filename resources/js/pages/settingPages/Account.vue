@@ -83,7 +83,7 @@
       <Dialog>
         <DialogTrigger>
           <span class="font-medium h-[50px] cursor-pointer flex items-center normal-case">
-            Muted Writers
+            Muted Authors
           </span>
         </DialogTrigger>
         <DialogContent class="max-h-[500px] overflow-y-auto rounded-lg p-[30px] space-y-6">

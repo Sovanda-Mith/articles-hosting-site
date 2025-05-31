@@ -15,7 +15,7 @@ class StoreArticleRequest extends FormRequest
         $validated['user_id'] = auth()->id();
         if ($validated['user_id']) {
             return true;
-        }else {
+        } else {
             // If not authenticated, return false
             return false;
         }

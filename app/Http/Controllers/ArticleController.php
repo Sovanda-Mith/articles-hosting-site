@@ -16,8 +16,8 @@ class ArticleController extends Controller
      */
     public function index(): jsonResponse
     {
-      $articles = Article::with(['likes','comments'])->paginate(10);
-      return response()->json(ArticleResource::collection($articles));
+        $articles = Article::with(['likes','comments'])->paginate(10);
+        return response()->json(ArticleResource::collection($articles));
     }
 
     /**
@@ -49,9 +49,9 @@ class ArticleController extends Controller
 
     public function store(StoreArticleRequest $request): JsonResponse
     {
-      $article = Article::create($request->validated());
+        $article = Article::create($request->validated());
 
-      return response()->json(new ArticleResource($article), 201);
+        return response()->json(new ArticleResource($article), 201);
     }
 
     /**
@@ -80,10 +80,10 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, string $id)
     {
-      $article = Article::findOrFail($id);
-      $article->update($request->validated());
+        $article = Article::findOrFail($id);
+        $article->update($request->validated());
 
-      return response()->json(new ArticleResource($article));
+        return response()->json(new ArticleResource($article));
     }
 
     /**
@@ -91,7 +91,7 @@ class ArticleController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-      Article::findOrFail($id)->delete();
-      return response()->json(['message' => 'Article deleted successfully'], 204);
+        Article::findOrFail($id)->delete();
+        return response()->json(['message' => 'Article deleted successfully'], 204);
     }
 }
