@@ -19,6 +19,7 @@ class StoreArticleRequest extends FormRequest
             // If not authenticated, return false
             return false;
         }
+
     }
 
     /**
@@ -32,8 +33,10 @@ class StoreArticleRequest extends FormRequest
             'title' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'content' => 'required|string',
+            'user_id' => 'required|exists:users,id',
+            'view_count' => 'nullable|integer|min:0',
             'image' => 'nullable|image',
-            'status' => 'in:draft,published',
+            'status' => 'nullable|in:draft,published',
         ];
     }
 }

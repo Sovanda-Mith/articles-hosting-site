@@ -20,6 +20,9 @@ class Article extends Model
         'subtitle',
         'content',
         'user_id',
+        'view_count',
+        'image',
+        'status',
     ];
 
     // relationships
