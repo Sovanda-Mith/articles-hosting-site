@@ -58,5 +58,12 @@ class Article extends Model
     {
         return $this->belongsToMany(Category::class, 'article_categories', 'article_id', 'category_id');
     }
+    /**
+     * Relationships to user
+    */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 
 }
