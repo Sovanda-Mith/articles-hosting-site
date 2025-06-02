@@ -2,7 +2,7 @@ import axios from 'axios';
 
 declare global {
   interface Window {
-	axios: typeof axios;
+    axios: typeof axios;
   }
 }
 window.axios = axios;

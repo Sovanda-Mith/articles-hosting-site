@@ -25,6 +25,10 @@ COPY . /var/www
 
 COPY --chown=www-data:www-data . /var/www
 
+WORKDIR /var/www
+
+RUN composer install --optimize-autoloader
+
 EXPOSE 9000
 CMD ["php-fpm"]
 

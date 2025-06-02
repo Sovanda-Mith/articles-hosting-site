@@ -29,6 +29,9 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'username' => fake()->unique()->userName(),
+            'bio' => fake()->text(100),
+            'role_id' => 1, // Default to user role (assuming user role has id 1)
         ];
     }
 
