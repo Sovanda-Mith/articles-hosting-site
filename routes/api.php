@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArticleController;
@@ -22,21 +23,26 @@ Route::get('/user', function (Request $request) {
 // Article Routes - using apiResource
 Route::apiResource('articles', ArticleController::class);
 
-Route::controller(SettingController::class)->prefix('settings')->group(
+Route::middleware('auth:sanctum')->controller(SettingController::class)->prefix('settings')->group(
     function () {
         Route::get('/blockedUser', 'blockedUsers');
         Route::get('/mutedUser', 'mutedUsers');
         Route::post('/notification', 'updateNotificationSettings');
         Route::get('/download', 'downloadUserData');
-
     }
 );
 
-Route::controller(CategoryController::class)->prefix('category')->group(
+Route::middleware('auth:sanctum')->controller(CategoryController::class)->prefix('category')->group(
     function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
+    }
+);
+
+Route::controller(UploadController::class)->prefix('upload')->group(
+    function () {
+        Route::post('/cover', 'uploadCover');
     }
 );

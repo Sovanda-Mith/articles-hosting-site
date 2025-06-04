@@ -28,25 +28,6 @@ class ArticleController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function store(Request $request): JsonResponse
-    // {
-    //   $validated = $request->validate([
-    //     'title' => 'required|string|max:255',
-    //     'subtitle' => 'nullable|string|max:255',
-    //     'content' => 'required|string',
-    //     'image' => 'nullable|image|max:2048',
-    //     'status' => 'required|in:draft,published',
-    //   ]);
-
-    //   $validated['user_id'] = auth()->id();
-    //   $article = Article::create($validated);
-
-    //   return response()->json(new ArticleResource($article), 201);
-    // }
-
     public function store(StoreArticleRequest $request): JsonResponse
     {
         $article = Article::create($request->validated());

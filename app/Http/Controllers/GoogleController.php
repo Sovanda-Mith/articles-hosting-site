@@ -23,31 +23,43 @@ class GoogleController extends Controller
     {
         try {
 
-          $googleUser = Socialite::driver('google')->stateless()->user();
+            $googleUser = Socialite::driver('google')->stateless()->user();
 
-          // Check if user already exists by email or google_id
-          $existingUser = User::where('email', $googleUser->email)
-                            ->orWhere('google_id', $googleUser->id)
-                            ->first();
+            // Check if user already exists by email or google_id
+            $existingUser = User::where('email', $googleUser->email)
+                              ->orWhere('google_id', $googleUser->id)
+                              ->first();
 
-          if ($existingUser) {
-              // Update existing user's Google ID if it's missing
-              if (!$existingUser->google_id) {
-                  $existingUser->update(['google_id' => $googleUser->id]);
-              }
-              $user = $existingUser;
-          } else {
-              // Create new user with all required fields
-              $user = $this->createNewUser($googleUser);
-          }
+            if ($existingUser) {
+                // Update existing user's Google ID if it's missing
+                if (!$existingUser->google_id) {
+                    $existingUser->update(['google_id' => $googleUser->id]);
+                }
+                $user = $existingUser;
+            } else {
+                // Create new user with all required fields
+                $user = $this->createNewUser($googleUser);
+            }
 
-          dd($user);
+            // dd($user);
 
-            // // Log the user in
-            // Auth::login($user);
+            // Log the user in
+            Auth::login($user);
+            session()->regenerate();
 
-            // // Redirect to intended page or dashboard
-            // return redirect()->intended('/dashboard')->with('success', 'Welcome! You have been logged in successfully.');
+            if (request()->expectsJson()) {
+                // For Mobile app, Postman, etc.
+                $token = auth()->user()->createToken('auth_token')->plainTextToken;
+
+                return response()->json([
+                  'success' => true,
+                  'message' => 'Login successful',
+                  'token' => $token,
+                ]);
+            } else {
+                // For web, no need for token since we are authenticating by session in web
+                return redirect()->intended('/feed');
+            }
 
         } catch (\Exception $e) {
             // Log the error for debugging
@@ -61,55 +73,55 @@ class GoogleController extends Controller
     // create new user
     public function createNewUser($googleUser)
     {
-      // Generate initial username
-      $baseUsername = Str::slug($googleUser->name);
-      $username = $baseUsername . '#' . Str::random(5);
+        // Generate initial username
+        $baseUsername = Str::slug($googleUser->name);
+        $username = $baseUsername . '#' . Str::random(5);
 
-      // Check if username exists and keep trying until we find a unique one
-      while (User::where('username', $username)->exists()) {
-          $username = $baseUsername . '#' . Str::random(5);
-      }
+        // Check if username exists and keep trying until we find a unique one
+        while (User::where('username', $username)->exists()) {
+            $username = $baseUsername . '#' . Str::random(5);
+        }
 
-      $profileImagePath = null;
-      if($googleUser->avatar) {
-        $profileImagePath = $this->downloadGoogleProfileImage($googleUser->avatar, $username);
-      }
+        $profileImagePath = null;
+        if ($googleUser->avatar) {
+            $profileImagePath = $this->downloadGoogleProfileImage($googleUser->avatar, $username);
+        }
 
-      // Get the user role ID dynamically
-      $userRole = Role::where('name', 'user')->first();
-      $roleId = $userRole ? $userRole->role_id : 1; // Fallback to 1 if role not found
+        // Get the user role ID dynamically
+        $userRole = Role::where('name', 'user')->first();
+        $roleId = $userRole ? $userRole->role_id : 1; // Fallback to 1 if role not found
 
-      return User::create([
-          'name' => $googleUser->name,
-          'email' => $googleUser->email,
-          'password' => Hash::make(Str::random(16)), // Generate a random password
-          'google_id' => $googleUser->id,
-          'username' => $username,
-          'bio' => null,
-          'pf_image' => $profileImagePath,
-          'is_admin' => false,
-          'role_id' => $roleId,
-      ]);
+        return User::create([
+            'name' => $googleUser->name,
+            'email' => $googleUser->email,
+            'password' => Hash::make(Str::random(16)), // Generate a random password
+            'google_id' => $googleUser->id,
+            'username' => $username,
+            'bio' => null,
+            'pf_image' => $profileImagePath,
+            'is_admin' => false,
+            'role_id' => $roleId,
+        ]);
     }
 
     // download google profile image
     public function downloadGoogleProfileImage($url, $username)
     {
-      try {
-        $imageContent = file_get_contents($url);
+        try {
+            $imageContent = file_get_contents($url);
 
-        if($imageContent){
-          $extension = 'jpg'; // Default to jpg
-          $filename = 'google_'. $username . '_' . time() . '.' . $extension;
-          $path= 'userPf/' . $filename;
+            if ($imageContent) {
+                $extension = 'jpg'; // Default to jpg
+                $filename = 'google_'. $username . '_' . time() . '.' . $extension;
+                $path = 'userPf/' . $filename;
 
-          Storage::disk('public')->put('userPf/' . $filename, $imageContent);
-          return $path;
+                Storage::disk('public')->put('userPf/' . $filename, $imageContent);
+                return $path;
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to download profile image: ' . $e->getMessage());
         }
-      } catch (\Exception $e) {
-        \Log::error('Failed to download profile image: ' . $e->getMessage());
-      }
 
-      return null; // Return null if download fails
+        return null; // Return null if download fails
     }
 }

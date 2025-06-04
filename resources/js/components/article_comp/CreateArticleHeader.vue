@@ -1,44 +1,24 @@
 <template>
   <div
-    class="header w-screen h-auto flex justify-between items-center px-[20px] pt-[20px] pb-[20px] fixed top-0 left-0 bg-white shadow-xs z-50"
+    class="header w-screen h-auto flex justify-between items-center px-[20px] pt-[20px] pb-[20px] bg-white shadow-xs z-50"
   >
     <router-link to="/">
-      <div class="logo_container flex justify-center items-center sm:gap-3 md">
-        <div class="logo w-[38px] h-[38px] rounded-[8px]">
+      <div class="flex justify-center items-center sm:gap-3 md">
+        <div class="w-[38px] h-[38px]">
           <img src="@/assets/settingsPage_img/logo.webp" alt="logo" />
         </div>
         <h5 class="logo_name">Bloggist</h5>
+        <div class="text-[13px] pt-2">Draft in {{ user }}</div>
       </div>
     </router-link>
 
     <div class="flex justify-center items-center gap-[40px] relative">
-      <nav class="desktop-nav">
-        <ul class="flex justify-center items-center gap-[40px]">
-          <li>
-            <router-link to="/" class="navList body-big" active-class="active">Home</router-link>
-          </li>
-          <li>
-            <router-link to="/aboutus" class="navList body-big" active-class="active"
-              >About us</router-link
-            >
-          </li>
-          <li>
-            <router-link to="/contact" class="navList body-big" active-class="active"
-              >Contact</router-link
-            >
-          </li>
-        </ul>
-      </nav>
       <div class="flex gap-[40px]">
-        <router-link to="/new-article" class="navList body-big flex items-center space-x-1">
-          <img
-            src="@/assets/settingsPage_img/write.png"
-            alt="Write"
-            title="Write"
-            class="w-[30px] h-[30px]"
-          />
-          <p>Write</p>
-        </router-link>
+        <div
+          class="body-big flex items-center space-x-1 bg-green-500 px-4 rounded-xl !text-white cursor-pointer hover:bg-green-600 navList"
+        >
+          <p>Publish</p>
+        </div>
         <router-link to="#" class="navList body-big">
           <img
             src="@/assets/settingsPage_img/notification.png"
@@ -84,18 +64,11 @@
       <div v-if="isMenuOpen" class="mobile-nav-menu">
         <ul class="flex flex-col gap-2 py-2">
           <li>
-            <router-link to="/" class="mobile-navList body-big" active-class="active"
-              >Home</router-link
-            >
-          </li>
-          <li>
-            <router-link to="/aboutus" class="mobile-navList body-big" active-class="active"
-              >About us</router-link
-            >
-          </li>
-          <li>
-            <router-link to="/contact" class="mobile-navList body-big" active-class="active"
-              >Contact</router-link
+            <router-link
+              to="/settings/account"
+              class="mobile-navList body-big"
+              active-class="active"
+              >Settings</router-link
             >
           </li>
         </ul>
@@ -110,6 +83,8 @@
   const toggleMenu = () => {
     isMenuOpen.value = !isMenuOpen.value;
   };
+
+  const user = ref('Mith Sovanda');
 </script>
 
 <style scoped>

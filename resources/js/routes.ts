@@ -43,7 +43,7 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'account',
+        path: '',
         component: () => import('../js/pages/settingPages/Account.vue'),
         meta: {
           title: 'Account | Settings',
@@ -76,7 +76,7 @@ const routes: RouteRecordRaw[] = [
     path: '/feed',
     component: () => import('../js/pages/FeedPage.vue'),
     meta: {
-      title: 'FeedPage',
+      title: 'Articles Feed',
     },
   },
   {
@@ -91,6 +91,13 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../js/pages/ViewerPofilePage.vue'),
     meta: {
       title: 'User Profile',
+    },
+  },
+  {
+    path: '/new-article',
+    component: () => import('../js/pages/article/NewArticle.vue'),
+    meta: {
+      title: 'New Article',
     },
   },
 
