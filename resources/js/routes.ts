@@ -76,8 +76,29 @@ const routes: RouteRecordRaw[] = [
     path: '/feed',
     component: () => import('../js/pages/FeedPage.vue'),
     meta: {
-      title: 'FeedPage',
+          title: "FeedPage",
     },
+    children: [
+        {
+            path: "", 
+            redirect: "/feed/foryou"
+        },
+        {
+            path: "foryou",
+            component: () => import("../js/pages/Foryoupage.vue")
+        },
+        {
+            path: "following",
+            component: () => import("../js/pages/FollowingPage.vue")
+        },
+    ]
+  },
+  {
+      path: "/feed/trending",
+      component: () => import("../js/pages/TrendingPage.vue"),
+      meta: {
+          title: "TrendingPage"
+      }
   },
   {
     path: '/profile',
