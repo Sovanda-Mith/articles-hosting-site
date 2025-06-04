@@ -73,7 +73,7 @@ import Header from '../../components/landingPage_comp/Header.vue';
 import preview from "../../../resources/components/feedpage_comp/preview.vue";
 import trending_preview from "../../../resources/components/feedpage_comp/trending_preview.vue";
 
-export default {
+  export default {
     components: {
         Header,
         preview,
@@ -88,3 +88,4 @@ export default {
   border-bottom: 2px solid black; 
 }
 </style> 
+

@@ -1,4 +1,5 @@
 <template>
+
     <div class="w-full py-5 px-4 sm:px-6 border-b-1  border-gray-300 sm:min-w-[600px]">
         <!-- publisher name/Info -->
         <div class="flex items-center">
@@ -97,4 +98,5 @@ export default {
         }
     }
 }
+
 </script>
