@@ -25,12 +25,17 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'username' => fake()->unique()->userName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'username' => fake()->unique()->userName(),
+            'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
+            'updated_at' => function (array $attributes) {
+                return fake()->dateTimeBetween($attributes['created_at'], 'now');
+            },
             'bio' => fake()->text(100),
+            'pf_image' => 'https://via.placeholder.com/150x150.png?text=' . fake()->userName(),
             'role_id' => 1, // Default to user role (assuming user role has id 1)
         ];
     }

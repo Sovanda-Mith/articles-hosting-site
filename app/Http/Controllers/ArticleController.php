@@ -49,7 +49,10 @@ class ArticleController extends Controller
 
     public function store(StoreArticleRequest $request): JsonResponse
     {
-      $article = Article::create($request->validated());
+      $validated = $request->validated();
+      $validated['user_id'] = auth()->id();
+
+      $article = Article::create($validated);
 
       return response()->json(new ArticleResource($article), 201);
     }
@@ -80,10 +83,16 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, string $id)
     {
-      $article = Article::findOrFail($id);
-      $article->update($request->validated());
+      // $article = Article::findOrFail($id);
+      // $article->update($request->validated());
 
-      return response()->json(new ArticleResource($article));
+      $validated = $request->validated();
+      $validated['user_id'] = auth()->id();
+
+      $article = Article::findOrFail($id);
+      $article->update($validated);
+
+      return response()->json(new ArticleResource($article), 200);
     }
 
     /**

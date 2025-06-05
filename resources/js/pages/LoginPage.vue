@@ -1,27 +1,3 @@
-<script setup lang="ts">
-  import { Input } from '@/components/ui/input';
-  import { Label } from '@/components/ui/label';
-  import { Button } from '@/components/ui/button';
-  import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-  } from '@/components/ui/sheet';
-  import { ref } from 'vue';
-
-  const username = ref('');
-  const email = ref('');
-
-  const signInwithGoogle = () => {
-    // Use relative path instead of hardcoded URL for better flexibility across environments
-    window.location.href = '/auth/google/redirect';
-  };
-</script>
 <template>
   <div class="w-full min-h-screen flex flex-col-reverse lg:flex-row">
     <!-- Left panel -->
@@ -61,13 +37,6 @@
       <div class="mx-auto w-full">
         <!-- Sign in heading -->
         <h4 class="mb-6 md:mb-8">Sign in</h4>
-
-        <!-- OR divider -->
-        <div class="flex items-center my-4 md:my-6">
-          <div class="flex-grow h-px bg-gray-300"></div>
-          <span class="px-4 text-sm text-gray-500 font-medium">OR</span>
-          <div class="flex-grow h-px bg-gray-300"></div>
-        </div>
       </div>
 
       <!-- Social sign in buttons -->
@@ -102,41 +71,23 @@
           <span class="">CONTINUE WITH GOOGLE</span>
         </button>
 
-        <button
-          class="flex items-center gap-2 justify-center w-full py-2 md:py-3 px-4 border border-gray-300 rounded-4xl hover:bg-gray-50 transition-colors"
-        >
-          <svg
-            width="24"
-            height="25"
-            viewBox="0 0 24 25"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g clip-path="url(#clip0_396_5)">
-              <path
-                d="M15.5 1.5H7.5C6.12 1.5 5 2.62 5 4V21C5 22.38 6.12 23.5 7.5 23.5H15.5C16.88 23.5 18 22.38 18 21V4C18 2.62 16.88 1.5 15.5 1.5ZM11.5 22.5C10.67 22.5 10 21.83 10 21C10 20.17 10.67 19.5 11.5 19.5C12.33 19.5 13 20.17 13 21C13 21.83 12.33 22.5 11.5 22.5ZM16 18.5H7V4.5H16V18.5Z"
-                fill="#333333"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_396_5">
-                <rect width="24" height="24" fill="white" transform="translate(0 0.5)" />
-              </clipPath>
-            </defs>
-          </svg>
-          <span>CONTINUE WITH PHONE</span>
-        </button>
+        <!-- OR divider -->
+        <div class="flex items-center my-4 md:my-6">
+          <div class="flex-grow h-px bg-gray-300"></div>
+          <span class="px-4 text-sm text-gray-500 font-medium">OR</span>
+          <div class="flex-grow h-px bg-gray-300"></div>
+        </div>
       </div>
 
       <!-- Login form -->
       <div class="flex flex-col gap-5">
         <div class="grid w-full items-center gap-1.5">
-          <Label for="email" class="body-1 text-[#666666]">Username or Email address</Label>
-          <Input id="email" class="body-1" type="email" placeholder="" />
+          <Label for="email" class="body-1 text-[#666666]">Email address</Label>
+          <Input id="email" class="body-1" v-model="email" type="email" placeholder="" />
         </div>
         <div class="grid w-full items-center gap-1.5">
           <Label for="password" class="body-1 text-[#666666]">Password</Label>
-          <Input id="password" class="body-1" type="password" placeholder="" />
+          <Input id="password" class="body-1" v-model="password" type="password" placeholder="" />
         </div>
         <!-- forgot password slide left using shardcn sheet -->
         <Sheet>
@@ -162,11 +113,11 @@
             <div class="grid gap-4 py-4">
               <div class="grid items-center grid-cols-4 gap-4">
                 <Label for="name" class="text-right">Username</Label>
-                <Input id="name" v-model="username" class="col-span-3" />
+                <Input id="name" v-model="usernameForget" class="col-span-3" />
               </div>
               <div class="grid items-center grid-cols-4 gap-4">
                 <Label for="email" class="text-right">Email</Label>
-                <Input id="email" v-model="email" class="col-span-3" />
+                <Input id="email" v-model="emailForget" class="col-span-3" />
               </div>
             </div>
 
@@ -178,22 +129,39 @@
           </SheetContent>
         </Sheet>
 
-        <!-- log-in button -->
-        <router-link to="/">
-          <div class="loginbtn_container">
-            <a href="#" class="login_button type--C">
-              <div class="button__line"></div>
-              <div class="button__line"></div>
-              <span class="button__text">LOGIN</span>
-              <div class="button__drow1"></div>
-              <div class="button__drow2"></div>
-            </a>
+        <!-- Error and Success Messages -->
+        <div v-if="errorMessage" class="mb-4 p-4 rounded-lg bg-red-50 border border-red-200">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-red-700 text-sm font-medium">{{ errorMessage }}</span>
           </div>
-        </router-link>
+        </div>
+
+        <div v-if="successMessage" class="mb-4 p-4 rounded-lg bg-green-50 border border-green-200">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-green-700 text-sm font-medium">{{ successMessage }}</span>
+          </div>
+        </div>
+
+        <!-- log-in button -->
+        <div class="loginbtn_container">
+          <button type="button" @click="login" class="login_button type--C">
+            <div class="button__line"></div>
+            <div class="button__line"></div>
+            <span class="button__text">LOGIN</span>
+            <div class="button__drow1"></div>
+            <div class="button__drow2"></div>
+          </button>
+        </div>
       </div>
 
       <!-- Sign up link -->
-      <router-link to="/signin">
+      <router-link to="/signin" class="w-fit">
         <div class="mt-2 md:mt-4 body-1">
           <span class="text-xs md:text-sm text-gray-600">Don't have an account?</span>
           <a href="#" class="md:text-sm text-blue-600 hover:underline ml-1">Sign up</a>
@@ -496,19 +464,76 @@
 
   /* Animation for Sheet sliding from left */
 </style>
+<script setup lang="ts">
+  import { Input } from '@/components/ui/input';
+  import { Label } from '@/components/ui/label';
+  import { Button } from '@/components/ui/button';
+  import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+  } from '@/components/ui/sheet';
+  import { ref } from 'vue';
+  
+  const email = ref('');
+  const password = ref('');
+  const usernameForget = ref('');
+  const emailForget = ref('');
 
-<script lang="ts">
-  export default {
-    name: 'LoginPage',
-    data() {
-      return {
-        isOpen: false,
+  const signInwithGoogle = () => {
+    // Use relative path instead of hardcoded URL for better flexibility across environments
+    window.location.href = '/auth/google/redirect';
+  };
+
+  const errorMessage = ref('');
+  // const errorMessage = "Please enter a valid username or email address.";
+  const successMessage = ref('');
+  // const successMessage = "A confirmation email has been sent to your email address.";
+
+  // const isOpen = ref(false);
+  // const toggleSheet = () => {
+  //   isOpen.value = !isOpen.value;
+  // };
+
+  const login = async () => {
+    //clear message
+    errorMessage.value = '';
+    successMessage.value = '';
+    //fetch all users from backend
+    try {
+      //get username and password from input fields
+      const user = {
+        // username: username.value,
+        email: email.value,
+        password: password.value,
       };
-    },
-    methods: {
-      toggleSheet() {
-        this.isOpen = !this.isOpen;
-      },
-    },
+
+      //make a post request to the backend to login
+      const response = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        successMessage.value = "Login successful!";
+        // console.log("User data:", data.user);
+      } else {
+        errorMessage.value = data.message || "Failed to login. Please check your credentials.";
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      errorMessage.value = 'An error occurred while logging in. Please try again.';
+    }
+
   };
 </script>

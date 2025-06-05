@@ -41,13 +41,33 @@ class GoogleController extends Controller
               $user = $this->createNewUser($googleUser);
           }
 
-          dd($user);
+          // dd($user); // Commented out for production
 
-            // // Log the user in
-            // Auth::login($user);
+          // Log the user in
+          Auth::login($user);
 
-            // // Redirect to intended page or dashboard
-            // return redirect()->intended('/dashboard')->with('success', 'Welcome! You have been logged in successfully.');
+          // Return success response for API or redirect for web
+          if (request()->expectsJson()) {
+              // Create Sanctum token for API authentication
+              $token = $user->createToken('Google OAuth Token')->plainTextToken;
+
+              return response()->json([
+                  'success' => true,
+                  'message' => 'Login successful',
+                  'user' => $user,
+                  'token' => $token
+              ]);
+          }
+          // For debugging: show the JSON response that would be returned
+          return response()->json([
+              'success' => true,
+              'message' => 'Login successful',
+              'user' => $user,
+              'token' => $user->createToken('Google OAuth Token')->plainTextToken
+          ]);
+
+          // Redirect to intended page or dashboard
+          // return redirect()->intended('/dashboard')->with('success', 'Welcome! You have been logged in successfully.');
 
         } catch (\Exception $e) {
             // Log the error for debugging
@@ -111,5 +131,49 @@ class GoogleController extends Controller
       }
 
       return null; // Return null if download fails
+    }
+
+    // API-specific methods for mobile/SPA applications
+    public function apiRedirectToGoogle()
+    {
+        return response()->json([
+            'redirect_url' => Socialite::driver('google')
+                ->stateless()
+                ->redirect()
+                ->getTargetUrl()
+        ]);
+    }
+
+    public function apiHandleGoogleCallback(Request $request)
+    {
+        try {
+            // Use stateless for API
+            $googleUser = Socialite::driver('google')->stateless()->user();
+
+            // Find or create user
+            $user = User::updateOrCreate([
+                'email' => $googleUser->email
+            ], [
+                'name' => $googleUser->name,
+                'google_id' => $googleUser->id,
+                'avatar' => $googleUser->avatar,
+                'email_verified_at' => now(),
+            ]);
+
+            // Create Sanctum token for API use
+            $token = $user->createToken('API Token')->plainTextToken;
+
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
+                'message' => 'Successfully authenticated'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Authentication failed',
+                'message' => $e->getMessage()
+            ], 400);
+        }
     }
 }

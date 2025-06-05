@@ -19,30 +19,30 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Get the user role ID
-        $userRole = \App\Models\Role::where('name', 'user')->first();
+        // $userRole = \App\Models\Role::where('name', 'user')->first();
         $adminRole = \App\Models\Role::where('name', 'admin')->first();
 
         // User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'username' => 'usernameTest',
-            'bio' => 'This is a test bio for user.',
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'username' => 'usernameAdmin',
+            'bio' => 'This is a test bio for admin.',
             'gender' => 'male',
-            'pf_image' => 'https://via.placeholder.com/150x150.png?text=User1',
-            'role_id' => $userRole->role_id,
+            'pf_image' => 'https://via.placeholder.com/150x150.png?text=UserAdmin',
+            'role_id' => $adminRole->role_id,
         ]);
 
-        User::factory()->create([
-            'name' => 'Test User 2',
-            'email' => 'test2@example.com',
-            'username' => 'usernameTest2',
-            'bio' => 'This is a test bio for user 2.',
-            'gender' => 'female',
-            'pf_image' => 'https://via.placeholder.com/150x150.png?text=User2',
-            'role_id' => $userRole->role_id,
-        ]);
+        // User::factory()->create([
+        //     'name' => 'Test User 2',
+        //     'email' => 'test2@example.com',
+        //     'username' => 'usernameTest2',
+        //     'bio' => 'This is a test bio for user 2.',
+        //     'gender' => 'female',
+        //     'pf_image' => 'https://via.placeholder.com/150x150.png?text=User2',
+        //     'role_id' => $userRole->role_id,
+        // ]);
 
         // Call ArticleSeeder
         $this->call([
@@ -60,6 +60,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CommentSeeder::class,
         ]);
-
+        // Call UserSeeder
+        $this->call([
+            UserSeeder::class,
+        ]);
+        // Call FollowsSeeder
+        $this->call([
+            FollowSeeder::class,
+        ]);
     }
 }
