@@ -12,16 +12,8 @@ class StoreFollowRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // // Check if the user is authenticated
-        // $validated['follower_id'] = auth()->id();
-        // if ($validated['follower_id']) {
-        //     return true;
-        // } else {
-        //     // If not authenticated, return false
-        //     return false;
-        // }
 
-        return auth()->check();
+        return true;
     }
 
     /**
@@ -32,14 +24,15 @@ class StoreFollowRequest extends FormRequest
     public function rules(): array
     {
         return [
-          'following_id' => [
-            'required',
-            'exists:users,id',
-            'different:' . auth()->id(), // Ensure the user cannot follow themselves
-            Rule::unique('follows')->where(function ($query) {
-                return $query->where('follower_id', auth()->id());
-            }), // Ensure the user is not already following the other user
-          ]
+            'following_id' => [
+                'required',
+                'exists:users,id',
+                'different:' . auth()->id(), // Ensure the user cannot follow themselves
+                Rule::unique('follows')->where(function ($query) {
+                    return $query->where('follower_id', auth()->id())
+                                 ->where('following_id', $this->following_id);
+                }), // Ensure the user is not already following the other user
+            ]
         ];
     }
 
@@ -47,6 +40,9 @@ class StoreFollowRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'follower_id.required' => 'Follower ID is required.',
+            'follower_id.exists' => 'The follower user does not exist.',
+            'following_id.required' => 'Following ID is required.',
             'following_id.different' => 'You cannot follow yourself.',
             'following_id.unique' => 'You are already following this user.',
             'following_id.exists' => 'The user you are trying to follow does not exist.',

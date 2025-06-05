@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\FollowController;
+use App\Http\Controllers\UserController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -57,3 +59,23 @@ Route::middleware(['auth:sanctum'])->prefix('articles')->group(function () {
   Route::put('/{article}', [ArticleController::class, 'update']);
   Route::delete('/{article}', [ArticleController::class, 'destroy']);
 });
+
+// Follow Routes
+
+Route::apiResource('follows', FollowController::class)
+    ->middleware('auth:sanctum');
+Route::middleware(['auth:sanctum'])->prefix('follows')->group(function () {
+  Route::get('/getFollowers/{userId}', [FollowController::class, 'getFollowers']);
+  Route::get('/getFollowing/{userId}', [FollowController::class, 'getFollowing']);
+});
+
+// User
+// Route::middleware(['auth:sanctum'])->prefix('users')->group(function () {
+//     Route::get('/', [\App\Http\Controllers\UserController::class, 'index']);
+//     Route::get('/{id}', [\App\Http\Controllers\UserController::class, 'show']);
+// });
+Route::get('users/', [UserController::class, 'index']);
+Route::get('users/{id}', [UserController::class, 'show']);
+Route::post('users', [UserController::class, 'store']);
+Route::post('users/login', [UserController::class, 'login'])
+    ->name('login');
