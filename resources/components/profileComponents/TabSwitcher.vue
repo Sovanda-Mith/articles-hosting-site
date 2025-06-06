@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-  import { useTabStore } from '@/useTabStore';
+  import { useTabStore } from '@/stores/features/useTabStore';
 
   const tabStore = useTabStore();
 

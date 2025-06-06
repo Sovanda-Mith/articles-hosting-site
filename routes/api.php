@@ -12,6 +12,14 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// Auth verification endpoint
+Route::get('/auth/verify', function (Request $request) {
+    return response()->json([
+        'valid' => true,
+        'user' => $request->user()
+    ]);
+})->middleware('auth:sanctum');
+
 // CSRF Token endpoint for testing with Postman
 // Route::get('csrf-token', function () {
 //     return response()->json(['csrf_token' => csrf_token()]);
@@ -79,3 +87,6 @@ Route::get('users/{id}', [UserController::class, 'show']);
 Route::post('users', [UserController::class, 'store']);
 Route::post('users/login', [UserController::class, 'login'])
     ->name('login');
+Route::post('/auth/logout', [UserController::class, 'logout'])
+    ->middleware('auth:sanctum')
+    ->name('logout');

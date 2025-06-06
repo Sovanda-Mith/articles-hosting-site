@@ -354,6 +354,7 @@ import router from '@/routes';
     }),
   });
 
+
   const onSubmit = handleSubmit(async (values) => {
     // Clear previous messages
     errorMessage.value = '';
@@ -399,12 +400,38 @@ import router from '@/routes';
         // Success
         console.log('Success:', data);
         successMessage.value = 'Account created successfully! Welcome to Bloggist!';
-        //redirect logic here
-        setTimeout(() => {
-          router.push('/').then(() => {
-            window.location.reload();
+        //log in the user
+        try{
+          const response = await fetch('/api/users/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              email: values.email,
+              password: values.password,
+            }),
           });
-        }, 1000);
+
+          const dataUser = await response.json();
+
+          if(response.ok) {
+            localStorage.setItem('auth_token', dataUser.token); // Store the JWT token
+            //redirect logic here
+            setTimeout(() => {
+              router.push('/feed').then(() => {
+                window.location.reload();
+              });
+            }, 1000);
+          }
+        } catch (error) {
+          console.error('Login Error:', error);
+          errorMessage.value = 'Login failed. Please try again.';
+        }
+
       }
     } catch (error) {
       console.error('Error:', error);

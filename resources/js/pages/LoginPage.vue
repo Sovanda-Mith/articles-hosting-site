@@ -479,7 +479,10 @@
     SheetTrigger,
   } from '@/components/ui/sheet';
   import { ref } from 'vue';
-  
+  import { useRouter } from 'vue-router';
+
+  const router = useRouter();
+
   const email = ref('');
   const password = ref('');
   const usernameForget = ref('');
@@ -526,7 +529,12 @@
 
       if (response.ok) {
         successMessage.value = "Login successful!";
+        localStorage.setItem('auth_token', data.token); // Store JWT token in localStorage for checking authentication later
         // console.log("User data:", data.user);
+        setTimeout(() => {
+          router.push('/feed');
+        }, 1500); // 1.5 second delay before redirecting
+
       } else {
         errorMessage.value = data.message || "Failed to login. Please check your credentials.";
       }
