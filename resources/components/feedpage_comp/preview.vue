@@ -65,38 +65,39 @@
 export default {
     name: "Preview",
     props: {
-      profile_img: {
-        type: String,
-        default: '/feedpage_img/profile1.jpg',
-      },
-      publisherName: {
-        type: String,
-        default: 'Sky_blue',
-      },
-      title: {
-        type: String,
-        default: "Nature Doesn't Rush, So Why Are You?",
-      },
-      subtitle: {
-        type: String,
-        default: "Overworked? Overwhelmed? Maybe You're Moving Too Fast.",
-      },
-      pub_date: {
-        type: String,
-        default: 'Mar 10',
-      },
-      clapNum: {
-        type: String,
-        default: '4.4k',
-      },
-      commentNum: {
-        type: String,
-        default: '129',
-      },
-      preview_img: {
-        type: String,
-        default: '/feedpage_img/img1.jpg',
-      },
-    },
-  };
+        profile_img: {
+            type: String,
+            default: "/feedpage_img/profile1.jpg"
+        },
+        publisherName: {
+            type: String,
+            default: "Sky_blue"
+        },
+        title: {
+            type: String,
+            default: "Nature Doesn't Rush, So Why Are You?"
+        },
+        subtitle: {
+            type: String,
+            default: "Overworked? Overwhelmed? Maybe You're Moving Too Fast."
+        },
+        pub_date: {
+            type: String,
+            default: "Mar 10"
+        },
+        clapNum: {
+            type: String,
+            default: "4.4k"
+        },
+        commentNum: {
+            type: String,
+            default: "129"
+        },
+        preview_img: {
+            type: String,
+            default: "/feedpage_img/img1.jpg"
+        }
+    }
+}
+
 </script>
