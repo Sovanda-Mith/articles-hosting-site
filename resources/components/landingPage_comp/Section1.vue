@@ -13,13 +13,15 @@
             {{ button1Text }}
           </button>
           <p v-if="button1Text && button2Text" class="subtitle-2">OR</p>
-          <button
-            v-if="button2Text"
-            class="text-center text-black bg-[#ffffff] pl-[12px] pr-[12px] pt-[17px] pb-[17px] rounded-[15px] shadow-xl border-[1px] border-[#000000] secondary-btn-animation"
-            ref="button2Element"
-          >
-            {{ button2Text }}
-          </button>
+          <router-link to="/feed">
+            <button
+              v-if="button2Text"
+              class="text-center text-black bg-[#ffffff] pl-[12px] pr-[12px] pt-[17px] pb-[17px] rounded-[15px] shadow-xl border-[1px] border-[#000000] secondary-btn-animation"
+              ref="button2Element"
+            >
+              {{ button2Text }}
+            </button>
+          </router-link>
         </div>
       </div>
       <div class="w-[50%] flex justify-end">
@@ -145,6 +147,7 @@
 </style>
 
 <script lang="ts">
+  // import { Router-Link } from 'vue-router';
   export default {
     name: 'Section_1',
     mounted() {

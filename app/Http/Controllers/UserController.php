@@ -116,19 +116,34 @@ class UserController extends Controller
           ], 401);
       }
 
-      // Generate a token or session here if needed
-      // For simplicity, we will just return the user data
+      // Create Sanctum token for API authentication
+      $token = $user->createToken('API Token')->plainTextToken;
+
       return response()->json([
         'message' => 'Login successful',
         'user' => [
             'id' => $user->id,
+            'name' => $user->name,
             'email' => $user->email,
             'username' => $user->username,
             'bio' => $user->bio,
             'gender' => $user->gender,
+            // 'avatar' => $user->avatar,
             'role' => $user->role_id == 1 ? 'user' : 'admin',
-        ]
+        ],
+        'token' => $token
       ]);
+    }
+
+    public function logout(Request $request): JsonResponse
+    {
+        // Revoke the token that was used to authenticate the request
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+
+            'message' => 'Logged out successfully'
+        ], 200);
     }
 
     /**

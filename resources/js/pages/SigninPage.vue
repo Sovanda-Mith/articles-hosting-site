@@ -399,6 +399,7 @@ import router from '@/routes';
         // Success
         console.log('Success:', data);
         successMessage.value = 'Account created successfully! Welcome to Bloggist!';
+        localStorage.setItem('auth_token', data.token); // Store the JWT token
         //redirect logic here
         setTimeout(() => {
           router.push('/').then(() => {
