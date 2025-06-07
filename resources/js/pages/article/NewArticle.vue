@@ -5,9 +5,14 @@
     <!-- Category Modal -->
     <div
       v-if="showCategoryModal"
-      class="fixed inset-0 bg-white bg-opacity-50 flex flex-col items-start z-50 md:px-10 md:py-20 lg:px-50 lg:py-40 overflow-auto"
+      class="fixed inset-0 bg-white bg-opacity-50 flex flex-col items-start z-50 md:px-10 md:pt-10 md:pb-20 lg:px-50 lg:pb-40 lg:pt-20 overflow-auto"
     >
-      <div class="rounded-md w-full mt-10">
+      <div class="w-full flex justify-end">
+        <button @click="showCategoryModal = false" class="p-2 hover:bg-gray-100 rounded-lg">
+          <X class="w-10 h-10 text-gray-500" />
+        </button>
+      </div>
+      <div class="rounded-md w-full mt-5">
         <h2 class="text-xl font-bold mb-4 text-[#212529]">Article Preview</h2>
         <div class="flex flex-col w-full">
           <!-- Uploaded Image Preview (Optional, outside the editor) -->
@@ -115,6 +120,7 @@
   import type { Category, Article } from '@/lib/types';
   import { ArticleStatus } from '@/lib/types';
   import router from '@/routes';
+  import { X } from 'lucide-vue-next';
   // Modal state
   const showCategoryModal = ref(false);
 
