@@ -61,11 +61,13 @@ Route::get('/auth/verify', function (Request $request) {
 Route::get('articles', [ArticleController::class, 'index']);
 Route::get('articles/{article}', [ArticleController::class, 'show']);
 
+
 // Protected routes (authentication required)
 Route::middleware(['auth:sanctum'])->prefix('articles')->group(function () {
   Route::post('/', [ArticleController::class, 'store']);
   Route::put('/{article}', [ArticleController::class, 'update']);
   Route::delete('/{article}', [ArticleController::class, 'destroy']);
+  Route::get('/following/{userid}', [ArticleController::class, 'followingArticle']);
 });
 
 // Follow Routes
@@ -76,6 +78,8 @@ Route::middleware(['auth:sanctum'])->prefix('follows')->group(function () {
   Route::get('/getFollowers/{userId}', [FollowController::class, 'getFollowers']);
   Route::get('/getFollowing/{userId}', [FollowController::class, 'getFollowing']);
 });
+  // Route::get('/getFollowers/{userId}', [FollowController::class, 'getFollowers']);
+  // Route::get('/getFollowing/{userId}', [FollowController::class, 'getFollowing']);
 
 // User
 // Route::middleware(['auth:sanctum'])->prefix('users')->group(function () {

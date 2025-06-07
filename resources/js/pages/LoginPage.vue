@@ -530,6 +530,7 @@
       if (response.ok) {
         successMessage.value = "Login successful!";
         localStorage.setItem('auth_token', data.token); // Store JWT token in localStorage for checking authentication later
+        localStorage.setItem('userId', JSON.stringify(data.user.id)); // Store user data
         // console.log("User data:", data.user);
         setTimeout(() => {
           router.push('/feed');
