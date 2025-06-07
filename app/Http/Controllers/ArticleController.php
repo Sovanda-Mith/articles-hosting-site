@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Resources\ArticleResource;
 use App\Http\Requests\Article\UpdateArticleRequest;
 use App\Http\Requests\Article\StoreArticleRequest;
+use App\Models\Follow;
 
 class ArticleController extends Controller
 {
@@ -23,6 +24,36 @@ class ArticleController extends Controller
       $limit = $request->get('limit', 10);
 
       $articles = Article::with(['likes', 'comments'])
+          ->paginate($limit, ['*'], 'page', $page);
+
+      return response()->json([
+          'data' => ArticleResource::collection($articles),
+          'meta' => [
+              'current_page' => $articles->currentPage(),
+              'last_page' => $articles->lastPage(),
+              'per_page' => $articles->perPage(),
+              'total' => $articles->total(),
+              'from' => $articles->firstItem(),
+              'to' => $articles->lastItem(),
+          ],
+      ]);
+    }
+
+    /**
+     * Display a listing of the articles from users that the specified user follows.
+     */
+    public function followingArticle(string $userId, Request $request): JsonResponse
+    {
+      $page = $request->get('page', 1);
+      $limit = $request->get('limit', 10);
+
+      // Get ALL users that the current user follows (no pagination on follows)
+      $followingIds = Follow::where('follower_id', $userId)
+            ->pluck('following_id');
+
+      // Get articles from all followed users with pagination
+      $articles = Article::with(['likes', 'comments', 'user'])
+          ->whereIn('user_id', $followingIds)
           ->paginate($limit, ['*'], 'page', $page);
 
       return response()->json([

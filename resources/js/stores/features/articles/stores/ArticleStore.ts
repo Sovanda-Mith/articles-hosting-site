@@ -50,6 +50,33 @@ export const useArticleStore = defineStore('article', () => {
     return response;
   }
 
+  const fetchFollowingArticles = async (user_id: number,page: number=1) => {
+    const response = await ArticleApi.getFollowingArticles(user_id, page);
+
+    if(page===1){
+      articles.value = response.articles;
+    }else {
+      articles.value = [...articles.value, ...response.articles];
+    }
+
+    currentPage.value = response.current_page;
+    lastPage.value = response.last_page;
+    totalArticles.value = response.total;
+
+    return response;
+  }
+  const fetchMoreFollowingArticles = async (user_id: number, page: number) => {
+    const response = await ArticleApi.getFollowingArticles(user_id, page);
+
+    articles.value = [...articles.value, ...response.articles];
+
+    currentPage.value = response.current_page;
+    lastPage.value = response.last_page;
+    totalArticles.value = response.total;
+
+    return response;
+  }
+
   const resetArticles = () => {
     articles.value = [];
     currentPage.value = 1;
@@ -69,6 +96,8 @@ export const useArticleStore = defineStore('article', () => {
     fetchArticles,
     fetchMoreArticles,
     resetArticles,
+    fetchFollowingArticles,
+    fetchMoreFollowingArticles
   }
 
 })

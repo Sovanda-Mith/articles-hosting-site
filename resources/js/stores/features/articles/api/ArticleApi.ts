@@ -29,10 +29,33 @@ class ArticleApi {
   }
 
 
-  public static async getFollowingArticles(user_id: number): Promise<ArticleInterface[]> {
-    const response = await fetch(`${ArticleApi.baseUrl}/following/${user_id}`);
+  // public static async getFollowingArticles(user_id: number): Promise<ArticleInterface[]> {
+  //   const response = await fetch(`${ArticleApi.baseUrl}/following/${user_id}`);
+  //   const data = await response.json();
+  //   return data;
+  // }
+
+  public static async getFollowingArticles(user_id:number, page: number =1, limit: number = 10): Promise<{
+    articles: ArticleInterface[];
+    current_page: number;
+    last_page: number;
+    total: number;
+  }> {
+    const response = await fetch(`${ArticleApi.baseUrl}/following/${user_id}?page=${page}&limit=${limit}`,{
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+      },
+      method: 'GET',
+    });
     const data = await response.json();
-    return data;
+    return {
+      articles: data.data,
+      current_page: data.meta.current_page,
+      last_page: data.meta.last_page,
+      total: data.meta.total,
+    };
   }
 
 }

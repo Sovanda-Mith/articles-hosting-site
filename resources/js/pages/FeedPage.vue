@@ -1,5 +1,5 @@
  <template>
-    <Header></Header>
+    <AppHeader></AppHeader>
         <div class="flex flex-row justify-center items-start ml-72 mr-40 mt-20 mb-32 sm:ml-32  ">
 
             <div class="flex flex-col lg:pr-8 xl:pr-32 ">
@@ -69,13 +69,13 @@
 </template>
 
 <script lang="ts">
-// import Header from '../../components/landingPage_comp/Header.vue';
+import AppHeader from '../../components/landingPage_comp/Header.vue';
 // import preview from "../../../resources/components/feedpage_comp/preview.vue";
 import trending_preview from "../../../resources/components/feedpage_comp/trending_preview.vue";
 
   export default {
     components: {
-        // Header,
+        AppHeader,
         // preview,
         trending_preview,
     }
