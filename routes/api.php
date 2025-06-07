@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleCategoryController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UploadController;
@@ -23,7 +24,7 @@ Route::get('/user', function (Request $request) {
 // Article Routes - using apiResource
 Route::apiResource('articles', ArticleController::class);
 
-Route::middleware('auth:sanctum')->controller(SettingController::class)->prefix('settings')->group(
+Route::controller(SettingController::class)->prefix('settings')->group(
     function () {
         Route::get('/blockedUser', 'blockedUsers');
         Route::get('/mutedUser', 'mutedUsers');
@@ -32,12 +33,19 @@ Route::middleware('auth:sanctum')->controller(SettingController::class)->prefix(
     }
 );
 
-Route::middleware('auth:sanctum')->controller(CategoryController::class)->prefix('category')->group(
+Route::controller(CategoryController::class)->prefix('category')->group(
     function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
+    }
+);
+
+Route::controller(ArticleCategoryController::class)->prefix('articleCategory')->group(
+    function () {
+        Route::post('/', 'update');
+
     }
 );
 

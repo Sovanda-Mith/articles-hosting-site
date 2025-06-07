@@ -12,9 +12,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        /*
+            if (!auth()->user()) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+        */
         $categories = Category::all();
 
         return response()->json(['categories' => $categories], 200);

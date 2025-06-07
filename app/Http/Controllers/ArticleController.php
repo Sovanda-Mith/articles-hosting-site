@@ -30,7 +30,15 @@ class ArticleController extends Controller
 
     public function store(StoreArticleRequest $request): JsonResponse
     {
-        $article = Article::create($request->validated());
+        $article = Article::create([
+            'title' => $request->validated('title'),
+            'subtitle' => $request->validated('subtitle'),
+            'content' => $request->validated('content'),
+            'image' => $request->validated('image'),
+            'status' => $request->validated('status'),
+            // 'user_id' => auth()->user()->id,
+            'user_id' => 3,
+        ]);
 
         return response()->json(new ArticleResource($article), 201);
     }

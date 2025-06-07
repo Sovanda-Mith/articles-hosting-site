@@ -18,9 +18,6 @@
       <button @click="cmd('strike')" :class="isActive('strike')" class="btn">
         <Strikethrough class="icon" />
       </button>
-
-      <button @click="cmd('undo')" class="btn"><Undo class="icon" /></button>
-      <button @click="cmd('redo')" class="btn"><Redo class="icon" /></button>
     </div>
 
     <textarea
@@ -30,8 +27,7 @@
       rows="1"
       @input="autoResize"
     />
-    <div class="flex flex-col w-fit">
-      <!-- Uploaded Image Preview (Optional, outside the editor) -->
+    <div class="flex flex-col w-full">
       <div v-if="uploadedImages.length" class="mt-4 pl-[2rem]">
         <div class="flex flex-wrap gap-4">
           <div
@@ -47,31 +43,10 @@
           </div>
         </div>
       </div>
-      <div v-else>
-        <label for="image-upload" class="btn ml-[2rem] w-fit" title="Add Image">
-          <svg
-            fill="#000000"
-            class="icon !w-[100px] !h-[100px]"
-            version="1.1"
-            id="Icons"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-            viewBox="0 0 32 32"
-            xml:space="preserve"
-          >
-            <g>
-              <circle cx="19" cy="14" r="2" />
-              <path
-                d="M29,22h-4V11h4c0.6,0,1-0.4,1-1s-0.4-1-1-1h-4V5c0-0.6-0.4-1-1-1s-1,0.4-1,1v4H9V5c0-0.6-0.4-1-1-1S7,4.4,7,5v4H3
-		c-0.6,0-1,0.4-1,1s0.4,1,1,1h4v11H3c-0.6,0-1,0.4-1,1s0.4,1,1,1h4v4c0,0.6,0.4,1,1,1s1-0.4,1-1v-4h14v4c0,0.6,0.4,1,1,1s1-0.4,1-1
-		v-4h4c0.6,0,1-0.4,1-1S29.6,22,29,22z M23,11v4.5l-4,3.2l-3.4-2.5c-0.4-0.3-0.9-0.3-1.3,0L9,20.8V11H23z"
-              />
-            </g>
-          </svg>
+      <div v-else class="w-full h-[500px]">
+        <label for="image-upload" class="btn ml-[2rem] w-full h-full" title="Add Image">
+          <span class="text-xs font-serif text-[#868e96] flex justify-center">Add Cover Image</span>
         </label>
-        <span class="text-xs font-serif ml-[2rem] text-[#868e96] flex justify-center"
-          >Add Cover Image</span
-        >
 
         <input
           type="file"
@@ -91,24 +66,14 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, onBeforeUnmount } from 'vue';
+  import { ref, onMounted, onBeforeUnmount, defineExpose } from 'vue';
   import { useEditor, EditorContent } from '@tiptap/vue-3';
   import StarterKit from '@tiptap/starter-kit';
   import Underline from '@tiptap/extension-underline';
-  import Link from '@tiptap/extension-link';
   import Placeholder from '@tiptap/extension-placeholder';
-  import TextAlign from '@tiptap/extension-text-align';
-  import HorizontalRule from '@tiptap/extension-horizontal-rule';
 
   // Lucide icons
-  import {
-    Bold,
-    Italic,
-    Underline as UnderlineIcon,
-    Strikethrough,
-    Undo,
-    Redo,
-  } from 'lucide-vue-next';
+  import { Bold, Italic, Underline as UnderlineIcon, Strikethrough } from 'lucide-vue-next';
 
   const title = ref('');
 
@@ -123,11 +88,6 @@
     extensions: [
       StarterKit,
       Underline,
-      Link,
-      HorizontalRule,
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
       Placeholder.configure({
         placeholder: 'Start writing your article...',
         emptyEditorClass: 'is-editor-empty',
@@ -205,9 +165,6 @@
       case 'strike':
         chain.toggleStrike().run();
         break;
-      case 'horizontalRule':
-        chain.setHorizontalRule().run();
-        break;
     }
   };
 
@@ -221,6 +178,13 @@
 
   onBeforeUnmount(() => {
     document.removeEventListener('mouseup', checkSelection);
+  });
+
+  defineExpose({
+    title,
+    editor,
+    uploadedImages,
+    handleImageSelect,
   });
 </script>
 

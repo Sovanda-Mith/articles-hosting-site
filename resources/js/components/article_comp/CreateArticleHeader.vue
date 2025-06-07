@@ -1,6 +1,6 @@
 <template>
   <div
-    class="header w-screen h-auto flex justify-between items-center px-[20px] pt-[20px] pb-[20px] bg-white shadow-xs z-50"
+    class="header w-full h-auto flex justify-between items-center px-[20px] pt-[20px] pb-[20px] bg-white shadow-xs z-50"
   >
     <router-link to="/">
       <div class="flex justify-center items-center sm:gap-3 md">
@@ -15,6 +15,7 @@
     <div class="flex justify-center items-center gap-[40px] relative">
       <div class="flex gap-[40px]">
         <div
+          @click="handlePublish"
           class="body-big flex items-center space-x-1 bg-green-500 px-4 rounded-xl !text-white cursor-pointer hover:bg-green-600 navList"
         >
           <p>Publish</p>
@@ -78,6 +79,12 @@
 </template>
 <script setup lang="ts">
   import { ref } from 'vue';
+
+  const emit = defineEmits(['publish']);
+
+  const handlePublish = () => {
+    emit('publish');
+  };
 
   const isMenuOpen = ref(false);
   const toggleMenu = () => {
