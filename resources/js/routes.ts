@@ -80,6 +80,13 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/detail-article/',
+    component: () => import('../js/pages/DetailArticlePage.vue'),
+    meta: {
+      title: 'DetailArticle',
+    },
+  },
+  {
     path: '/profile',
     component: () => import('../js/pages/ProfilePage.vue'),
     meta: {
