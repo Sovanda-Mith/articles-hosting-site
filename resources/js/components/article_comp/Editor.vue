@@ -18,6 +18,28 @@
       <button @click="cmd('strike')" :class="isActive('strike')" class="btn">
         <Strikethrough class="icon" />
       </button>
+      <button @click="cmd('link')" :class="isActive('link')" class="btn">
+        <LinkIcon class="icon" />
+      </button>
+      <button @click="cmd('code')" :class="isActive('code')" class="btn">
+        <CodeIcon class="icon" />
+      </button>
+      <Dialog v-model:open="isLinkDialogOpen">
+        <DialogContent class="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Insert Link</DialogTitle>
+            <DialogDescription>Enter the URL for the selected text.</DialogDescription>
+          </DialogHeader>
+
+          <div class="grid gap-2 py-4">
+            <Input v-model="linkUrl" placeholder="https://example.com" class="col-span-4" />
+          </div>
+
+          <DialogFooter>
+            <Button @click="applyLink">Apply</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
 
     <textarea
@@ -71,9 +93,47 @@
   import StarterKit from '@tiptap/starter-kit';
   import Underline from '@tiptap/extension-underline';
   import Placeholder from '@tiptap/extension-placeholder';
+  import Link from '@tiptap/extension-link';
+  import Code from '@tiptap/extension-code';
 
   // Lucide icons
-  import { Bold, Italic, Underline as UnderlineIcon, Strikethrough } from 'lucide-vue-next';
+  import {
+    Bold,
+    Italic,
+    Underline as UnderlineIcon,
+    Strikethrough,
+    Link as LinkIcon,
+    CodeIcon,
+  } from 'lucide-vue-next';
+
+  import { Button } from '@/components/ui/button';
+  import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+  } from '@/components/ui/dialog';
+  import { Input } from '@/components/ui/input';
+
+  const isLinkDialogOpen = ref(false);
+  const linkUrl = ref('');
+
+  const openLinkDialog = () => {
+    linkUrl.value = '';
+    isLinkDialogOpen.value = true;
+  };
+
+  const applyLink = () => {
+    if (!editor.value) return;
+
+    if (linkUrl.value.trim()) {
+      editor.value.chain().focus().setLink({ href: linkUrl.value.trim() }).run();
+    }
+
+    isLinkDialogOpen.value = false;
+  };
 
   const title = ref('');
 
@@ -86,8 +146,18 @@
   const editor = useEditor({
     content: '',
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        code: false,
+      }),
       Underline,
+      Code,
+      Link.configure({
+        openOnClick: true,
+        autolink: true,
+        HTMLAttributes: {
+          class: 'text-blue-500 underline',
+        },
+      }),
       Placeholder.configure({
         placeholder: 'Start writing your article...',
         emptyEditorClass: 'is-editor-empty',
@@ -165,6 +235,17 @@
       case 'strike':
         chain.toggleStrike().run();
         break;
+      case 'link':
+        if (editor.value?.isActive('link')) {
+          editor.value.chain().focus().unsetLink().run();
+        } else {
+          openLinkDialog();
+        }
+        break;
+      case 'code':
+        const isActive = editor.value?.isActive('code');
+        editor.value.chain().focus()[isActive ? 'unsetCode' : 'setCode']().run();
+        break;
     }
   };
 
@@ -241,5 +322,13 @@
   .icon {
     width: 1.2rem;
     height: 1.2rem;
+  }
+
+  code {
+    background-color: #f3f4f6;
+    border-radius: 0.4rem;
+    color: #242424;
+    font-size: 0.85rem;
+    padding: 0.25em 0.3em;
   }
 </style>
