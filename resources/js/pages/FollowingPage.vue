@@ -9,7 +9,7 @@
             pub_date = "Mar 10"
             clapNum = "4.4k"
             commentNum = "129"
-            preview_img =  "/feedpage_img/img1.jpg" 
+            preview_img =  "/feedpage_img/img1.jpg"
         />
         <preview
             profile_img = "/feedpage_img/profile1.jpg"
@@ -19,7 +19,7 @@
             pub_date = "Mar 10"
             clapNum = "4.4k"
             commentNum = "129"
-            preview_img =  "/feedpage_img/img1.jpg" 
+            preview_img =  "/feedpage_img/img1.jpg"
         />
         <preview
             profile_img = "/feedpage_img/profile1.jpg"
@@ -29,7 +29,7 @@
             pub_date = "Mar 10"
             clapNum = "4.4k"
             commentNum = "129"
-            preview_img =  "/feedpage_img/img1.jpg" 
+            preview_img =  "/feedpage_img/img1.jpg"
         />
         <preview
             profile_img = "/feedpage_img/profile1.jpg"
@@ -39,7 +39,7 @@
             pub_date = "Mar 10"
             clapNum = "4.4k"
             commentNum = "129"
-            preview_img =  "/feedpage_img/img1.jpg" 
+            preview_img =  "/feedpage_img/img1.jpg"
         />
         <preview
             profile_img = "/feedpage_img/profile1.jpg"
@@ -49,14 +49,14 @@
             pub_date = "Mar 10"
             clapNum = "4.4k"
             commentNum = "129"
-            preview_img =  "/feedpage_img/img1.jpg" 
+            preview_img =  "/feedpage_img/img1.jpg"
         />
 
     </div>
 
-</template> 
+</template>
 
-<script lang="ts">
+<!-- <script lang="ts">
 import preview from "../../../resources/components/feedpage_comp/preview.vue";
 import trending_preview from "../../../resources/components/feedpage_comp/trending_preview.vue";
 
@@ -66,6 +66,37 @@ export default {
         trending_preview,
     }
 }
+</script> -->
+<script setup lang="ts">
+import preview from '../../../resources/components/feedpage_comp/preview.vue';
+import trending_preview from '../../../resources/components/feedpage_comp/trending_preview.vue';
+import { ref } from 'vue';
+import { useArticleStore } from '../stores/features/articles/stores/ArticleStore';
+import { storeToRefs } from 'pinia';
+
+defineOptions({
+  name: 'FollowingPage',
+});
+
+const articleStore = useArticleStore();
+const { articles } = storeToRefs(articleStore);
+
+const loadingArticles = ref(false);
+const error = ref<string | null>(null);
+
+// const loadFollowingArticles = async () => {
+//   loadingArticles.value = true;
+//   error.value = null;
+
+//   try {
+//     await articleStore.fetchFollowingArticles();
+//   } catch (err) {
+//     error.value = 'Failed to load articles';
+//     console.error(err);
+//   } finally {
+//     loadingArticles.value = false;
+//   }
+// };
 </script>
 
 <style scoped>
