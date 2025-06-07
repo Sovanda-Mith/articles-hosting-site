@@ -52,6 +52,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
         ]);
+        // Call UserSeeder
+        $this->call([
+            UserSeeder::class,
+        ]);
         // Call LikeSeeder
         $this->call([
             LikeSeeder::class,
@@ -59,10 +63,6 @@ class DatabaseSeeder extends Seeder
         //Call CommentSeeder
         $this->call([
             CommentSeeder::class,
-        ]);
-        // Call UserSeeder
-        $this->call([
-            UserSeeder::class,
         ]);
         // Call FollowsSeeder
         $this->call([
