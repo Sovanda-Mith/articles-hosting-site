@@ -3,7 +3,7 @@
     <div class="flex justify-between h-[50px] items-center">
       <div class="flex flex-col">
         <p class="font-medium">Notifications on your articles</p>
-        <p class="text-gray-500 text-sm">Get notifications for comments, save, etc.</p>
+        <p class="text-gray-500 text-sm">Get notifications for likes, comments, save, etc.</p>
       </div>
       <Checkbox />
     </div>
@@ -12,7 +12,7 @@
       <Checkbox />
     </div>
     <div class="flex justify-between h-[50px] items-center">
-      <p class="font-medium">New product features from Bloggist</p>
+      <p class="font-medium">New features from Bloggist</p>
       <Checkbox />
     </div>
   </div>
