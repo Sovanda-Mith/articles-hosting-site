@@ -26,8 +26,8 @@ class StoreArticleRequest extends FormRequest
             'subtitle' => 'nullable|string|max:255',
             'content' => 'required|string',
             'view_count' => 'nullable|integer|min:0',
-            'image' => 'nullable|image',
-            'status' => 'nullable|in:draft,published',
+            'image' => 'nullable|string',
+            'status' => 'in:draft,published',
         ];
     }
 }

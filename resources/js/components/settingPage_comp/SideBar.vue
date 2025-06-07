@@ -36,7 +36,7 @@
   const route = useRoute();
 
   const categories = [
-    { id: 'account', name: 'Account' },
+    { id: '', name: 'Account' },
     { id: 'notifications', name: 'Notifications' },
     { id: 'security', name: 'Security and Privacy' },
   ];

@@ -20,6 +20,8 @@ class Article extends Model
         'title',
         'subtitle',
         'content',
+        'image',
+        'status',
         'user_id',
         'view_count',
         'image',

@@ -13,7 +13,9 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -58,8 +60,58 @@ class User extends Authenticatable
     }
 
     /**
+     * Users this user has blocked
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function blockedUsers()
+    {
+        return $this->belongsToMany(User::class, 'user_blocks', 'user_id', 'blocked_user_id');
+    }
+
+    /**
+     * Users who blocked this user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function blockedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'user_blocks', 'blocked_user_id', 'user_id');
+    }
+
+    /**
+     * Users this user has muted
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function mutedUsers()
+    {
+        return $this->belongsToMany(User::class, 'user_mutes', 'user_id', 'muted_user_id');
+    }
+
+    /**
+     * Users who muted this user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function mutedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'user_mutes', 'muted_user_id', 'user_id');
+    }
+
+    /**
+     * Settings States
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function settings()
+    {
+        return $this->hasOne(UserSettings::class);
+    }
+
+    /**
      * Relationships to likes
-    */
+     */
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);

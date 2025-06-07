@@ -77,33 +77,19 @@ class ArticleController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function store(Request $request): JsonResponse
-    // {
-    //   $validated = $request->validate([
-    //     'title' => 'required|string|max:255',
-    //     'subtitle' => 'nullable|string|max:255',
-    //     'content' => 'required|string',
-    //     'image' => 'nullable|image|max:2048',
-    //     'status' => 'required|in:draft,published',
-    //   ]);
-
-    //   $validated['user_id'] = auth()->id();
-    //   $article = Article::create($validated);
-
-    //   return response()->json(new ArticleResource($article), 201);
-    // }
-
     public function store(StoreArticleRequest $request): JsonResponse
     {
-      $validated = $request->validated();
-      $validated['user_id'] = auth()->id();
+        $article = Article::create([
+            'title' => $request->validated('title'),
+            'subtitle' => $request->validated('subtitle'),
+            'content' => $request->validated('content'),
+            'image' => $request->validated('image'),
+            'status' => $request->validated('status'),
+            // 'user_id' => auth()->user()->id,
+            'user_id' => 3,
+        ]);
 
-      $article = Article::create($validated);
-
-      return response()->json(new ArticleResource($article), 201);
+        return response()->json(new ArticleResource($article), 201);
     }
 
     /**
@@ -149,7 +135,7 @@ class ArticleController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-      Article::findOrFail($id)->delete();
-      return response()->json(['message' => 'Article deleted successfully'], 204);
+        Article::findOrFail($id)->delete();
+        return response()->json(['message' => 'Article deleted successfully'], 204);
     }
 }
