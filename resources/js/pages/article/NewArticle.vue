@@ -160,7 +160,7 @@
     };
 
     try {
-      const response = await axios.post('/api/articles/', {
+      const response = await axios.post('/api/articles', {
         title: article.title,
         subtitle: article.subtitle,
         content: article.content,
