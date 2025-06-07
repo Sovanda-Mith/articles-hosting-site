@@ -14,10 +14,28 @@ class ArticleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): jsonResponse
+    public function index(Request $request): jsonResponse
     {
-      $articles = Article::with(['likes','comments'])->paginate(10);
-      return response()->json(ArticleResource::collection($articles));
+      // $articles = Article::with(['likes','comments'])->paginate(10);
+      // return response()->json(ArticleResource::collection($articles));
+
+      $page = $request->get('page', 1);
+      $limit = $request->get('limit', 10);
+
+      $articles = Article::with(['likes', 'comments'])
+          ->paginate($limit, ['*'], 'page', $page);
+
+      return response()->json([
+          'data' => ArticleResource::collection($articles),
+          'meta' => [
+              'current_page' => $articles->currentPage(),
+              'last_page' => $articles->lastPage(),
+              'per_page' => $articles->perPage(),
+              'total' => $articles->total(),
+              'from' => $articles->firstItem(),
+              'to' => $articles->lastItem(),
+          ],
+      ]);
     }
 
     /**

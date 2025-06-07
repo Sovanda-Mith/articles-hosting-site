@@ -28,7 +28,7 @@
           <Form
             @submit="onSubmit"
             :validation-schema="yup.Schema"
-            class="w-full flex flex-col gap-10 mb-5"
+            class="w-full flex flex-col gap-8 mb-5"
           >
             <div class="relative bg-white rounded-lg w-full">
               <input
@@ -324,7 +324,7 @@
     DialogTitle,
     DialogTrigger,
   } from 'reka-ui';
-import router from '@/routes';
+  import router from '@/routes';
   // import {Router} from '@/vue-router';
 
   // Reactive variables for error and success messages
@@ -350,7 +350,11 @@ import router from '@/routes';
         .string()
         .min(8, 'Password must be at least 8 characters')
         .max(20, 'Password must be less than 20 characters')
-        .required('Password is required'),
+        .required('Password is required')
+        .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+        .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+        .matches(/[0-9]/, 'Password must contain at least one digits')
+        .matches(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
     }),
   });
 
@@ -398,7 +402,7 @@ import router from '@/routes';
         }
       } else {
         // Success
-        console.log('Success:', data);
+        // console.log('Success:', data);
         successMessage.value = 'Account created successfully! Welcome to Bloggist!';
         //log in the user
         try{

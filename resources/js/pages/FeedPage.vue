@@ -31,7 +31,7 @@
                     <div class="py-2 text-xl font-semibold border-black">Trending</div>
                 </div>
 
-                <div> 
+                <div>
                     <trending_preview
                         profile_img = "/feedpage_img/profile1.jpg"
                         publisherName="Sky_blue"
@@ -66,26 +66,26 @@
                 </div>
             </div>
         </div>
-</template>  
+</template>
 
 <script lang="ts">
-import Header from '../../components/landingPage_comp/Header.vue'; 
-import preview from "../../../resources/components/feedpage_comp/preview.vue";
+// import Header from '../../components/landingPage_comp/Header.vue';
+// import preview from "../../../resources/components/feedpage_comp/preview.vue";
 import trending_preview from "../../../resources/components/feedpage_comp/trending_preview.vue";
 
   export default {
     components: {
-        Header,
-        preview,
+        // Header,
+        // preview,
         trending_preview,
     }
 }
 </script>
 
 <style scoped>
-.active-tab {          
+.active-tab {
   font-weight: bold;
-  border-bottom: 2px solid black; 
+  border-bottom: 2px solid black;
 }
-</style> 
+</style>
 
