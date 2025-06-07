@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -22,6 +23,9 @@ class Article extends Model
         'image',
         'status',
         'user_id',
+        'view_count',
+        'image',
+        'status',
     ];
 
     // relationships
@@ -56,6 +60,13 @@ class Article extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'article_categories', 'article_id', 'category_id');
+    }
+    /**
+     * Relationships to user
+    */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
 }

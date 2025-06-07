@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-  import { useTabStore } from '../useTabStore.ts';
+  import { useTabStore } from '../stores/features/useTabStore.ts';
   import ProfileHeader from '../../../resources/components/profileComponents/ProfileHeader.vue';
   import TabSwitcher from '../../../resources/components/profileComponents/TabSwitcher.vue';
   import Sidebar from '../../../resources/components/profileComponents/Sidebar.vue';

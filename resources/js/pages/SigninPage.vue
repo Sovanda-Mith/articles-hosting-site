@@ -28,42 +28,42 @@
           <Form
             @submit="onSubmit"
             :validation-schema="yup.Schema"
-            class="w-full flex flex-col gap-10 mb-5"
+            class="w-full flex flex-col gap-8 mb-5"
           >
             <div class="relative bg-white rounded-lg w-full">
-              <Input
+              <input
                 placeholder="Email address"
                 v-model="email"
                 v-bind="emailAttrs"
                 class="peer w-full bg-transparent placeholder-transparent text-gray-800 text-sm border-1 border-gray-200 rounded-md px-3 py-2 transition box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;duration-300 ease focus:outline-none focus:border-none focus:shadow-[0_2.8px_2.2px_rgba(0,_0,_0,_0.034),_0_6.7px_5.3px_rgba(0,_0,_0,_0.048),_0_12.5px_10px_rgba(0,_0,_0,_0.06),_0_22.3px_17.9px_rgba(0,_0,_0,_0.072),_0_41.8px_33.4px_rgba(0,_0,_0,_0.086),_0_100px_80px_rgba(0,_0,_0,_0.12)] shadow-sm"
-                id="defaultInput"
+                id="emailInput"
                 type="email"
               />
               <label
                 class="subtitle absolute left-2 -top-6 text-gray-500 bg-transparent text-sm transition-all peer-placeholder-shown:top-1.5 peer-placeholder-shown:text-gray-600 peer-placeholder-shown:text-base peer-focus:-top-6 peer-focus:text-gray-600 font-semibold peer-focus:text-sm px-1"
-                for="defaultInput"
+                for="emailInput"
               >
-                Email address
+                Email
               </label>
               <div class="text-red-500">{{ errors.email }}</div>
             </div>
 
             <div class="relative bg-white rounded-lg w-full">
               <input
-                placeholder="Username"
-                v-model="username"
-                v-bind="usernameAttrs"
+                placeholder="Name"
+                v-model="name"
+                v-bind="nameAttrs"
                 class="peer w-full bg-transparent placeholder-transparent text-gray-800 text-sm border-1 border-gray-200 rounded-md px-3 py-2 transition box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;duration-300 ease focus:outline-none focus:border-none focus:shadow-[0_2.8px_2.2px_rgba(0,_0,_0,_0.034),_0_6.7px_5.3px_rgba(0,_0,_0,_0.048),_0_12.5px_10px_rgba(0,_0,_0,_0.06),_0_22.3px_17.9px_rgba(0,_0,_0,_0.072),_0_41.8px_33.4px_rgba(0,_0,_0,_0.086),_0_100px_80px_rgba(0,_0,_0,_0.12)] shadow-sm"
-                id="defaultInput"
+                id="nameInput"
                 type="text"
               />
               <label
                 class="subtitle absolute left-2 -top-6 text-gray-500 bg-transparent text-sm transition-all peer-placeholder-shown:top-1.5 peer-placeholder-shown:text-gray-600 peer-placeholder-shown:text-base peer-focus:-top-6 peer-focus:text-gray-600 font-semibold peer-focus:text-sm px-1"
-                for="defaultInput"
+                for="nameInput"
               >
-                Username
+                Name
               </label>
-              <div class="text-red-500">{{ errors.username }}</div>
+              <div class="text-red-500">{{ errors.name }}</div>
             </div>
 
             <!-- password -->
@@ -74,12 +74,12 @@
                   v-model="password"
                   v-bind="passwordAttrs"
                   class="peer w-full bg-transparent placeholder-transparent text-gray-800 text-sm border-1 border-gray-200 rounded-md px-3 py-2 transition box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;duration-300 ease focus:outline-none focus:border-none focus:shadow-[0_2.8px_2.2px_rgba(0,_0,_0,_0.034),_0_6.7px_5.3px_rgba(0,_0,_0,_0.048),_0_12.5px_10px_rgba(0,_0,_0,_0.06),_0_22.3px_17.9px_rgba(0,_0,_0,_0.072),_0_41.8px_33.4px_rgba(0,_0,_0,_0.086),_0_100px_80px_rgba(0,_0,_0,_0.12)] shadow-sm"
-                  id="defaultInput"
+                  id="passwordInput"
                   type="password"
                 />
                 <label
                   class="subtitle absolute left-2 -top-6 text-gray-500 bg-transparent text-sm transition-all peer-placeholder-shown:top-1.5 peer-placeholder-shown:text-gray-600 peer-placeholder-shown:text-base peer-focus:-top-6 peer-focus:text-gray-600 font-semibold peer-focus:text-sm px-1"
-                  for="defaultInput"
+                  for="passwordInput"
                 >
                   Password
                 </label>
@@ -101,33 +101,139 @@
 
             <!-- get start button -->
             <div class="flex flex-col gap-2">
-              <div class="relative inline-flex items-center justify-center w-full gap-4 group">
-                <div
-                  class="absolute inset-0 duration-1000 opacity-60 transitiona-all bg-gradient-to-r from-indigo-500 via-pink-500 to-yellow-400 rounded-xl blur-lg filter group-hover:opacity-100 group-hover:duration-200"
-                ></div>
-                <button
-                  class="group w-full relative inline-flex items-center justify-center rounded-2xl bg-gray-900 px-8 py-3 font-semibold text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:-translate-y-0.5 hover:shadow-gray-600/30"
-                  title="payment"
+
+              <DialogRoot>
+                <DialogTrigger
+
                 >
-                  Get Started For Free<svg
-                    aria-hidden="true"
-                    viewBox="0 0 10 10"
-                    height="10"
-                    width="10"
-                    fill="none"
-                    class="mt-0.5 ml-2 -mr-1 stroke-white stroke-2"
+                  <div class="relative inline-flex items-center justify-center w-full gap-4 group">
+                    <div
+                      class="absolute inset-0 duration-1000 opacity-60 transitiona-all bg-gradient-to-r from-indigo-500 via-pink-500 to-yellow-400 rounded-xl blur-lg filter group-hover:opacity-100 group-hover:duration-200"
+                    ></div>
+                    <!-- had to put type button to prevent submit form -->
+                    <button
+                      type="button"
+                      :disabled="isLoading"
+                      class="group w-full relative inline-flex items-center justify-center rounded-2xl bg-gray-900 px-8 py-3 font-semibold text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:-translate-y-0.5 hover:shadow-gray-600/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="payment"
+                    >
+                      <span v-if="!isLoading">Get Started For Free</span>
+                      <span v-else class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Creating Account...
+                      </span>
+                      <svg
+                        v-if="!isLoading"
+                        aria-hidden="true"
+                        viewBox="0 0 10 10"
+                        height="10"
+                        width="10"
+                        fill="none"
+                        class="mt-0.5 ml-2 -mr-1 stroke-white stroke-2"
+                      >
+                        <path d="M0 5h7" class="transition opacity-0 group-hover:opacity-100"></path>
+                        <path d="M1 1l4 4-4 4" class="transition group-hover:translate-x-[3px]"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </DialogTrigger>
+                <DialogPortal>
+                  <DialogOverlay class="bg-black/60 data-[state=open]:animate-overlayShow fixed inset-0 z-30" />
+                  <DialogContent
+                    class="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none z-[100]"
                   >
-                    <path d="M0 5h7" class="transition opacity-0 group-hover:opacity-100"></path>
-                    <path d="M1 1l4 4-4 4" class="transition group-hover:translate-x-[3px]"></path>
-                  </svg>
-                </button>
-              </div>
+                    <DialogTitle class="text-mauve12 m-0 text-[17px] font-semibold">
+                      Confirm your information
+                    </DialogTitle>
+                    <DialogDescription class="text-mauve11 mt-[10px] mb-5 text-sm leading-normal">
+                      Make sure all the information is correct before saving your profile.
+                    </DialogDescription>
+                    <!-- entered form data -->
+                    <div class="flex flex-col gap-5">
+                      <div class="flex justify-between">
+                        <span class="text-gray-700 font-semibold">Email:</span>
+                        <span class="text-gray-600">{{ email }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-700 font-semibold">Name:</span>
+                        <span class="text-gray-600">{{ name }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-700 font-semibold">Password:</span>
+                        <span class="text-gray-600">{{ password.replace(/./g, '*') }}</span>
+                      </div>
+                      <!-- <span>{{ name }}</span> -->
+                    </div>
+                    <div class="mt-[25px] flex justify-end">
+                      <DialogClose as-child>
+                        <button
+                          @click="onSubmit"
+                          type="submit"
+                          :disabled="isLoading"
+                          class="bg-green4 text-green11 text-sm hover:bg-green5 focus:shadow-green7 inline-flex h-[35px] items-center justify-center rounded-lg px-[15px] font-semibold leading-none focus:shadow-[0_0_0_2px] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <span v-if="!isLoading">Yes, create my profile</span>
+                          <span v-else class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Creating...
+                          </span>
+                        </button>
+                      </DialogClose>
+                    </div>
+                    <DialogClose
+                      class="text-grass11 hover:bg-green4 focus:shadow-green7 absolute top-[10px] right-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
+                      aria-label="Close"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M18 6L6 18" />
+                        <path d="M6 6l12 12" />
+                      </svg>
+                    </DialogClose>
+                  </DialogContent>
+                </DialogPortal>
+              </DialogRoot>
 
               <span class="body-1 text-center text-[#666666]"
                 >By creating an account, you agree to the Terms of use and Privacy Policy.
               </span>
             </div>
           </Form>
+
+          <!-- Error and Success Messages -->
+          <div v-if="errorMessage" class="mb-4 p-4 rounded-lg bg-red-50 border border-red-200">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+              </svg>
+              <span class="text-red-700 text-sm font-medium">{{ errorMessage }}</span>
+            </div>
+          </div>
+
+          <div v-if="successMessage" class="mb-4 p-4 rounded-lg bg-green-50 border border-green-200">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <span class="text-green-700 text-sm font-medium">{{ successMessage }}</span>
+            </div>
+          </div>
+
           <!-- OR seperator -->
           <div class="flex items-center my-1 md:my-2">
             <div class="flex-grow h-px bg-gray-300"></div>
@@ -198,12 +304,33 @@
       </div>
     </div>
   </div>
+
 </template>
 <style scoped></style>
 <script lang="ts" setup>
   // import { reactive } from 'vue';
+
   import { useForm, Form } from 'vee-validate';
   import * as yup from 'yup';
+  import { ref, watch } from 'vue';
+  // import { Icon } from '@iconify/vue';
+  import {
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogOverlay,
+    DialogPortal,
+    DialogRoot,
+    DialogTitle,
+    DialogTrigger,
+  } from 'reka-ui';
+  import router from '@/routes';
+  // import {Router} from '@/vue-router';
+
+  // Reactive variables for error and success messages
+  const errorMessage = ref('');
+  const successMessage = ref('');
+  const isLoading = ref(false);
 
   // const form = reactive({
   //   email: '',
@@ -211,28 +338,128 @@
   //   password: '',
   // });
 
+
   const { errors, handleSubmit, defineField } = useForm({
     validationSchema: yup.object({
       email: yup.string().email('Invalid email format').required('Email is required'),
-      username: yup
+      name: yup
         .string()
-        .min(3, 'Username must be at least 3 characters')
-        .required('Username is required'),
+        .min(3, 'Name must be at least 3 characters')
+        .required('Name is required'),
       password: yup
         .string()
         .min(8, 'Password must be at least 8 characters')
         .max(20, 'Password must be less than 20 characters')
-        .required('Password is required'),
+        .required('Password is required')
+        .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+        .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+        .matches(/[0-9]/, 'Password must contain at least one digits')
+        .matches(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
     }),
   });
 
-  const onSubmit = handleSubmit((values) => {
-    alert(JSON.stringify(values, null, 2));
+
+  const onSubmit = handleSubmit(async (values) => {
+    // Clear previous messages
+    errorMessage.value = '';
+    successMessage.value = '';
+    isLoading.value = true;
+
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: values.email,
+          name: values.name,
+          password: values.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle different types of errors
+        if (response.status === 422) {
+          // Validation errors
+          if (data.errors) {
+            const validationErrors = Object.values(data.errors).flat();
+            errorMessage.value = validationErrors.join(', ');
+          } else {
+            errorMessage.value = data.message || 'Validation failed. Please check your input.';
+          }
+        } else if (response.status === 409) {
+          // Conflict (e.g., email already exists)
+          errorMessage.value = data.message || 'Email already exists. Please use a different email.';
+        } else {
+          // Other server errors
+          errorMessage.value = data.message || 'An error occurred while creating your account. Please try again.';
+        }
+      } else {
+        // Success
+        // console.log('Success:', data);
+        successMessage.value = 'Account created successfully! Welcome to Bloggist!';
+        //log in the user
+        try{
+          const response = await fetch('/api/users/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              email: values.email,
+              password: values.password,
+            }),
+          });
+
+          const dataUser = await response.json();
+
+          if(response.ok) {
+            localStorage.setItem('auth_token', dataUser.token); // Store the JWT token
+            
+            //redirect logic here
+            setTimeout(() => {
+              router.push('/feed').then(() => {
+                window.location.reload();
+              });
+            }, 1000);
+          }
+        } catch (error) {
+          console.error('Login Error:', error);
+          errorMessage.value = 'Login failed. Please try again.';
+        }
+
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      errorMessage.value = 'Network error. Please check your internet connection and try again.';
+    } finally {
+      isLoading.value = false;
+    }
   });
 
   const [email, emailAttrs] = defineField('email');
-  const [username, usernameAttrs] = defineField('username');
+  const [name, nameAttrs] = defineField('name');
   const [password, passwordAttrs] = defineField('password');
+
+  // Clear messages when user starts typing
+  const clearMessages = () => {
+    if (errorMessage.value || successMessage.value) {
+      errorMessage.value = '';
+      successMessage.value = '';
+    }
+  };
+
+  // Watch for form changes to clear messages
+  watch([email, name, password], clearMessages);
 
   const signInwithGoogle = () => {
     // Use relative path instead of hardcoded URL for better flexibility across environments

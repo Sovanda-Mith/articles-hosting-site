@@ -8,16 +8,65 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Resources\ArticleResource;
 use App\Http\Requests\Article\UpdateArticleRequest;
 use App\Http\Requests\Article\StoreArticleRequest;
+use App\Models\Follow;
 
 class ArticleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(): jsonResponse
+    public function index(Request $request): jsonResponse
     {
-        $articles = Article::with(['likes','comments'])->paginate(10);
-        return response()->json(ArticleResource::collection($articles));
+      // $articles = Article::with(['likes','comments'])->paginate(10);
+      // return response()->json(ArticleResource::collection($articles));
+
+      $page = $request->get('page', 1);
+      $limit = $request->get('limit', 10);
+
+      $articles = Article::with(['likes', 'comments'])
+          ->paginate($limit, ['*'], 'page', $page);
+
+      return response()->json([
+          'data' => ArticleResource::collection($articles),
+          'meta' => [
+              'current_page' => $articles->currentPage(),
+              'last_page' => $articles->lastPage(),
+              'per_page' => $articles->perPage(),
+              'total' => $articles->total(),
+              'from' => $articles->firstItem(),
+              'to' => $articles->lastItem(),
+          ],
+      ]);
+    }
+
+    /**
+     * Display a listing of the articles from users that the specified user follows.
+     */
+    public function followingArticle(string $userId, Request $request): JsonResponse
+    {
+      $page = $request->get('page', 1);
+      $limit = $request->get('limit', 10);
+
+      // Get ALL users that the current user follows (no pagination on follows)
+      $followingIds = Follow::where('follower_id', $userId)
+            ->pluck('following_id');
+
+      // Get articles from all followed users with pagination
+      $articles = Article::with(['likes', 'comments', 'user'])
+          ->whereIn('user_id', $followingIds)
+          ->paginate($limit, ['*'], 'page', $page);
+
+      return response()->json([
+          'data' => ArticleResource::collection($articles),
+          'meta' => [
+              'current_page' => $articles->currentPage(),
+              'last_page' => $articles->lastPage(),
+              'per_page' => $articles->perPage(),
+              'total' => $articles->total(),
+              'from' => $articles->firstItem(),
+              'to' => $articles->lastItem(),
+          ],
+      ]);
     }
 
     /**
@@ -69,10 +118,16 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, string $id)
     {
-        $article = Article::findOrFail($id);
-        $article->update($request->validated());
+      // $article = Article::findOrFail($id);
+      // $article->update($request->validated());
 
-        return response()->json(new ArticleResource($article));
+      $validated = $request->validated();
+      $validated['user_id'] = auth()->id();
+
+      $article = Article::findOrFail($id);
+      $article->update($validated);
+
+      return response()->json(new ArticleResource($article), 200);
     }
 
     /**

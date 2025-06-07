@@ -22,44 +22,47 @@ class GoogleController extends Controller
     public function handleGoogleCallback()
     {
         try {
+          
+          $googleUser = Socialite::driver('google')->stateless()->user();
 
-            $googleUser = Socialite::driver('google')->stateless()->user();
+          // Check if user already exists by email or google_id
+          $existingUser = User::where('email', $googleUser->email)
+                            ->orWhere('google_id', $googleUser->id)
+                            ->first();
 
-            // Check if user already exists by email or google_id
-            $existingUser = User::where('email', $googleUser->email)
-                              ->orWhere('google_id', $googleUser->id)
-                              ->first();
+          if ($existingUser) {
+              // Update existing user's Google ID if it's missing
+              if (!$existingUser->google_id) {
+                  $existingUser->update(['google_id' => $googleUser->id]);
+              }
+              $user = $existingUser;
+          } else {
+              // Create new user with all required fields
+              $user = $this->createNewUser($googleUser);
+          }
 
-            if ($existingUser) {
-                // Update existing user's Google ID if it's missing
-                if (!$existingUser->google_id) {
-                    $existingUser->update(['google_id' => $googleUser->id]);
-                }
-                $user = $existingUser;
-            } else {
-                // Create new user with all required fields
-                $user = $this->createNewUser($googleUser);
-            }
+          // dd($user); // Commented out for production
 
-            // dd($user);
+          // Log the user in
+          Auth::login($user);
+          session()->regenerate();
 
-            // Log the user in
-            Auth::login($user);
-            session()->regenerate();
-
-            if (request()->expectsJson()) {
-                // For Mobile app, Postman, etc.
-                $token = auth()->user()->createToken('auth_token')->plainTextToken;
-
-                return response()->json([
+          if (request()->expectsJson()) {
+              // Create Sanctum token for API authentication
+              $token = $user->createToken('Google OAuth Token')->plainTextToken;
+              return response()->json([
                   'success' => true,
                   'message' => 'Login successful',
-                  'token' => $token,
-                ]);
-            } else {
-                // For web, no need for token since we are authenticating by session in web
-                return redirect()->intended('/feed');
-            }
+                  'user' => $user,
+                  'token' => $token
+              ]);
+          } else {
+              // For web, redirect to intended page
+              return redirect()->intended('/feed');
+          }
+
+          // Redirect to intended page or dashboard
+          // return redirect()->intended('/dashboard')->with('success', 'Welcome! You have been logged in successfully.');
 
         } catch (\Exception $e) {
             // Log the error for debugging
@@ -123,5 +126,49 @@ class GoogleController extends Controller
         }
 
         return null; // Return null if download fails
+    }
+
+    // API-specific methods for mobile/SPA applications
+    public function apiRedirectToGoogle()
+    {
+        return response()->json([
+            'redirect_url' => Socialite::driver('google')
+                ->stateless()
+                ->redirect()
+                ->getTargetUrl()
+        ]);
+    }
+
+    public function apiHandleGoogleCallback(Request $request)
+    {
+        try {
+            // Use stateless for API
+            $googleUser = Socialite::driver('google')->stateless()->user();
+
+            // Find or create user
+            $user = User::updateOrCreate([
+                'email' => $googleUser->email
+            ], [
+                'name' => $googleUser->name,
+                'google_id' => $googleUser->id,
+                'avatar' => $googleUser->avatar,
+                'email_verified_at' => now(),
+            ]);
+
+            // Create Sanctum token for API use
+            $token = $user->createToken('API Token')->plainTextToken;
+
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
+                'message' => 'Successfully authenticated'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Authentication failed',
+                'message' => $e->getMessage()
+            ], 400);
+        }
     }
 }

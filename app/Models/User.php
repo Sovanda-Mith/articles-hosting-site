@@ -35,6 +35,7 @@ class User extends Authenticatable
         'role_id',
     ];
 
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -133,4 +134,23 @@ class User extends Authenticatable
         return $this->belongsToMany(Article::class, 'article_comments', 'user_id', 'article_id');
     }
 
+    /**
+     * Relationships to articles
+    */
+    public function articles(): HasMany
+    {
+        return $this->hasMany(Article::class, 'user_id', 'id');
+    }
+
+    /**
+     * Relationships to follows
+    */
+    public function followers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id');
+    }
+    public function following(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id');
+    }
 }

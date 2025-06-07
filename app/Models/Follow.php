@@ -7,12 +7,32 @@ use Illuminate\Database\Eloquent\Model;
 
 class Follow extends Model
 {
-    /** @use HasFactory<\Database\Factories\FollowsFactory> */
+    /** @use HasFactory<\Database\Factories\FollowFactory> */
     use HasFactory;
 
-    protected $guarded = [
-      'follower_id',
-      'following_id',
-      'follower_following_unique',
+    protected $table = 'follows';
+
+    protected $primaryKey = 'follow_id';
+
+    protected $fillable = [
+        'follower_id',
+        'following_id',
     ];
+
+    // relationships
+    /**
+     * The user that follows another user.
+     */
+    public function follower()
+    {
+        return $this->belongsTo(User::class, 'follower_id');
+    }
+
+    /**
+     * The user that is being followed.
+     */
+    public function following()
+    {
+        return $this->belongsTo(User::class, 'following_id');
+    }
 }

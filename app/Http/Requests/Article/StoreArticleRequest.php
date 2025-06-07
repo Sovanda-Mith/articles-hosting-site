@@ -11,16 +11,6 @@ class StoreArticleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Check if the user is authenticated
-        /*
-            $validated['user_id'] = auth()->id();
-            if ($validated['user_id']) {
-                return true;
-            } else {
-                // If not authenticated, return false
-                return false;
-            }
-        */
         return true;
     }
 
@@ -35,6 +25,7 @@ class StoreArticleRequest extends FormRequest
             'title' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'content' => 'required|string',
+            'view_count' => 'nullable|integer|min:0',
             'image' => 'nullable|string',
             'status' => 'in:draft,published',
         ];
