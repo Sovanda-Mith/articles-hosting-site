@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col sm:flex-row items-center justify-between px-0 sm:px-10 py-3 sm:py-5 border-y-2 border-gray-100 pb-3 sm:pb-5 gap-4">
+    <div class="flex sm:flex-row items-center justify-between px-0 sm:px-10 py-3 sm:py-5 border-y-2 border-gray-100 pb-3 sm:pb-5 gap-4">
       <div class="flex items-center gap-6 sm:gap-10">
         <div class="flex items-center gap-1 sm:gap-2">
           <i class="pi pi-heart" style="font-size: 20px;"></i>
