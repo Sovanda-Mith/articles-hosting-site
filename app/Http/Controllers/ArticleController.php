@@ -68,6 +68,30 @@ class ArticleController extends Controller
           ],
       ]);
     }
+    /**
+     * Display trending articles.
+     */
+    public function getTrending(Request $request): JsonResponse
+    {
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 10);
+
+        $articles = Article::with(['likes', 'comments'])
+            ->orderBy('view_count', 'desc')
+            ->paginate($limit, ['*'], 'page', $page);
+
+        return response()->json([
+            'data' => ArticleResource::collection($articles),
+            'meta' => [
+                'current_page' => $articles->currentPage(),
+                'last_page' => $articles->lastPage(),
+                'per_page' => $articles->perPage(),
+                'total' => $articles->total(),
+                'from' => $articles->firstItem(),
+                'to' => $articles->lastItem(),
+            ],
+        ]);
+    }
 
     /**
      * Show the form for creating a new resource.

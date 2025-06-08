@@ -34,7 +34,7 @@
         :publisherName="`User ${article.user_id}`"
         :title="article.title"
         :subtitle="article.subtitle || 'No subtitle available'"
-        :pub_date="formatDate(article.created_at)"
+        :pub_date="articleStore.formatDate(article.created_at)"
         :clapNum="article.likes_count?.toString() || '0'"
         :commentNum="article.comments_count?.toString() || '0'"
         :preview_img="article.image || '/feedpage_img/img1.jpg'"
@@ -145,16 +145,6 @@
       isLoadingMore.value = false;
     }
   }
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
 
   // Load articles when component mounts
   onMounted(() => {
