@@ -546,8 +546,6 @@
         token: data.token,
       });
 
-      console.log('User data:', userStore.user);
-
       if (response.status === 200) {
         successMessage.value = 'Login successful!';
         localStorage.setItem('auth_token', data.token); // Store JWT token in localStorage for checking authentication later
