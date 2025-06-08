@@ -95,9 +95,8 @@ Route::post('/auth/logout', [UserController::class, 'logout'])
     ->name('logout');
 
 // Comment Routes
-Route::middleware(['auth:anctum'])->prefix('article/{article_id}')->group(function () {
+Route::middleware(['auth:sanctum'])->prefix('article/{article_id}')->group(function () {
     Route::get('/comments', [CommentController::class, 'index']);
-    Route::get('comment/{id}', [CommentController::class, 'show']);
     Route::post('/comment', [CommentController::class, 'store']);
     Route::put('comment/{id}', [CommentController::class, 'update']);
     Route::delete('comment/{id}', [CommentController::class, 'destroy']);
@@ -106,7 +105,7 @@ Route::middleware(['auth:anctum'])->prefix('article/{article_id}')->group(functi
 // Like Routes
 Route::middleware(['auth:sanctum'])->prefix('article/{article_id}')->group(function () {
     Route::get('/likes', [LikeController::class, 'getArticleLikes']);
-    Route::post('/like', [LikeController::class, 'toggleArticleLikes']);
+    Route::post('/like', [LikeController::class, 'toggleArticleLike']);
 });
 
 Route::middleware(['auth:sanctum'])->prefix('comment/{comment_id}')->group(function () {

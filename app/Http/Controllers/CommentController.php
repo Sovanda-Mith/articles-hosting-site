@@ -14,18 +14,19 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Article $article): JsonResponse
+    public function index(string $article_id): JsonResponse
     {
-        $comments = Comment::with('user:id,name,email')
-            ->where('article_id', $article->article_id)
-            ->whereNull('parent_id')
-            ->orderBy('created_at', 'desc')
-            ->paginate(5);
+        $article = Article::with('comments.user')->findOrFail($article_id);
+
+        if (!$article) {
+            return response()->json(['message' => 'Article not found'], 404);
+        }
 
         return response()->json([
-            'comments' => CommentResource::collection($comments),
-            'message' => 'Comments retrieved successfully',
-        ]);
+            'article_id' => $article->article_id,
+            'comments' => $article->comments,
+            'comments_count' => $article->comments()->count()
+      ]);
     }
 
     /**
@@ -39,9 +40,21 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCommentRequest $request): JsonResponse
+    public function store(StoreCommentRequest $request, string $article_id): JsonResponse
     {
-        $comment = Comment::create($request->validated());
+        $validated = $request->validated();
+
+        $article = Article::find($article_id);
+        if (!$article) {
+            return response()->json(['message' => 'Article not found'], 404);
+        }
+
+        $comment = Comment::create([
+          'content' => $validated['content'],
+          'article_id' => $article_id,
+          'user_id' => auth()->user()->id
+        ]);
+
         return response()->json($comment, 201);
     }
 
@@ -68,9 +81,9 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCommentRequest $request, string $id)
+    public function update(UpdateCommentRequest $request, string $article_id, string $id): JsonResponse
     {
-        $comment = Comment::find($id);
+        $comment = Comment::findOrFail($id);
         if (!$comment) {
             return response()->json(['message' => 'Comment not found'], 404);
         }
@@ -82,7 +95,7 @@ class CommentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $article_id, string $id): JsonResponse
     {
         $comment = Comment::find($id);
         if (!$comment) {

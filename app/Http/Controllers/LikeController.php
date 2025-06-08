@@ -16,7 +16,7 @@ class LikeController extends Controller
      */
     public function index()
     {
-        // 
+        //
     }
 
     /**
@@ -32,7 +32,7 @@ class LikeController extends Controller
      */
     public function store(Request $request)
     {
-        // 
+        //
     }
 
     /**
@@ -70,14 +70,16 @@ class LikeController extends Controller
     /**
      * Toggle like for an article.
      */
-    public function toggleArticleLike(Article $article): JsonResponse
+    public function toggleArticleLike(string $article_id): JsonResponse
     {
         $user = Auth::id();
+
+        $article = Article::findOrFail($article_id);
 
         // Check if the user has already liked the article
         $existingLike = Like::where([
             'user_id' => $user,
-            'article_id' => $article->article_id,
+            'article_id' => $article_id,
         ])->first();
 
         if ($existingLike) {
@@ -88,7 +90,7 @@ class LikeController extends Controller
             // Like
             Like::create([
                 'user_id' => $user,
-                'article_id' => $article->article_id,
+                'article_id' => $article_id,
             ]);
             $action = 'liked';
         }
@@ -109,16 +111,14 @@ class LikeController extends Controller
     /**
      * Get the likes for an article.
      */
-    public function getArticleLikes(Article $article): JsonResponse
+    public function getArticleLikes(string $article_id): JsonResponse
     {
-        $likes = Like::with('user:id,name')
-            ->where('article_id', $article->article_id)
-            ->orderBy('created_at', 'desc')
-            ->get(['like_id', 'user_id', 'created_at']);
+        $article = Article::with('likes.user')->findOrFail($article_id);
 
         return response()->json([
-            'success' => true,
-            'likes' => $likes,
+            'article_id' => $article->article_id,
+            'likes' => $article->likes,
+            'likes_count' => $article->likes()->count(),
         ]);
     }
 
@@ -142,7 +142,7 @@ class LikeController extends Controller
             // Like
             Like::create([
                 'user_id' => $user,
-                'cooment_id' => $comment->comment_id,
+                'comment_id' => $comment->comment_id,
             ]);
             $action = 'liked';
         }

@@ -23,6 +23,8 @@
 
   const author = ref<User>();
 
+  const comments = ref([]);
+
   dayjs.extend(relativeTime);
 
   let timeAgo = ref('');
@@ -78,15 +80,65 @@
               role: userResponse.data.data.role,
             };
           }
-        } catch (error) {}
+        } catch (error) {
+          console.error('Error fetching user:', error);
+        }
+
+        try {
+          const likeResponse = await axios.get(`/api/article/${props.id}/likes`, {
+            headers: {
+              Authorization: `Bearer ${userStore.user.token}`,
+            },
+          });
+
+          if (likeResponse.status === 200) {
+            article.value.likes_count = likeResponse.data.likes_count;
+          }
+        } catch (error) {
+          console.error('Error fetching likes:', error);
+        }
+
+        try {
+          const commentResponse = await axios.get(`/api/article/${props.id}/comments`, {
+            headers: {
+              Authorization: `Bearer ${userStore.user.token}`,
+            },
+          });
+
+          if (commentResponse.status === 200) {
+            article.value.comments_count = commentResponse.data.comments_count;
+            comments.value = commentResponse.data.comments;
+          }
+        } catch (error) {
+          console.error('Error fetching comments:', error);
+        }
       }
     } catch (error) {
       console.error('Error fetching article:', error);
     }
   };
 
+  const isLiked = ref(false);
+
+  const toggleLike = async () => {
+    try {
+      const response = await axios.post(`/api/article/${props.id}/like`, null, {
+        headers: {
+          Authorization: `Bearer ${userStore.user.token}`,
+        },
+      });
+      if (response.status === 200) {
+        isLiked.value = response.data.is_liked;
+        article.value.likes_count = response.data.likes_count;
+      }
+    } catch (error) {
+      console.error('Error liking article:', error);
+    }
+  };
+
   onMounted(() => {
     getArticleAndItsCategories();
+    toggleLike();
   });
 </script>
 
@@ -124,12 +176,17 @@
     >
       <div class="flex items-center gap-6 sm:gap-10">
         <div class="flex items-center gap-1 sm:gap-2">
-          <i class="pi pi-heart" style="font-size: 20px"></i>
-          <span>1.2K</span>
+          <i
+            class="pi"
+            :class="isLiked ? 'pi-heart-fill text-red-500' : 'pi-heart'"
+            style="font-size: 20px; cursor: pointer"
+            @click="toggleLike"
+          ></i>
+          <span>{{ article?.likes_count }}</span>
         </div>
         <div class="flex items-center gap-1 sm:gap-2">
           <i class="pi pi-comment" style="font-size: 20px"></i>
-          <span>8</span>
+          <span>{{ article?.comments_count }}</span>
         </div>
       </div>
       <div class="flex items-center gap-6 sm:gap-15">
@@ -183,7 +240,7 @@
   <div class="border-t-2 border-gray-100 w-full">
     <div class="w-full max-w-4xl h-auto flex flex-col justify-center mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="font-bold text-2xl sm:text-3xl md:text-4xl pl-0 sm:pl-5 my-6 sm:my-10">
-        Response (8)
+        Response ({{ article?.comments_count }})
       </h2>
       <div class="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-5 pl-0 sm:pl-5">
         <img
@@ -213,8 +270,16 @@
         </div>
       </div>
       <div class="flex flex-col mt-6 sm:mt-10">
-        <Comment />
-        <Comment />
+        <Comment
+          v-for="comment in comments"
+          :key="comment.comment_id"
+          :id="comment.comment_id"
+          :user_id="comment.user_id"
+          :name="comment.user.name"
+          :avatar="comment.user.avatar"
+          :content="comment.content"
+          :timeAgo="dayjs(comment.created_at).fromNow()"
+        />
       </div>
       <a
         href=""
