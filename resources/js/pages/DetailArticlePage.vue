@@ -66,6 +66,7 @@
             author.value = {
               id: userResponse.data.data.id,
               email: userResponse.data.data.email,
+              name: userResponse.data.data.name,
               username: userResponse.data.data.username,
               bio: userResponse.data.data.bio,
               avatar: userResponse.data.data.avatar,
@@ -100,13 +101,13 @@
       <img :src="author?.avatar" class="w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-full" />
       <div class="flex flex-col pl-0 sm:pl-2">
         <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <span>{{ author?.username }}</span>
+          <span>{{ author?.name }}</span>
           <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
           <span class="hover:underline underline-offset-2">Follow</span>
         </div>
         <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
           <span class="text-gray-500 font-normal text-xs sm:text-sm">Published in</span>
-          <span class="font-bold text-sm sm:text-base">{{ author?.username }}</span>
+          <span class="font-bold text-sm sm:text-base">{{ author?.name }}</span>
           <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
           <span class="text-gray-500 font-normal text-xs sm:text-sm">10 min read</span>
           <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
@@ -157,7 +158,7 @@
       <div class="flex gap-2 sm:gap-4">
         <img :src="author?.avatar" alt="" class="w-14 h-14 sm:w-[75px] sm:h-[75px] rounded-full" />
         <div class="flex flex-col space-y-1">
-          <span class="text-lg sm:text-2xl font-bold">{{ author?.username }}</span>
+          <span class="text-lg sm:text-2xl font-bold">{{ author?.name }}</span>
           <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
             <span class="text-gray-500 text-sm sm:text-lg">1K Followers</span>
             <i class="pi pi-circle-fill" style="font-size: 3px"></i>

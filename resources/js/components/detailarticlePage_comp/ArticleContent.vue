@@ -2,6 +2,9 @@
   import { ref, onMounted, watch } from 'vue';
   import { Editor, EditorContent } from '@tiptap/vue-3';
   import StarterKit from '@tiptap/starter-kit';
+  import Link from '@tiptap/extension-link';
+  import Underline from '@tiptap/extension-underline';
+  import Code from '@tiptap/extension-code';
 
   interface Props {
     content: string;
@@ -14,7 +17,7 @@
   onMounted(() => {
     editor.value = new Editor({
       content: props.content, // assumed to be HTML or valid Tiptap content
-      extensions: [StarterKit],
+      extensions: [StarterKit, Link, Underline, Code],
       editable: false, // read-only mode
     });
   });

@@ -89,6 +89,7 @@ class UserController extends Controller
             'data' => [
                 'id' => $user->id,
                 'email' => $user->email,
+                'name' => $user->name,
                 'username' => $user->username,
                 'bio' => $user->bio,
                 'avatar' => $user->pf_image,
