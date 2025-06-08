@@ -127,14 +127,16 @@ class UserController extends Controller
         return response()->json([
           'message' => 'Login successful',
           'user' => [
-              'id' => $user->id,
-              'name' => $user->name,
-              'email' => $user->email,
-              'username' => $user->username,
-              'bio' => $user->bio,
-              'gender' => $user->gender,
-              // 'avatar' => $user->avatar,
-              'role' => $user->role_id == 1 ? 'user' : 'admin',
+            'id' => $user->id,
+            'email' => $user->email,
+            'name' => $user->name,
+            'username' => $user->username,
+            'bio' => $user->bio,
+            'avatar' => $user->pf_image,
+            'gender' => $user->gender,
+            'role' => $user->role_id == 1 ? 'user' : 'admin',
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at
           ],
           'token' => $token
         ]);

@@ -12,6 +12,9 @@
   } from 'reka-ui';
   import { ref, onMounted } from 'vue';
   import '../../css/app.css';
+  import { useUserStore } from '@/stores/features/user';
+
+  const userStore = useUserStore();
 
   const isMenuOpen = ref(false);
   const isAuthenticated = ref(false);
@@ -73,6 +76,7 @@
       });
 
       if (response.ok) {
+        userStore.clearUserData();
         localStorage.removeItem('auth_token');
         // alert('Logged out successfully');
         isAuthenticated.value = false;

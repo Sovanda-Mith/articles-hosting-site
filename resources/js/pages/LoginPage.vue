@@ -490,6 +490,9 @@
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   import axios from 'axios';
+  import { useUserStore } from '@/stores/features/user';
+
+  const userStore = useUserStore();
 
   const router = useRouter();
 
@@ -530,6 +533,20 @@
       const response = await axios.post('/api/users/login', user);
 
       const data = response.data;
+
+      userStore.setUserData({
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        avatar: data.user.avatar,
+        username: data.user.username,
+        bio: data.user.bio,
+        gender: data.user.gender,
+        role: data.user.role,
+        token: data.token,
+      });
+
+      console.log('User data:', userStore.user);
 
       if (response.status === 200) {
         successMessage.value = 'Login successful!';

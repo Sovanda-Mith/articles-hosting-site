@@ -9,6 +9,9 @@
   import { type Category, type Article, type User } from '@/lib/types';
   import dayjs from 'dayjs';
   import relativeTime from 'dayjs/plugin/relativeTime';
+  import { useUserStore } from '@/stores/features/user';
+
+  const userStore = useUserStore();
 
   const props = defineProps({
     id: String,
@@ -26,6 +29,7 @@
 
   const getArticleAndItsCategories = async () => {
     try {
+      console.log(userStore.user + ' ' + props.id);
       const response = await axios.get(`/api/articles/${props.id}`);
       if (response.status === 200) {
         article.value = {
@@ -183,11 +187,11 @@
       </h2>
       <div class="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-5 pl-0 sm:pl-5">
         <img
-          src="@/assets/detailarticlePage_img/Profile.png"
+          :src="userStore.user.avatar"
           alt=""
           class="w-10 h-10 sm:w-[60px] sm:h-[60px] rounded-full"
         />
-        <span class="text-lg sm:text-xl font-semibold">Mario</span>
+        <span class="text-lg sm:text-xl font-semibold">{{ userStore.user.name }}</span>
       </div>
       <!-- Textarea -->
       <div class="bg-gray-100 rounded-2xl p-3 sm:p-5 w-full shadow-sm">
