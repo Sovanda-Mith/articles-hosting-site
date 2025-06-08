@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <script setup lang="ts">
   import { ref, onMounted, watch } from 'vue';
   import { Editor, EditorContent } from '@tiptap/vue-3';

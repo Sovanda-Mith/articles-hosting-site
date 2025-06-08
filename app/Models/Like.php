@@ -38,5 +38,11 @@ class Like extends Model
         return $this->belongsTo(Article::class, 'article_id', 'article_id');
     }
 
-
+    /**
+     * The comment that the like belongs to.
+     */
+    public function comment(): BelongsTo
+    {
+        return $this->belongsTo(Comment::class, 'comment_id', 'comment_id');
+    }
 }
