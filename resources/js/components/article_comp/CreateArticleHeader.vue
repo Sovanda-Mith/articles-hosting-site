@@ -8,7 +8,7 @@
           <img src="@/assets/settingsPage_img/logo.webp" alt="logo" />
         </div>
         <h5 class="logo_name">Bloggist</h5>
-        <div class="text-[13px] pt-2">Draft in {{ user }}</div>
+        <div class="text-[18px]">Draft in {{ user.name }}</div>
       </div>
     </router-link>
 
@@ -28,14 +28,28 @@
             class="w-[30px] h-[30px]"
           />
         </router-link>
+        <Router-link
+          to="/profile"
+          class=" border-1 border-gray-300 rounded-lg py-1 px-2"
+        >
+          <span class="text-gray-800 font-bold">{{ user.name }}</span>
+        </Router-link>
         <router-link to="/profile">
           <img
+            v-if="user.pfp"
+            :src="user.pfp"
+            alt="Profile"
+            class="w-[35px] h-[35px] rounded-full object-cover"
+          />
+          <img
+            v-else
             src="@/assets/settingsPage_img/placeholderPf.png"
             alt="Profile"
-            class="w-[35px] h-[35px]"
+            class="w-[35px] h-[35px] rounded-full object-cover"
           />
         </router-link>
       </div>
+
       <button @click="toggleMenu" class="headerMenu">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +92,8 @@
   </div>
 </template>
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { onMounted, ref } from 'vue';
+  import axios from 'axios';
 
   const emit = defineEmits(['publish']);
 
@@ -91,7 +106,31 @@
     isMenuOpen.value = !isMenuOpen.value;
   };
 
-  const user = ref('Mith Sovanda');
+  // const user = ref('Mith Sovanda');
+  const user = ref({
+    name: '', pfp: '',
+  });
+
+  onMounted(async () => {
+    await getUserData();
+  });
+
+  // Fetch user data
+  const getUserData = async () => {
+    try {
+      const response = await axios.get('/api/auth/verify', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+      });
+      if (response.status === 200) {
+        user.value = response.data.user;
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
 </script>
 
 <style scoped>

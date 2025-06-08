@@ -42,7 +42,7 @@
     </div>
 
     <!-- Load more button -->
-    <div v-if="hasMoreArticles" class="text-center py-8">
+    <div v-if="hasMoreArticles && articles.length > 0" class="text-center py-8">
       <button
         @click="loadMoreArticles"
         :disabled="isLoadingMore"
@@ -55,6 +55,17 @@
     <!-- End of articles message -->
     <div v-if="!hasMoreArticles && articles.length > 0" class="text-center py-4">
       <p class="text-gray-500">No more articles to load</p>
+    </div>
+
+    <!-- need to follow other users to see articles -->
+    <div v-if="!isLoading && articles.length === 0 && !error" class="text-center py-8">
+      <p class="text-gray-600">Follow users to see their articles</p>
+      <button
+        @click="loadArticles"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+      >
+        Load Articles
+      </button>
     </div>
 
     <!-- No articles state -->
