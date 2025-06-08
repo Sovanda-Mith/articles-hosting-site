@@ -4,15 +4,14 @@ namespace App\Http\Requests\Comment;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCommentRequest extends FormRequest
+class UpdateCommentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        // Allow all authenticated users to create comments (customize as needed)
-        return true;
+        return true; // Adjust based on your authorization logic
     }
 
     /**
@@ -23,9 +22,7 @@ class StoreCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content' => 'required|string',
-            'user_id' => 'required|exists:users,id',
-            'article_id' => 'required|exists:articles,id',
+            'content' => 'sometimes|required|string',
         ];
     }
 }

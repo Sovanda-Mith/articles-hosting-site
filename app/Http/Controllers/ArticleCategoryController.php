@@ -30,4 +30,13 @@ class ArticleCategoryController extends Controller
         return response()->json(['message' => 'Categories updated successfully', 'redirect' => '/profile'], 200);
     }
 
+    public function show($article)
+    {
+        $article = Article::findOrFail($article);
+
+        $categories = $article->categories;
+
+        return response()->json($categories);
+    }
+
 }
