@@ -424,7 +424,8 @@
 
           if(response.ok) {
             localStorage.setItem('auth_token', dataUser.token); // Store the JWT token
-            
+            localStorage.setItem('userId', JSON.stringify(dataUser.user.id)); // Store user data
+
             //redirect logic here
             setTimeout(() => {
               router.push('/feed').then(() => {

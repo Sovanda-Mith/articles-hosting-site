@@ -132,6 +132,8 @@
 
   const subtitle = ref('');
 
+  const token = localStorage.getItem('auth_token');
+
   // When "Publish" is clicked
   const onPublish = () => {
     showCategoryModal.value = true;
@@ -160,13 +162,23 @@
     };
 
     try {
-      const response = await axios.post('/api/articles', {
-        title: article.title,
-        subtitle: article.subtitle,
-        content: article.content,
-        image: article.image,
-        status: article.status,
-      });
+      const response = await axios.post(
+        '/api/articles',
+        {
+          title: article.title,
+          subtitle: article.subtitle,
+          content: article.content,
+          image: article.image,
+          status: article.status,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.status === 201) {
         const articleId = response.data.id;

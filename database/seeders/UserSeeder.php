@@ -18,6 +18,6 @@ class UserSeeder extends Seeder
       //   $userRole = Role::where('name', 'user')->first();
       //   $adminRole = Role::where('name', 'admin')->first();
 
-        User::factory()->count(50)->create();
+        User::factory()->count(60)->create();
     }
 }

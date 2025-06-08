@@ -86,8 +86,7 @@ class ArticleController extends Controller
             'image' => $request->validated('image'),
             'status' => $request->validated('status'),
             'view_count' => 0,
-            // 'user_id' => auth()->user()->id,
-            'user_id' => 3,
+            'user_id' => auth()->id(),
         ]);
 
         return response()->json(new ArticleResource($article), 201);
