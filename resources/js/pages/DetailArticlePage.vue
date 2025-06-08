@@ -1,85 +1,191 @@
 <script setup lang="ts">
+  import { onMounted, ref } from 'vue';
+  import axios from 'axios';
   import ArticleContent from '@/components/detailarticlePage_comp/ArticleContent.vue';
   import Comment from '@/components/detailarticlePage_comp/Comment.vue';
   import DetailFooter from '@/components/detailarticlePage_comp/DetailFooter.vue';
   import Recommendation from '@/components/detailarticlePage_comp/Recommendation.vue';
   import AuthHeader from '@/components/settingPage_comp/AuthHeader.vue';
+  import { type Category, type Article, type User } from '@/lib/types';
+  import dayjs from 'dayjs';
+  import relativeTime from 'dayjs/plugin/relativeTime';
+
+  const props = defineProps({
+    id: String,
+  });
+
+  const article = ref<Article>();
+
+  const categories = ref<Category[]>([]);
+
+  const author = ref<User>();
+
+  dayjs.extend(relativeTime);
+
+  let timeAgo = ref('');
+
+  const getArticleAndItsCategories = async () => {
+    try {
+      const response = await axios.get(`/api/articles/${props.id}`);
+      if (response.status === 200) {
+        article.value = {
+          article_id: response.data.id,
+          user_id: response.data.user_id,
+          title: response.data.title,
+          subtitle: response.data.subtitle,
+          content: response.data.content,
+          image: response.data.image,
+          status: response.data.status,
+          view_count: response.data.view_count,
+          likes_count: response.data.likes_count,
+          comments_count: response.data.comments_count,
+          created_at: response.data.created_at,
+          updated_at: response.data.updated_at,
+        };
+
+        timeAgo = dayjs(article?.value.created_at).fromNow();
+
+        try {
+          const categoryResponse = await axios.get(`/api/articleCategory/${props.id}`);
+          if (categoryResponse.status === 200) {
+            categoryResponse.data.map((category) => {
+              categories.value.push({
+                category_id: category.category_id,
+                name: category.name,
+                description: category.description,
+              });
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching article categories:', error);
+        }
+
+        try {
+          const userResponse = await axios.get('/api/users/' + article.value.user_id);
+          if (userResponse.status === 200) {
+            author.value = {
+              id: userResponse.data.data.id,
+              email: userResponse.data.data.email,
+              username: userResponse.data.data.username,
+              bio: userResponse.data.data.bio,
+              avatar: userResponse.data.data.avatar,
+              gender: userResponse.data.data.gender,
+              role: userResponse.data.data.role,
+            };
+          }
+        } catch (error) {}
+      }
+    } catch (error) {
+      console.error('Error fetching article:', error);
+    }
+  };
+
+  onMounted(() => {
+    getArticleAndItsCategories();
+  });
 </script>
 
 <template>
   <AuthHeader />
-  <div class="w-full max-w-4xl h-auto flex flex-col justify-center mx-auto mt-20 pb-5 px-4 sm:px-6 lg:px-8">
-    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold pb-3 sm:pb-5">Soil Health - Recovery From Degradation</h1>
+  <div
+    class="w-full max-w-4xl h-auto flex flex-col justify-center mx-auto mt-20 pb-5 px-4 sm:px-6 lg:px-8"
+  >
+    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold pb-3 sm:pb-5">
+      {{ article?.title }}
+    </h1>
     <h3 class="text-lg sm:text-xl md:text-2xl text-gray-500 pb-3 sm:pb-5 font-medium">
-      Once our soil becomes depleted or polluted - what can be done to bring it back to good health environment
+      {{ article?.subtitle }}
     </h3>
     <div class="flex flex-col sm:flex-row gap-2 pb-5">
-      <img src="@/assets/detailarticlePage_img/Profile.png" class="w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-full" />
+      <img :src="author?.avatar" class="w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-full" />
       <div class="flex flex-col pl-0 sm:pl-2">
         <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <span>Joe Procopeo</span>
-          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray;"></i>
+          <span>{{ author?.username }}</span>
+          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
           <span class="hover:underline underline-offset-2">Follow</span>
         </div>
         <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
           <span class="text-gray-500 font-normal text-xs sm:text-sm">Published in</span>
-          <span class="font-bold text-sm sm:text-base">The Environment</span>
-          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray;"></i>
+          <span class="font-bold text-sm sm:text-base">{{ author?.username }}</span>
+          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
           <span class="text-gray-500 font-normal text-xs sm:text-sm">10 min read</span>
-          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray;"></i>
-          <span class="text-gray-500 font-normal text-xs sm:text-sm">8 hours ago</span>
+          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
+          <span class="text-gray-500 font-normal text-xs sm:text-sm">{{ timeAgo }}</span>
         </div>
       </div>
     </div>
-    <div class="flex flex-col sm:flex-row items-center justify-between px-0 sm:px-10 py-3 sm:py-5 border-y-2 border-gray-100 pb-3 sm:pb-5 gap-4">
+    <div
+      class="flex flex-col sm:flex-row items-center justify-between px-0 sm:px-10 py-3 sm:py-5 border-y-2 border-gray-100 pb-3 sm:pb-5 gap-4"
+    >
       <div class="flex items-center gap-6 sm:gap-10">
         <div class="flex items-center gap-1 sm:gap-2">
-          <i class="pi pi-heart" style="font-size: 20px;"></i>
+          <i class="pi pi-heart" style="font-size: 20px"></i>
           <span>1.2K</span>
         </div>
         <div class="flex items-center gap-1 sm:gap-2">
-          <i class="pi pi-comment" style="font-size: 20px;"></i>
+          <i class="pi pi-comment" style="font-size: 20px"></i>
           <span>8</span>
         </div>
       </div>
       <div class="flex items-center gap-6 sm:gap-15">
-        <i class="pi pi-bookmark" style="font-size: 20px;"></i>
-        <i class="pi pi-ellipsis-h" style="font-size: 20px;"></i>
+        <i class="pi pi-bookmark" style="font-size: 20px"></i>
+        <i class="pi pi-ellipsis-h" style="font-size: 20px"></i>
       </div>
     </div>
     <figure class="flex flex-col items-center justify-center my-5">
-      <img
-        src="@/assets/detailarticlePage_img/image.png"
-        alt=""
-        class="w-full h-auto object-cover rounded-lg"
-      />
+      <img :src="article?.image" alt="" class="w-full h-auto object-cover rounded-lg" />
+      <!--
       <figcaption class="text-gray-500 text-xs sm:text-sm mt-2">
         Image by <a href="">Josephine King</a> on Unsplash
       </figcaption>
+      -->
     </figure>
-    <ArticleContent />
-    <div class="flex justify-center my-5"><i class="pi pi-ellipsis-h" style="font-size: 30px; color: gray;"></i></div>
+    <ArticleContent :content="article?.content" />
+    <div class="mt-6 sm:mt-10 flex flex-wrap gap-2">
+      <span
+        v-for="category in categories"
+        :key="category.category_id"
+        class="text-sm sm:text-base px-3 py-1 bg-gray-100 text-gray-600 rounded-full"
+      >
+        {{ category.name }}
+      </span>
+    </div>
+    <div class="flex justify-center my-5">
+      <i class="pi pi-ellipsis-h" style="font-size: 30px; color: gray"></i>
+    </div>
     <div class="flex flex-col md:flex-row items-start justify-between gap-6">
       <div class="flex gap-2 sm:gap-4">
-        <img src="@/assets/detailarticlePage_img/Profile.png" alt="" class="w-14 h-14 sm:w-[75px] sm:h-[75px] rounded-full">
+        <img :src="author?.avatar" alt="" class="w-14 h-14 sm:w-[75px] sm:h-[75px] rounded-full" />
         <div class="flex flex-col space-y-1">
-          <span class="text-lg sm:text-2xl font-bold">Written by Joe Pricopio - Climage Ages</span>
+          <span class="text-lg sm:text-2xl font-bold">{{ author?.username }}</span>
           <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
             <span class="text-gray-500 text-sm sm:text-lg">1K Followers</span>
-            <i class="pi pi-circle-fill" style="font-size: 3px;"></i>
+            <i class="pi pi-circle-fill" style="font-size: 3px"></i>
             <span class="text-gray-500 text-sm sm:text-lg">500 Following</span>
           </div>
-          <p class="text-xs sm:text-sm">I'm a multi-exit, multi-failure entrepreneur. AI pioneer. Technologist. Innovator. I write at Inc.com and BuiltIn.com. More about me at joeprocopio.com</p>
+          <p class="text-xs sm:text-sm">
+            {{ author?.bio }}
+          </p>
         </div>
       </div>
-      <button class="text-white bg-black font-semibold px-4 sm:px-6 py-2 sm:py-4 rounded-2xl mt-4 md:mt-0 w-full md:w-auto">Follow</button>
+      <button
+        class="text-white bg-black font-semibold px-4 sm:px-6 py-2 sm:py-4 rounded-2xl mt-4 md:mt-0 w-full md:w-auto"
+      >
+        Follow
+      </button>
     </div>
   </div>
   <div class="border-t-2 border-gray-100 w-full">
     <div class="w-full max-w-4xl h-auto flex flex-col justify-center mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-bold text-2xl sm:text-3xl md:text-4xl pl-0 sm:pl-5 my-6 sm:my-10">Response (8)</h2>
+      <h2 class="font-bold text-2xl sm:text-3xl md:text-4xl pl-0 sm:pl-5 my-6 sm:my-10">
+        Response (8)
+      </h2>
       <div class="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-5 pl-0 sm:pl-5">
-        <img src="@/assets/detailarticlePage_img/Profile.png" alt="" class="w-10 h-10 sm:w-[60px] sm:h-[60px] rounded-full" />
+        <img
+          src="@/assets/detailarticlePage_img/Profile.png"
+          alt=""
+          class="w-10 h-10 sm:w-[60px] sm:h-[60px] rounded-full"
+        />
         <span class="text-lg sm:text-xl font-semibold">Mario</span>
       </div>
       <!-- Textarea -->
@@ -94,7 +200,9 @@
           <button class="px-3 sm:px-4 py-1 sm:py-2 text-black font-medium text-sm sm:text-base">
             Cancel
           </button>
-          <button class="px-3 sm:px-4 py-1 sm:py-2 rounded-full font-medium text-sm sm:text-base bg-gray-400 text-white">
+          <button
+            class="px-3 sm:px-4 py-1 sm:py-2 rounded-full font-medium text-sm sm:text-base bg-gray-400 text-white"
+          >
             Respond
           </button>
         </div>
@@ -103,17 +211,29 @@
         <Comment />
         <Comment />
       </div>
-      <a href="" class="w-fit border border-black rounded-full py-2 sm:py-3 px-4 sm:px-6 my-6 sm:my-10 text-base sm:text-lg font-semibold">See all responses</a>
+      <a
+        href=""
+        class="w-fit border border-black rounded-full py-2 sm:py-3 px-4 sm:px-6 my-6 sm:my-10 text-base sm:text-lg font-semibold"
+        >See all responses</a
+      >
     </div>
   </div>
   <div class="bg-gray-50 w-full">
     <div class="w-full max-w-4xl h-auto flex flex-col justify-center mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-bold text-2xl sm:text-3xl md:text-4xl pl-0 sm:pl-5 my-6 sm:my-10">Recommendation from Bloggist</h2>
-      <div class="flex flex-col sm:flex-row items-center justify-between border-b border-gray-200 pb-6 sm:pb-10 gap-4">
+      <h2 class="font-bold text-2xl sm:text-3xl md:text-4xl pl-0 sm:pl-5 my-6 sm:my-10">
+        Recommendation from Bloggist
+      </h2>
+      <div
+        class="flex flex-col sm:flex-row items-center justify-between border-b border-gray-200 pb-6 sm:pb-10 gap-4"
+      >
         <Recommendation />
         <Recommendation />
       </div>
-      <a href="" class="w-fit border border-black rounded-full py-2 sm:py-3 px-4 sm:px-6 my-6 sm:my-10 text-base sm:text-lg font-semibold bg-white">See more recommendations</a>
+      <a
+        href=""
+        class="w-fit border border-black rounded-full py-2 sm:py-3 px-4 sm:px-6 my-6 sm:my-10 text-base sm:text-lg font-semibold bg-white"
+        >See more recommendations</a
+      >
     </div>
   </div>
   <DetailFooter />

@@ -53,6 +53,7 @@ Route::controller(CategoryController::class)->prefix('category')->group(
 Route::controller(ArticleCategoryController::class)->prefix('articleCategory')->group(
     function () {
         Route::post('/', 'update');
+        Route::get('/{article}', 'show');
     }
 );
 

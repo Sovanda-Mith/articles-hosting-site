@@ -5,7 +5,7 @@
     "build": "vite build",
     "dev": "vite",
     "lint": "eslint . --ext .vue,.js,.jsx,.ts,.tsx --fix",
-  "format": "prettier --write \"**/*.{vue,ts,js,jsx,tsx,css,scss,json,md}\""
+    "format": "prettier --write \"**/*.{vue,ts,js,jsx,tsx,css,scss,json,md}\""
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
@@ -42,6 +42,7 @@
     "chart.js": "^4.4.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.13",
     "lucide-vue-next": "^0.487.0",
     "pinia": "^3.0.1",
     "primeicons": "^7.0.0",

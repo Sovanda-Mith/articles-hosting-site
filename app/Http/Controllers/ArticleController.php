@@ -100,8 +100,13 @@ class ArticleController extends Controller
     {
         $article = Article::with(['likes', 'comments'])->findOrFail($id);
 
-        //increase view count of that article
-        $article->increment('view_count');
+        $viewed = session()->get('viewed_articles', []);
+
+        if (!in_array($id, $viewed)) {
+            //increase view count of that article
+            $article->increment('view_count');
+            session()->push('viewed_articles', $id);
+        }
         //return the article with likes and comments
         return response()->json(new ArticleResource($article));
     }
