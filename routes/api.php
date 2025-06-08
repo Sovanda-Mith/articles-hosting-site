@@ -26,8 +26,8 @@ Route::get('/auth/verify', function (Request $request) {
 
 // Public routes (no authentication needed)
 Route::get('articles', [ArticleController::class, 'index']);
+Route::get('articles/trending', [ArticleController::class, 'getTrending']);
 Route::get('articles/{article}', [ArticleController::class, 'show']);
-
 
 // Settings Routes
 Route::controller(SettingController::class)->prefix('settings')->group(
@@ -70,6 +70,7 @@ Route::middleware(['auth:sanctum'])->prefix('articles')->group(function () {
     Route::put('/{article}', [ArticleController::class, 'update']);
     Route::delete('/{article}', [ArticleController::class, 'destroy']);
     Route::get('/following/{userid}', [ArticleController::class, 'followingArticle']);
+
 });
 
 // Follow Routes
