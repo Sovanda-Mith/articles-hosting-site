@@ -79,26 +79,41 @@ const routes: RouteRecordRaw[] = [
       title: 'Articles Feed',
     },
     children: [
-        {
-            path: "", 
-            redirect: "/feed/foryou"
-        },
-        {
-            path: "foryou",
-            component: () => import("../js/pages/Foryoupage.vue")
-        },
-        {
-            path: "following",
-            component: () => import("../js/pages/FollowingPage.vue")
-        },
-    ]
+      {
+        path: '',
+        redirect: '/feed/foryou',
+      },
+      {
+        path: 'foryou',
+        component: () => import('../js/pages/Foryoupage.vue'),
+      },
+      {
+        path: 'following',
+        component: () => import('../js/pages/FollowingPage.vue'),
+      },
+    ],
   },
   {
-      path: "/feed/trending",
-      component: () => import("../js/pages/TrendingPage.vue"),
-      meta: {
-          title: "TrendingPage"
-      }
+    path: '/feed/trending',
+    component: () => import('../js/pages/TrendingPage.vue'),
+    meta: {
+      title: 'TrendingPage',
+    },
+  },
+  {
+    path: '/article/:id',
+    component: () => import('../js/pages/DetailArticlePage.vue'),
+    props: true,
+    meta: {
+      title: 'DetailArticle',
+    },
+  },
+  {
+    path: '/detail-article/',
+    component: () => import('../js/pages/DetailArticlePage.vue'),
+    meta: {
+      title: 'DetailArticle',
+    },
   },
   {
     path: '/profile',
