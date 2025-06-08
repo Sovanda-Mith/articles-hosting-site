@@ -63,6 +63,7 @@ Route::controller(UploadController::class)->prefix('upload')->group(
     }
 );
 
+// Route::post('articles/', [ArticleController::class, 'store']);
 // Article Routes (Protected)
 Route::middleware(['auth:sanctum'])->prefix('articles')->group(function () {
     Route::post('/', [ArticleController::class, 'store']);
