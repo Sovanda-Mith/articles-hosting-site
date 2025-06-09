@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import type ArticleInterface from '../types/ArticleInterface'
-=======
 import type ArticleInterface from '../types/ArticleInterface';
 import axios from 'axios';
->>>>>>> 21616bc23d16258ea22b7eed7c4f2149bc5d7106
 // import { ArticleStatus } from '../types/ArticleInterface'
 
 class ArticleApi {
@@ -17,41 +13,15 @@ class ArticleApi {
   // }
 
   //get all articles
-<<<<<<< HEAD
-  public static async getArticles(page: number =1, limit: number = 10): Promise<{
-=======
   public static async getArticles(
     page: number = 1,
     limit: number = 10
   ): Promise<{
->>>>>>> 21616bc23d16258ea22b7eed7c4f2149bc5d7106
     articles: ArticleInterface[];
     current_page: number;
     last_page: number;
     total: number;
   }> {
-<<<<<<< HEAD
-    const response = await fetch(`${ArticleApi.baseUrl}?page=${page}&limit=${limit}`);
-    const data = await response.json();
-    return {
-      articles: data.data,
-      current_page: data.meta.current_page,
-      last_page: data.meta.last_page,
-      total: data.meta.total,
-    };
-  }
-
-
-  public static async getFollowingArticles(user_id: number): Promise<ArticleInterface[]> {
-    const response = await fetch(`${ArticleApi.baseUrl}/following/${user_id}`);
-    const data = await response.json();
-    return data;
-  }
-
-}
-// export const articleApi = new ArticleApi();
-// export default articleApi;
-=======
     const response = await axios.get(`${ArticleApi.baseUrl}?page=${page}&limit=${limit}`);
     return {
       articles: response.data.data,
@@ -115,5 +85,4 @@ class ArticleApi {
   }
 }
 
->>>>>>> 21616bc23d16258ea22b7eed7c4f2149bc5d7106
 export { ArticleApi };
