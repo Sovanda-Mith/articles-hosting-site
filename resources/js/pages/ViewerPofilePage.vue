@@ -9,6 +9,7 @@
       </div>
       <Sidebar />
     </div>
+    <Footer />
   </div>
 </template>
 
@@ -19,6 +20,7 @@
   import Sidebar from '../../../resources/components/profileComponents/Sidebar.vue';
   import Home from '../pages/ViewerProfile/Home.vue';
   import About from '../pages/ViewerProfile/About.vue';
+  import Footer from '../../../resources/components/landingPage_comp/Footer.vue';
 
   const tabStore = useTabStore();
 </script>

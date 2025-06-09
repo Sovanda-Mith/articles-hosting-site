@@ -2,6 +2,7 @@
   <div class="min-h-screen bg-white text-white">
     <div class="grid md:grid-cols-3 bg-white text-black divide-x divide-gray-200">
       <div class="md:col-span-2 p-6">
+        <header />
         <ProfileHeader />
         <TabSwitcher />
         <Home v-if="tabStore.activeTab === 'home'" />
@@ -9,6 +10,7 @@
       </div>
       <Sidebar />
     </div>
+    <Footer />
   </div>
 </template>
 
@@ -19,6 +21,7 @@
   import Sidebar from '../../components/profileComponents/Sidebar.vue';
   import Home from '../pages/profile/Home.vue';
   import About from '../pages/profile/About.vue';
+  import Footer from '../../components/landingPage_comp/Footer.vue';
 
   const tabStore = useTabStore();
 </script>
