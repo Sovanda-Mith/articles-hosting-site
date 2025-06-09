@@ -1,5 +1,5 @@
  <template>
-    <Header></Header>
+    <AppHeader></AppHeader>
         <div class="flex flex-row justify-center items-start ml-72 mr-40 mt-20 mb-32 sm:ml-32  ">
 
             <div class="flex flex-col lg:pr-8 xl:pr-32 ">
@@ -32,7 +32,7 @@
                 </div>
 
                 <div>
-                    <trending_preview
+                    <!-- <trending_preview
                         profile_img = "/feedpage_img/profile1.jpg"
                         publisherName="Sky_blue"
                         title="Nature Doesn't Rush, So Why Are You?"
@@ -61,6 +61,18 @@
                         publisherName="Sky_blue"
                         title="Nature Doesn't Rush, So Why Are You?"
                         pub_date="Mar 10"
+                    /> -->
+                    <trending_preview
+                        v-for="article in articles"
+                        :key="article.id"
+                        :profile_img="'/feedpage_img/profile1.jpg'"
+                        :publisherName="`User ${article.user_id}`"
+                        :title="article.title"
+                        :pub_date="articleStore.formatDate(article.created_at)"
+                        :clapNum="article.likes_count?.toString() || '0'"
+                        :commentNum="article.comments_count?.toString() || '0'"
+                        :preview_img="article.image || '/feedpage_img/img1.jpg'"
+                        :viewCount="article.view_count?.toString() || '0'"
                     />
                     <router-link to="/feed/trending" active-class="active-tab" class="text-sm text-gray-500 hover:underline  ">See the full list</router-link>
                 </div>
@@ -68,18 +80,38 @@
         </div>
 </template>
 
-<script lang="ts">
-// import Header from '../../components/landingPage_comp/Header.vue';
-// import preview from "../../../resources/components/feedpage_comp/preview.vue";
-import trending_preview from "../../../resources/components/feedpage_comp/trending_preview.vue";
+<script setup lang="ts">
+  import AppHeader from '../../components/landingPage_comp/Header.vue';
+  // import preview from "../../../resources/components/feedpage_comp/preview.vue";
+  import trending_preview from "../../../resources/components/feedpage_comp/trending_preview.vue";
+  import { useArticleStore } from '../stores/features/articles/stores/ArticleStore';
+  import { storeToRefs } from 'pinia';
+  import { ref, onMounted } from 'vue';
 
-  export default {
-    components: {
-        // Header,
-        // preview,
-        trending_preview,
-    }
-}
+  const articleStore = useArticleStore();
+  const { articles } = storeToRefs(articleStore);
+
+  const idLoading = ref(false);
+  const error = ref<string | null>(null);
+
+  //load trending articles
+  const loadTrendingArticles = async () => {
+      idLoading.value = true;
+      error.value = null;
+
+      try {
+          await articleStore.fetchTrendingArticles();
+      } catch (err) {
+          error.value = 'Failed to load trending articles';
+          console.error(err);
+      } finally {
+          idLoading.value = false;
+      }
+  }
+
+  onMounted(() => {
+      loadTrendingArticles();
+  });
 </script>
 
 <style scoped>

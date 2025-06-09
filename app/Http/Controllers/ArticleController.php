@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Resources\ArticleResource;
 use App\Http\Requests\Article\UpdateArticleRequest;
 use App\Http\Requests\Article\StoreArticleRequest;
+use App\Models\Follow;
 
 class ArticleController extends Controller
 {
@@ -16,26 +17,80 @@ class ArticleController extends Controller
      */
     public function index(Request $request): jsonResponse
     {
-      // $articles = Article::with(['likes','comments'])->paginate(10);
-      // return response()->json(ArticleResource::collection($articles));
+        // $articles = Article::with(['likes','comments'])->paginate(10);
+        // return response()->json(ArticleResource::collection($articles));
 
-      $page = $request->get('page', 1);
-      $limit = $request->get('limit', 10);
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 10);
 
-      $articles = Article::with(['likes', 'comments'])
-          ->paginate($limit, ['*'], 'page', $page);
+        $articles = Article::with(['likes', 'comments'])
+            ->paginate($limit, ['*'], 'page', $page);
 
-      return response()->json([
-          'data' => ArticleResource::collection($articles),
-          'meta' => [
-              'current_page' => $articles->currentPage(),
-              'last_page' => $articles->lastPage(),
-              'per_page' => $articles->perPage(),
-              'total' => $articles->total(),
-              'from' => $articles->firstItem(),
-              'to' => $articles->lastItem(),
-          ],
-      ]);
+        return response()->json([
+            'data' => ArticleResource::collection($articles),
+            'meta' => [
+                'current_page' => $articles->currentPage(),
+                'last_page' => $articles->lastPage(),
+                'per_page' => $articles->perPage(),
+                'total' => $articles->total(),
+                'from' => $articles->firstItem(),
+                'to' => $articles->lastItem(),
+            ],
+        ]);
+    }
+
+    /**
+     * Display a listing of the articles from users that the specified user follows.
+     */
+    public function followingArticle(string $userId, Request $request): JsonResponse
+    {
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 10);
+
+        // Get ALL users that the current user follows (no pagination on follows)
+        $followingIds = Follow::where('follower_id', $userId)
+              ->pluck('following_id');
+
+        // Get articles from all followed users with pagination
+        $articles = Article::with(['likes', 'comments', 'user'])
+            ->whereIn('user_id', $followingIds)
+            ->paginate($limit, ['*'], 'page', $page);
+
+        return response()->json([
+            'data' => ArticleResource::collection($articles),
+            'meta' => [
+                'current_page' => $articles->currentPage(),
+                'last_page' => $articles->lastPage(),
+                'per_page' => $articles->perPage(),
+                'total' => $articles->total(),
+                'from' => $articles->firstItem(),
+                'to' => $articles->lastItem(),
+            ],
+        ]);
+    }
+    /**
+     * Display trending articles.
+     */
+    public function getTrending(Request $request): JsonResponse
+    {
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 10);
+
+        $articles = Article::with(['likes', 'comments'])
+            ->orderBy('view_count', 'desc')
+            ->paginate($limit, ['*'], 'page', $page);
+
+        return response()->json([
+            'data' => ArticleResource::collection($articles),
+            'meta' => [
+                'current_page' => $articles->currentPage(),
+                'last_page' => $articles->lastPage(),
+                'per_page' => $articles->perPage(),
+                'total' => $articles->total(),
+                'from' => $articles->firstItem(),
+                'to' => $articles->lastItem(),
+            ],
+        ]);
     }
 
     /**
@@ -46,33 +101,19 @@ class ArticleController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function store(Request $request): JsonResponse
-    // {
-    //   $validated = $request->validate([
-    //     'title' => 'required|string|max:255',
-    //     'subtitle' => 'nullable|string|max:255',
-    //     'content' => 'required|string',
-    //     'image' => 'nullable|image|max:2048',
-    //     'status' => 'required|in:draft,published',
-    //   ]);
-
-    //   $validated['user_id'] = auth()->id();
-    //   $article = Article::create($validated);
-
-    //   return response()->json(new ArticleResource($article), 201);
-    // }
-
     public function store(StoreArticleRequest $request): JsonResponse
     {
-      $validated = $request->validated();
-      $validated['user_id'] = auth()->id();
+        $article = Article::create([
+            'title' => $request->validated('title'),
+            'subtitle' => $request->validated('subtitle'),
+            'content' => $request->validated('content'),
+            'image' => $request->validated('image'),
+            'status' => $request->validated('status'),
+            'view_count' => 0,
+            'user_id' => auth()->id(),
+        ]);
 
-      $article = Article::create($validated);
-
-      return response()->json(new ArticleResource($article), 201);
+        return response()->json(new ArticleResource($article), 201);
     }
 
     /**
@@ -82,8 +123,13 @@ class ArticleController extends Controller
     {
         $article = Article::with(['likes', 'comments'])->findOrFail($id);
 
-        //increase view count of that article
-        $article->increment('view_count');
+        $viewed = session()->get('viewed_articles', []);
+
+        if (!in_array($id, $viewed)) {
+            //increase view count of that article
+            $article->increment('view_count');
+            session()->push('viewed_articles', $id);
+        }
         //return the article with likes and comments
         return response()->json(new ArticleResource($article));
     }
@@ -101,16 +147,16 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, string $id)
     {
-      // $article = Article::findOrFail($id);
-      // $article->update($request->validated());
+        // $article = Article::findOrFail($id);
+        // $article->update($request->validated());
 
-      $validated = $request->validated();
-      $validated['user_id'] = auth()->id();
+        $validated = $request->validated();
+        $validated['user_id'] = auth()->id();
 
-      $article = Article::findOrFail($id);
-      $article->update($validated);
+        $article = Article::findOrFail($id);
+        $article->update($validated);
 
-      return response()->json(new ArticleResource($article), 200);
+        return response()->json(new ArticleResource($article), 200);
     }
 
     /**
@@ -118,7 +164,7 @@ class ArticleController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-      Article::findOrFail($id)->delete();
-      return response()->json(['message' => 'Article deleted successfully'], 204);
+        Article::findOrFail($id)->delete();
+        return response()->json(['message' => 'Article deleted successfully'], 204);
     }
 }

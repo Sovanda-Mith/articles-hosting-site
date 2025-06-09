@@ -44,6 +44,11 @@ class DatabaseSeeder extends Seeder
         //     'role_id' => $userRole->role_id,
         // ]);
 
+        // Call UserSeeder
+        $this->call([
+            UserSeeder::class,
+        ]);
+
         // Call ArticleSeeder
         $this->call([
             ArticleSeeder::class,
@@ -51,6 +56,10 @@ class DatabaseSeeder extends Seeder
         //Call CategorySeeder
         $this->call([
             CategorySeeder::class,
+        ]);
+        // Call UserSeeder
+        $this->call([
+            UserSeeder::class,
         ]);
         // Call LikeSeeder
         $this->call([
@@ -60,10 +69,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CommentSeeder::class,
         ]);
-        // Call UserSeeder
-        $this->call([
-            UserSeeder::class,
-        ]);
+
         // Call FollowsSeeder
         $this->call([
             FollowSeeder::class,

@@ -11,7 +11,8 @@ class StoreCommentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // Allow all authenticated users to create comments (customize as needed)
+        return true;
     }
 
     /**
@@ -22,7 +23,9 @@ class StoreCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'content' => 'required|string',
+            'user_id' => 'required|exists:users,id',
+            'article_id' => 'required|exists:articles,id',
         ];
     }
 }

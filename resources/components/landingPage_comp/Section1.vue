@@ -5,13 +5,14 @@
         <h2 class="">{{ title }}</h2>
         <p class="subtitle-2">{{ description }}</p>
         <div class="flex gap-[31px] items-center">
-          <button
-            v-if="button1Text"
-            class="text-center bg-black text-[#ffffff] pl-[12px] pr-[12px] pt-[17px] pb-[17px] rounded-[15px] primary-btn-animation"
-            ref="button1Element"
-          >
-            {{ button1Text }}
-          </button>
+            <button
+              v-if="button1Text"
+              @click="checkAuthentication"
+              class="text-center bg-black text-[#ffffff] pl-[12px] pr-[12px] pt-[17px] pb-[17px] rounded-[15px] primary-btn-animation"
+              ref="button1Element"
+              >
+              {{ button1Text }}
+            </button>
           <p v-if="button1Text && button2Text" class="subtitle-2">OR</p>
           <router-link to="/feed">
             <button
@@ -185,6 +186,15 @@
 
         if (this.$refs.button2Element) {
           observer.observe(this.$refs.button2Element as HTMLElement);
+        }
+      },
+
+      checkAuthentication() {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+          this.$router.push('/login');
+        } else {
+          this.$router.push('/new-article');
         }
       },
     },

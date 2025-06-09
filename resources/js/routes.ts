@@ -43,7 +43,7 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'account',
+        path: '',
         component: () => import('../js/pages/settingPages/Account.vue'),
         meta: {
           title: 'Account | Settings',
@@ -76,29 +76,44 @@ const routes: RouteRecordRaw[] = [
     path: '/feed',
     component: () => import('../js/pages/FeedPage.vue'),
     meta: {
-      title: "FeedPage",
+      title: 'Articles Feed',
     },
     children: [
-        {
-            path: "", 
-            redirect: "/feed/foryou"
-        },
-        {
-            path: "foryou",
-            component: () => import("../js/pages/Foryoupage.vue")
-        },
-        {
-            path: "following",
-            component: () => import("../js/pages/FollowingPage.vue")
-        },
-    ]
+      {
+        path: '',
+        redirect: '/feed/foryou',
+      },
+      {
+        path: 'foryou',
+        component: () => import('../js/pages/Foryoupage.vue'),
+      },
+      {
+        path: 'following',
+        component: () => import('../js/pages/FollowingPage.vue'),
+      },
+    ],
   },
   {
-    path: "/feed/trending",
-    component: () => import("../js/pages/TrendingPage.vue"),
+    path: '/feed/trending',
+    component: () => import('../js/pages/TrendingPage.vue'),
     meta: {
-        title: "TrendingPage"
-    }
+      title: 'TrendingPage',
+    },
+  },
+  {
+    path: '/article/:id',
+    component: () => import('../js/pages/DetailArticlePage.vue'),
+    props: true,
+    meta: {
+      title: 'DetailArticle',
+    },
+  },
+  {
+    path: '/detail-article/',
+    component: () => import('../js/pages/DetailArticlePage.vue'),
+    meta: {
+      title: 'DetailArticle',
+    },
   },
   {
     path: '/profile',
@@ -112,6 +127,13 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../js/pages/ViewerPofilePage.vue'),
     meta: {
       title: 'User Profile',
+    },
+  },
+  {
+    path: '/new-article',
+    component: () => import('../js/pages/article/NewArticle.vue'),
+    meta: {
+      title: 'New Article',
     },
   },
 

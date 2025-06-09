@@ -22,7 +22,7 @@ class GoogleController extends Controller
     public function handleGoogleCallback()
     {
         try {
-
+          
           $googleUser = Socialite::driver('google')->stateless()->user();
 
           // Check if user already exists by email or google_id
@@ -45,26 +45,21 @@ class GoogleController extends Controller
 
           // Log the user in
           Auth::login($user);
+          session()->regenerate();
 
-          // Return success response for API or redirect for web
           if (request()->expectsJson()) {
               // Create Sanctum token for API authentication
               $token = $user->createToken('Google OAuth Token')->plainTextToken;
-
               return response()->json([
                   'success' => true,
                   'message' => 'Login successful',
                   'user' => $user,
                   'token' => $token
               ]);
+          } else {
+              // For web, redirect to intended page
+              return redirect()->intended('/feed');
           }
-          // For debugging: show the JSON response that would be returned
-          return response()->json([
-              'success' => true,
-              'message' => 'Login successful',
-              'user' => $user,
-              'token' => $user->createToken('Google OAuth Token')->plainTextToken
-          ]);
 
           // Redirect to intended page or dashboard
           // return redirect()->intended('/dashboard')->with('success', 'Welcome! You have been logged in successfully.');
@@ -81,56 +76,56 @@ class GoogleController extends Controller
     // create new user
     public function createNewUser($googleUser)
     {
-      // Generate initial username
-      $baseUsername = Str::slug($googleUser->name);
-      $username = $baseUsername . '#' . Str::random(5);
+        // Generate initial username
+        $baseUsername = Str::slug($googleUser->name);
+        $username = $baseUsername . '#' . Str::random(5);
 
-      // Check if username exists and keep trying until we find a unique one
-      while (User::where('username', $username)->exists()) {
-          $username = $baseUsername . '#' . Str::random(5);
-      }
+        // Check if username exists and keep trying until we find a unique one
+        while (User::where('username', $username)->exists()) {
+            $username = $baseUsername . '#' . Str::random(5);
+        }
 
-      $profileImagePath = null;
-      if($googleUser->avatar) {
-        $profileImagePath = $this->downloadGoogleProfileImage($googleUser->avatar, $username);
-      }
+        $profileImagePath = null;
+        if ($googleUser->avatar) {
+            $profileImagePath = $this->downloadGoogleProfileImage($googleUser->avatar, $username);
+        }
 
-      // Get the user role ID dynamically
-      $userRole = Role::where('name', 'user')->first();
-      $roleId = $userRole ? $userRole->role_id : 1; // Fallback to 1 if role not found
+        // Get the user role ID dynamically
+        $userRole = Role::where('name', 'user')->first();
+        $roleId = $userRole ? $userRole->role_id : 1; // Fallback to 1 if role not found
 
-      return User::create([
-          'name' => $googleUser->name,
-          'email' => $googleUser->email,
-          'password' => Hash::make(Str::random(16)), // Generate a random password
-          'google_id' => $googleUser->id,
-          'username' => $username,
-          'bio' => null,
-          'pf_image' => $profileImagePath,
-          'is_admin' => false,
-          'role_id' => $roleId,
-      ]);
+        return User::create([
+            'name' => $googleUser->name,
+            'email' => $googleUser->email,
+            'password' => Hash::make(Str::random(16)), // Generate a random password
+            'google_id' => $googleUser->id,
+            'username' => $username,
+            'bio' => null,
+            'pf_image' => $profileImagePath,
+            'is_admin' => false,
+            'role_id' => $roleId,
+        ]);
     }
 
     // download google profile image
     public function downloadGoogleProfileImage($url, $username)
     {
-      try {
-        $imageContent = file_get_contents($url);
+        try {
+            $imageContent = file_get_contents($url);
 
-        if($imageContent){
-          $extension = 'jpg'; // Default to jpg
-          $filename = 'google_'. $username . '_' . time() . '.' . $extension;
-          $path= 'userPf/' . $filename;
+            if ($imageContent) {
+                $extension = 'jpg'; // Default to jpg
+                $filename = 'google_'. $username . '_' . time() . '.' . $extension;
+                $path = 'userPf/' . $filename;
 
-          Storage::disk('public')->put('userPf/' . $filename, $imageContent);
-          return $path;
+                Storage::disk('public')->put('userPf/' . $filename, $imageContent);
+                return $path;
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to download profile image: ' . $e->getMessage());
         }
-      } catch (\Exception $e) {
-        \Log::error('Failed to download profile image: ' . $e->getMessage());
-      }
 
-      return null; // Return null if download fails
+        return null; // Return null if download fails
     }
 
     // API-specific methods for mobile/SPA applications

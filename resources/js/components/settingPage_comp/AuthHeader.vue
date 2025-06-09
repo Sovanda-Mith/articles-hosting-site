@@ -1,6 +1,6 @@
 <template>
   <div
-    class="header w-screen h-auto flex justify-between items-center pl-[80px] pr-[80px] pt-[20px] pb-[20px] fixed top-0 left-0 bg-white shadow-xs z-50"
+    class="header w-screen h-auto flex justify-between items-center px-[20px] pt-[20px] pb-[20px] fixed top-0 left-0 bg-white shadow-xs z-50"
   >
     <router-link to="/">
       <div class="logo_container flex justify-center items-center sm:gap-3 md">
@@ -30,7 +30,7 @@
         </ul>
       </nav>
       <div class="flex gap-[40px]">
-        <router-link to="#" class="navList body-big flex items-center space-x-1">
+        <router-link to="/new-article" class="navList body-big flex items-center space-x-1">
           <img
             src="@/assets/settingsPage_img/write.png"
             alt="Write"
@@ -47,7 +47,7 @@
             class="w-[30px] h-[30px]"
           />
         </router-link>
-        <router-link to="/settings/account">
+        <router-link to="/profile">
           <img
             src="@/assets/settingsPage_img/placeholderPf.png"
             alt="Profile"
@@ -97,22 +97,6 @@
             <router-link to="/contact" class="mobile-navList body-big" active-class="active"
               >Contact</router-link
             >
-          </li>
-          <li class="mt-2">
-            <router-link to="login">
-              <button class="login-btn button w-full h-[40px] bg-[#ffffff] rounded-[8px] mb-2">
-                Log In
-              </button>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="signin">
-              <button
-                class="signup-btn button w-full h-[40px] text-[#ffffff] bg-[#222222] rounded-[8px]"
-              >
-                Sign Up
-              </button>
-            </router-link>
           </li>
         </ul>
       </div>
