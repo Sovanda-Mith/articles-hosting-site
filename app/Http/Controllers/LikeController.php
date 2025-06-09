@@ -40,7 +40,7 @@ class LikeController extends Controller
      */
     public function show(string $id)
     {
-        //
+
     }
 
     /**
@@ -65,6 +65,20 @@ class LikeController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getIsLiked(string $article_id): JsonResponse
+    {
+        $user = Auth::id();
+
+        $article = Article::findOrFail($article_id);
+
+        $isLiked = $article->likes()->where('user_id', $user)->exists();
+
+        return response()->json([
+          'is_liked' => $isLiked
+        ]);
+
     }
 
     /**

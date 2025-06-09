@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { nextTick, onMounted, ref, computed } from 'vue';
   import axios from 'axios';
   import ArticleContent from '@/components/detailarticlePage_comp/ArticleContent.vue';
   import Comment from '@/components/detailarticlePage_comp/Comment.vue';
@@ -10,6 +10,16 @@
   import dayjs from 'dayjs';
   import relativeTime from 'dayjs/plugin/relativeTime';
   import { useUserStore } from '@/stores/features/user';
+
+  const showAll = ref(false);
+
+  const displayedComments = computed(() =>
+    showAll.value ? comments.value : comments.value.slice(0, 3)
+  );
+
+  const toggleShow = () => {
+    showAll.value = !showAll.value;
+  };
 
   const userStore = useUserStore();
 
@@ -25,13 +35,59 @@
 
   const comments = ref([]);
 
+  const commentContent = ref('');
+
+  const addComment = async () => {
+    try {
+      const response = await axios.post(
+        `/api/article/${props.id}/comment`,
+        {
+          content: commentContent.value,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userStore.user.token}`,
+          },
+        }
+      );
+      if (response.status === 201) {
+        commentContent.value = '';
+        comments.value.push(response.data.comment);
+        article.value.comments_count += 1;
+
+        nextTick(() => {
+          newComment.value?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const writeComment = ref(null);
+
+  const scrollToComments = () => {
+    if (writeComment.value) {
+      writeComment.value.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const newComment = ref(null);
+
+  const scrollToNewComment = () => {
+    if (newComment.value) {
+      newComment.value.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   dayjs.extend(relativeTime);
 
   let timeAgo = ref('');
 
+  const isLiked = ref(false);
+
   const getArticleAndItsCategories = async () => {
     try {
-      console.log(userStore.user + ' ' + props.id);
       const response = await axios.get(`/api/articles/${props.id}`);
       if (response.status === 200) {
         article.value = {
@@ -48,6 +104,8 @@
           created_at: response.data.created_at,
           updated_at: response.data.updated_at,
         };
+
+        isLiked.value = article.value.likes_count > 0;
 
         timeAgo = dayjs(article?.value.created_at).fromNow();
 
@@ -112,13 +170,45 @@
         } catch (error) {
           console.error('Error fetching comments:', error);
         }
+
+        try {
+          const followersResponse = await axios.get(
+            `/api/follows/getFollowers/${author.value.id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${userStore.user.token}`,
+              },
+            }
+          );
+
+          if (followersResponse.status === 200) {
+            author.value.followers_count = followersResponse.data.length;
+          }
+        } catch (error) {
+          console.error('Error fetching followers:', error);
+        }
+
+        try {
+          const followingResponse = await axios.get(
+            `/api/follows/getFollowing/${author.value.id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${userStore.user.token}`,
+              },
+            }
+          );
+
+          if (followingResponse.status === 200) {
+            author.value.following_count = followingResponse.data.length;
+          }
+        } catch (error) {
+          console.error('Error fetching following:', error);
+        }
       }
     } catch (error) {
       console.error('Error fetching article:', error);
     }
   };
-
-  const isLiked = ref(false);
 
   const toggleLike = async () => {
     try {
@@ -138,7 +228,6 @@
 
   onMounted(() => {
     getArticleAndItsCategories();
-    toggleLike();
   });
 </script>
 
@@ -185,7 +274,11 @@
           <span>{{ article?.likes_count }}</span>
         </div>
         <div class="flex items-center gap-1 sm:gap-2">
-          <i class="pi pi-comment" style="font-size: 20px"></i>
+          <i
+            class="pi pi-comment cursor-pointer"
+            style="font-size: 20px"
+            @click="scrollToComments"
+          ></i>
           <span>{{ article?.comments_count }}</span>
         </div>
       </div>
@@ -221,9 +314,13 @@
         <div class="flex flex-col space-y-1">
           <span class="text-lg sm:text-2xl font-bold">{{ author?.name }}</span>
           <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <span class="text-gray-500 text-sm sm:text-lg">1K Followers</span>
+            <span class="text-gray-500 text-sm sm:text-lg"
+              >{{ author?.followers_count }} Followers</span
+            >
             <i class="pi pi-circle-fill" style="font-size: 3px"></i>
-            <span class="text-gray-500 text-sm sm:text-lg">500 Following</span>
+            <span class="text-gray-500 text-sm sm:text-lg"
+              >{{ author?.following_count }} Following</span
+            >
           </div>
           <p class="text-xs sm:text-sm">
             {{ author?.bio }}
@@ -238,7 +335,10 @@
     </div>
   </div>
   <div class="border-t-2 border-gray-100 w-full">
-    <div class="w-full max-w-4xl h-auto flex flex-col justify-center mx-auto px-4 sm:px-6 lg:px-8">
+    <div
+      ref="writeComment"
+      class="w-full max-w-4xl h-auto flex flex-col justify-center mx-auto px-4 sm:px-6 lg:px-8"
+    >
       <h2 class="font-bold text-2xl sm:text-3xl md:text-4xl pl-0 sm:pl-5 my-6 sm:my-10">
         Response ({{ article?.comments_count }})
       </h2>
@@ -254,24 +354,29 @@
       <div class="bg-gray-100 rounded-2xl p-3 sm:p-5 w-full shadow-sm">
         <div class="mb-4 sm:mb-8">
           <textarea
+            v-model="commentContent"
             placeholder="What are your thoughts?"
             class="w-full h-24 sm:h-40 p-0 bg-transparent border-none outline-none resize-none text-gray-500 text-base sm:text-xl placeholder-gray-500 leading-relaxed font-semibold"
           ></textarea>
         </div>
         <div class="flex justify-end items-center gap-3 sm:gap-6">
-          <button class="px-3 sm:px-4 py-1 sm:py-2 text-black font-medium text-sm sm:text-base">
+          <button
+            class="px-3 sm:px-4 py-1 sm:py-2 text-black font-medium text-sm sm:text-base cursor-pointer"
+            @click="commentContent = ''"
+          >
             Cancel
           </button>
           <button
-            class="px-3 sm:px-4 py-1 sm:py-2 rounded-full font-medium text-sm sm:text-base bg-gray-400 text-white"
+            class="px-3 sm:px-4 py-1 sm:py-2 rounded-full font-medium text-sm sm:text-base bg-gray-400 text-white hover:bg-gray-500 cursor-pointer"
+            @click="addComment"
           >
             Respond
           </button>
         </div>
       </div>
-      <div class="flex flex-col mt-6 sm:mt-10">
+      <div ref="newComment" class="flex flex-col mt-6 sm:mt-10">
         <Comment
-          v-for="comment in comments"
+          v-for="comment in displayedComments"
           :key="comment.comment_id"
           :id="comment.comment_id"
           :user_id="comment.user_id"
@@ -282,9 +387,10 @@
         />
       </div>
       <a
-        href=""
+        v-if="comments.length > 3"
+        @click="toggleShow"
         class="w-fit border border-black rounded-full py-2 sm:py-3 px-4 sm:px-6 my-6 sm:my-10 text-base sm:text-lg font-semibold"
-        >See all responses</a
+        >{{ showAll ? 'Show Less' : 'See all responses' }}</a
       >
     </div>
   </div>

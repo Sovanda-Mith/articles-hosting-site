@@ -104,6 +104,7 @@ Route::middleware(['auth:sanctum'])->prefix('article/{article_id}')->group(funct
 
 // Like Routes
 Route::middleware(['auth:sanctum'])->prefix('article/{article_id}')->group(function () {
+    Route::get('/isLiked', [LikeController::class, 'checkIsLiked']);
     Route::get('/likes', [LikeController::class, 'getArticleLikes']);
     Route::post('/like', [LikeController::class, 'toggleArticleLike']);
 });

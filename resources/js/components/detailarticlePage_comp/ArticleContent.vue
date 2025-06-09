@@ -18,7 +18,14 @@
   onMounted(() => {
     editor.value = new Editor({
       content: props.content, // assumed to be HTML or valid Tiptap content
-      extensions: [StarterKit, Link, Underline, Code],
+      extensions: [
+        StarterKit.configure({
+          code: false,
+        }),
+        Link,
+        Underline,
+        Code,
+      ],
       editable: false, // read-only mode
     });
   });

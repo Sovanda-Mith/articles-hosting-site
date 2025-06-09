@@ -44,7 +44,8 @@ class CommentController extends Controller
     {
         $validated = $request->validated();
 
-        $article = Article::find($article_id);
+        $article = Article::findOrFail($article_id);
+
         if (!$article) {
             return response()->json(['message' => 'Article not found'], 404);
         }
@@ -55,7 +56,11 @@ class CommentController extends Controller
           'user_id' => auth()->user()->id
         ]);
 
-        return response()->json($comment, 201);
+        $comment->load('user');
+
+        return response()->json([
+          'comment' => $comment
+        ], 201);
     }
 
     /**

@@ -103,6 +103,10 @@ class FollowController extends Controller
             ->with('follower')
             ->paginate(10);
 
+        if (!$followers) {
+            return response()->json(['message' => 'No followers found'], 404);
+        }
+
         return response()->json(FollowResource::collection($followers));
     }
     public function getFollowing(string $userId): JsonResponse
