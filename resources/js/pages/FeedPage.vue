@@ -87,9 +87,5 @@ import trending_preview from "../../../resources/components/feedpage_comp/trendi
   font-weight: bold;
   border-bottom: 2px solid black;
 }
-<<<<<<< HEAD
-</style> 
-=======
 </style>
 
->>>>>>> 929a4b7ea9cebd7f41b09e253981e3056cd2e943
