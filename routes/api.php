@@ -68,7 +68,7 @@ Route::controller(UploadController::class)->prefix('upload')->group(
 
 // Route::post('articles/', [ArticleController::class, 'store']);
 // Article Routes (Protected)
-Route::prefix('articles')->group(function () {
+Route::middleware(['auth:sanctum'])->prefix('articles')->group(function () {
     Route::post('/', [ArticleController::class, 'store']);
     Route::put('/{article}', [ArticleController::class, 'update']);
     Route::delete('/{article}', [ArticleController::class, 'destroy']);
