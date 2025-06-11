@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["resources/js/*"]
@@ -7,10 +11,17 @@
     "allowJs": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "useDefineForClassFields": true,
     "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
     "types": ["vite/client"]
   },
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["resources/**/*.ts", "resources/**/*.d.ts", "resources/**/*.vue"]
+  "include": ["resources/**/*.ts", "resources/**/*.d.ts", "resources/**/*.vue"],
+  "exclude": ["node_modules", "vendor"]
 }

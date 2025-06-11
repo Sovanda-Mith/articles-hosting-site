@@ -12,7 +12,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->statefulApi();
+        // Configure API middleware to exclude CSRF for public routes
+        $middleware->api(prepend: [
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        ]);
+        
+        // Only apply stateful API for authenticated routes
+        $middleware->validateCsrfTokens(except: [
+            'api/users',
+            'api/users/login',
+            'api/users/logout',	
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

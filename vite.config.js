@@ -48,7 +48,7 @@ export default defineConfig({
     cors: true,
     hmr: {
       // host: isProduction ? 'bloggist.fun' : 'localhost',
-      host: 'localhost',
+      host: 'bloggist.fun',
       protocol: 'ws',
       port: 3000,
     },

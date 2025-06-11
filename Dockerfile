@@ -27,7 +27,10 @@ COPY --chown=www-data:www-data . /var/www
 
 WORKDIR /var/www
 
-RUN composer install --optimize-autoloader
+RUN composer install --optimize-autoloader --no-dev
+RUN php artisan key:generate && php artisan config:cache && php artisan route:cache && php artisan view:cache
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 9000
 CMD ["php-fpm"]
