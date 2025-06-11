@@ -88,7 +88,7 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, onBeforeUnmount, defineExpose } from 'vue';
+  import { ref, onMounted, onBeforeUnmount } from 'vue';
   import { useEditor, EditorContent } from '@tiptap/vue-3';
   import StarterKit from '@tiptap/starter-kit';
   import Underline from '@tiptap/extension-underline';

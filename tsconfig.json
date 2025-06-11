@@ -5,6 +5,9 @@
       "@/*": ["resources/js/*"]
     },
     "allowJs": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    
     "strict": false,
     "types": ["vite/client"]
   },

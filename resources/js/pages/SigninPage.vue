@@ -7,7 +7,7 @@
       <router-link to="/" class="w-fit h-fit">
         <div class="logo_container flex justify-start items-center sm:gap-3">
           <div class="logo w-[58px] h-[58px] rounded-[8px]">
-            <img src="/landingPage_img/logo.webp" alt="" />
+            <img :src="logoImage" alt="" />
           </div>
         </div>
       </router-link>
@@ -325,6 +325,7 @@
     DialogTrigger,
   } from 'reka-ui';
   import router from '@/routes';
+  import logoImage from '../assets/landingPage_img/logo.webp';
   // import {Router} from '@/vue-router';
 
   // Reactive variables for error and success messages

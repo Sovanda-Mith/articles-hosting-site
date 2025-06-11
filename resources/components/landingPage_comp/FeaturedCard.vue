@@ -62,6 +62,10 @@
     transform: rotateY(180deg);
   }
 </style>
+<script setup lang="ts">
+  // Importing the image for the card
+ import card1 from '../../assets/landingPage_img/card1.png';
+</script>
 <script lang="ts">
   export default {
     name: 'FeaturedCard',
@@ -76,7 +80,7 @@
       },
       image: {
         type: String,
-        default: '/landingPage_img/card1.png',
+        default: card1,
       },
       detailInfo: {
         type: String,

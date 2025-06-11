@@ -10,7 +10,7 @@
         <router-link to="/" class="w-fit">
           <div class="logo_container flex justify-start items-center sm:gap-3 md">
             <div class="logo w-[38px] h-[38px] rounded-[8px]">
-              <img src="/landingPage_img/logo.webp" alt="" />
+              <img :src="logoImage" alt="" />
             </div>
             <h5 class="logo_name text-white">Bloggist</h5>
           </div>
@@ -28,7 +28,7 @@
 
       <!-- Image placeholder - You'll replace this with your own image -->
       <div class="w-[380px] h-[380x] flex justify-center lg:justify-start">
-        <img src="/landingPage_img/login.png" alt="" />
+        <img :src="loginImage" alt="" />
       </div>
     </div>
 
@@ -491,6 +491,10 @@
   import { useRouter } from 'vue-router';
   import axios from 'axios';
   import { useUserStore } from '@/stores/features/user';
+
+  // Import images properly for Vite
+  import logoImage from '../assets/landingPage_img/logo.webp';
+  import loginImage from '../assets/landingPage_img/login.png';
 
   const userStore = useUserStore();
 

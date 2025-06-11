@@ -4,47 +4,58 @@ import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 export default defineConfig({
-  // server: {
-  //     hmr: {
-  //         host: "0.0.0.0",
-  //     },
-  //     port: 3000,
-  //     host: true,
-  //     watch: {
-  //         usePolling: true,
-  //     },
-  // },
+  plugins: [
+      laravel({
+        input: ['resources/css/app.css', 'resources/js/app.ts'],
+        refresh: true,
+      }),
+      tailwindcss(),
+      vue(),
+  ],
+  build: {
+    outDir: 'public/build',
+    manifest: true,
+    rollupOptions: {
+      input: ['resources/css/app.css', 'resources/js/app.ts'],
+    },
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'resources/js'),
+    },
+  },
   server: {
+    // https: (() => {
+    //   try {
+    //     if (fs.existsSync('./docker/ssl/cloudflare-origin.key') && fs.existsSync('./docker/ssl/cloudflare-origin.crt')) {
+    //       console.log('SSL certificates loaded successfully.');
+    //       console.log('Using SSL for development server.');
+    //       return {
+    //         key: fs.readFileSync('./docker/ssl/cloudflare-origin.key'),
+    //         cert: fs.readFileSync('./docker/ssl/cloudflare-origin.crt'),
+    //       };
+    //     }
+    //     return false;
+    //   } catch (error) {
+    //     console.warn('Failed to load SSL certificates:', error.message);
+    //     return false;
+    //   }
+    // })(),
+    https: false,
+    cors: true,
     hmr: {
-      host: 'localhost', // or your machine IP if needed externally
+      // host: isProduction ? 'bloggist.fun' : 'localhost',
+      host: 'localhost',
       protocol: 'ws',
       port: 3000,
     },
     port: 3000,
-    host: '0.0.0.0', // <- This is important for Docker
+    host: '0.0.0.0',
     watch: {
       usePolling: true,
-    },
-  },
-  plugins: [
-    laravel({
-      input: ['resources/css/app.css', 'resources/js/app.ts'],
-      refresh: true,
-    }),
-    tailwindcss(),
-    vue({
-      template: {
-        transformAssetUrls: {
-          base: null,
-          includeAbsolute: false,
-        },
-      },
-    }),
-  ],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'resources/js'),
     },
   },
   optimizeDeps: {
