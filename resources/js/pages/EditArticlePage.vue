@@ -158,8 +158,8 @@
     };
 
     try {
-      const response = await axios.post(
-        '/api/articles',
+      const response = await axios.put(
+        '/api/articles/' + editorRef.value?.articleId,
         {
           title: article.title,
           subtitle: article.subtitle,
@@ -176,12 +176,10 @@
         }
       );
 
-      if (response.status === 201) {
-        const articleId = response.data.id;
-
+      if (response.status === 200) {
         const categoryResponse = await axios.post('/api/articleCategory', {
-          article_id: articleId,
-          category_ids: editorRef.value.selectedCategoryIds,
+          article_id: editorRef.value?.articleId,
+          category_ids: editorRef.value?.selectedCategoryIds,
         });
 
         if (categoryResponse.status === 200) {

@@ -321,6 +321,7 @@
   });
 
   defineExpose({
+    articleId,
     title,
     subtitle,
     editor,
