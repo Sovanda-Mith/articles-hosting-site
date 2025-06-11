@@ -1,12 +1,17 @@
 <script setup lang="ts">
   import { useUserStore } from '@/stores/features/user';
   import { computed } from 'vue';
-  import { DropdownMenuRoot, DropdownMenuTrigger, DropdownMenuContent } from 'reka-ui';
+  import {
+    DropdownMenuRoot,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+  } from 'reka-ui';
 
   const userStore = useUserStore();
 
   const props = defineProps<{
-    id: string;
+    comment_id: number;
     user_id: number;
     name: string;
     avatar: string;
@@ -15,6 +20,16 @@
     likesCount?: number;
     commentsCount?: number;
   }>();
+
+  const emit = defineEmits(['edit', 'delete']);
+
+  const onEdit = () => {
+    emit('edit', props.comment_id, props.content);
+  };
+
+  const onDelete = () => {
+    emit('delete', props.comment_id);
+  };
 
   const likesCount = computed(() => props.likesCount ?? 0);
 
@@ -36,13 +51,28 @@
       <DropdownMenuRoot>
         <DropdownMenuTrigger>
           <i
-            class="pi pi-ellipsis-h cursor-pointer"
-            style="font-size: 25px"
+            class="pi pi-ellipsis-h text-gray-500 hover:text-gray-700 transition cursor-pointer"
+            style="font-size: 24px"
             v-if="isOwnerOfTheComment"
           ></i>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <div>Hello</div>
+
+        <DropdownMenuContent class="w-44 bg-white border border-gray-200 rounded-xl shadow-lg p-1">
+          <DropdownMenuItem
+            class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-all cursor-pointer text-sm"
+            @click="onEdit"
+          >
+            <i class="pi pi-pencil text-blue-500"></i>
+            <span>Edit</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            class="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-red-50 text-gray-700 hover:text-red-600 transition-all cursor-pointer text-sm"
+            @click="onDelete"
+          >
+            <i class="pi pi-trash text-red-500"></i>
+            <span>Delete</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenuRoot>
     </div>
