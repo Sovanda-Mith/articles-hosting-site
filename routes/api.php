@@ -82,6 +82,7 @@ Route::apiResource('follows', FollowController::class)
 Route::middleware(['auth:sanctum'])->prefix('follows')->group(function () {
     Route::get('/getFollowers/{userId}', [FollowController::class, 'getFollowers']);
     Route::get('/getFollowing/{userId}', [FollowController::class, 'getFollowing']);
+    Route::post('/checkIfFollowing', [FollowController::class, 'checkIfFollowing']);
 });
 
 // User Routes

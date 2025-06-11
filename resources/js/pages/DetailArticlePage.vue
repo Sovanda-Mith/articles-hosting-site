@@ -64,6 +64,76 @@
     }
   };
 
+  const isFollowing = ref(false);
+
+  const checkIfFollowing = async () => {
+    try {
+      const response = await axios.post(
+        `/api/follows/checkIfFollowing`,
+        {
+          following_id: author.value.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userStore.user.token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        isFollowing.value = response.data.following;
+        followId.value = response.data.follow_id;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const followId = ref();
+
+  const toggleFollowAuthor = async () => {
+    if (isFollowing.value) {
+      await unfollowAuthor();
+      return;
+    }
+    try {
+      const response = await axios.post(
+        `/api/follows`,
+        {
+          following_id: author.value.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userStore.user.token}`,
+          },
+        }
+      );
+      if (response.status === 201) {
+        isFollowing.value = true;
+        followId.value = response.data.id;
+        author.value.followers_count += 1;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const unfollowAuthor = async () => {
+    try {
+      const response = await axios.delete(`/api/follows/${followId.value}`, {
+        headers: {
+          Authorization: `Bearer ${userStore.user.token}`,
+        },
+      });
+      if (response.status === 204) {
+        isFollowing.value = false;
+        followId.value = null;
+        author.value.followers_count -= 1;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const writeComment = ref(null);
 
   const scrollToComments = () => {
@@ -73,12 +143,6 @@
   };
 
   const newComment = ref(null);
-
-  const scrollToNewComment = () => {
-    if (newComment.value) {
-      newComment.value.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
   dayjs.extend(relativeTime);
 
@@ -226,8 +290,9 @@
     }
   };
 
-  onMounted(() => {
-    getArticleAndItsCategories();
+  onMounted(async () => {
+    await getArticleAndItsCategories();
+    await checkIfFollowing();
   });
 </script>
 
@@ -248,7 +313,11 @@
         <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
           <span>{{ author?.name }}</span>
           <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
-          <span class="hover:underline underline-offset-2">Follow</span>
+          <span
+            class="hover:underline underline-offset-2 cursor-pointer"
+            @click="toggleFollowAuthor"
+            >{{ isFollowing ? 'Following' : 'Follow' }}</span
+          >
         </div>
         <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
           <span class="text-gray-500 font-normal text-xs sm:text-sm">Published in</span>
@@ -328,9 +397,10 @@
         </div>
       </div>
       <button
-        class="text-white bg-black font-semibold px-4 sm:px-6 py-2 sm:py-4 rounded-2xl mt-4 md:mt-0 w-full md:w-auto"
+        class="text-white bg-black font-semibold px-4 sm:px-6 py-2 sm:py-4 rounded-2xl mt-4 md:mt-0 w-full md:w-auto cursor-pointer"
+        @click="toggleFollowAuthor"
       >
-        Follow
+        {{ isFollowing ? 'Following' : 'Follow' }}
       </button>
     </div>
   </div>
