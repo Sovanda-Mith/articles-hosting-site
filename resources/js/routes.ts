@@ -109,13 +109,6 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: '/detail-article/',
-    component: () => import('../js/pages/DetailArticlePage.vue'),
-    meta: {
-      title: 'DetailArticle',
-    },
-  },
-  {
     path: '/profile',
     component: () => import('../js/pages/ProfilePage.vue'),
     meta: {
@@ -134,6 +127,14 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../js/pages/article/NewArticle.vue'),
     meta: {
       title: 'New Article',
+    },
+  },
+  {
+    path: '/edit-article/:id',
+    component: () => import('@/pages/EditArticlePage.vue'),
+    name: 'EditArticle',
+    meta: {
+      title: 'Edit Article',
     },
   },
 
