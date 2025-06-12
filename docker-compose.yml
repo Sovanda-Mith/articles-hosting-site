@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: ${DOCKER_TARGET:-development}  # Use development by default
     image: my-laravel-app
     container_name: my-laravel-app
     restart: unless-stopped
