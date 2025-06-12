@@ -65,12 +65,13 @@ services:
       - MYSQL_USER=${DB_USERNAME:-laravel}
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-root}
       - MYSQL_PASSWORD=${DB_PASSWORD:-laravel}
+      - MYSQL_PORT=${DB_PORT:-3306}
     volumes:
       - dbdata:/var/lib/mysql
     networks:
       - app-network
-    ports:
-      - '3306:3306'
+    # ports:
+    #   - '3306:3306'  # REMOVED: Don't expose database to internet!
 
   minio:
     image: minio/minio:latest

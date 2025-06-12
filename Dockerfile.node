@@ -1,20 +1,15 @@
-FROM node:20
+# Method 1: Host build + transfer to container (Laravel + Vue/Vite)
+FROM node:20-alpine
 
 WORKDIR /var/www
 
-COPY package*.json ./
+# Install a simple static file server
+RUN npm install -g serve
 
-# Install dependencies with legacy peer deps to avoid conflicts
-RUN npm install --legacy-peer-deps && npm cache clean --force
-RUN npm install pinia-plugin-persistedstate
-
-# Copy the rest of the application
-COPY . .
-
-# Build the application for production
-RUN npm run build
+# Copy the entire public directory (includes built assets)
+COPY public/ ./public/
 
 EXPOSE 3000
 
-# For production, serve built files, for development use dev server
-CMD ["npm", "run", "preview"]
+# Serve the public directory containing built assets
+CMD ["serve", "-s", "public", "-l", "3000"]

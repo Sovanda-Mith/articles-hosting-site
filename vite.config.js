@@ -11,13 +11,14 @@ export default defineConfig({
       laravel({
         input: ['resources/css/app.css', 'resources/js/app.ts'],
         refresh: true,
+        buildDirectory: 'build',
       }),
       tailwindcss(),
       vue(),
   ],
   build: {
     outDir: 'public/build',
-    manifest: true,
+    manifest: 'manifest.json',
     rollupOptions: {
       input: ['resources/css/app.css', 'resources/js/app.ts'],
     },
