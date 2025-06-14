@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+  import reviewPfp from '../../assets/landingPage_img/reviewPfp.png';
 </script>
 <template>
   <div
@@ -7,7 +8,7 @@
   >
     <div class="flex justify-center items-center gap-3">
       <Avatar>
-        <AvatarImage src="/landingPage_img/reviewPfp.png" alt="@unovue" />
+        <AvatarImage :src="reviewPfp" alt="@unovue" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <!-- star review -->
