@@ -4,6 +4,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
+    "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write \"**/*.{vue,ts,js,jsx,tsx,css,scss,json,md}\""
   },

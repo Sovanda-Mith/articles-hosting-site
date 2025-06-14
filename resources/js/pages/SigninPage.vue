@@ -7,7 +7,7 @@
       <router-link to="/" class="w-fit h-fit">
         <div class="logo_container flex justify-start items-center sm:gap-3">
           <div class="logo w-[58px] h-[58px] rounded-[8px]">
-            <img src="/landingPage_img/logo.webp" alt="" />
+            <img :src="logoImage" alt="" />
           </div>
         </div>
       </router-link>
@@ -18,8 +18,10 @@
         <div class="flex flex-col max-w-[460px] justify-center items-center gap-1">
           <h5>Create an account</h5>
           <p class="text-center text-[#666666]">
-            Welcome back! Sign in to access your writing space, continue your projects, and share
-            your creativity with the world.
+            Join our platform and bring your ideas to life! Sign in to access your personalized
+            writing space, collaborate with others, and share your creativity. Whether you're crafting
+            stories, articles, or insights, we provide the tools to help you write and publish
+            effortlessly.
           </p>
         </div>
 
@@ -325,6 +327,7 @@
     DialogTrigger,
   } from 'reka-ui';
   import router from '@/routes';
+  import logoImage from '../assets/landingPage_img/logo.webp';
   // import {Router} from '@/vue-router';
 
   // Reactive variables for error and success messages
