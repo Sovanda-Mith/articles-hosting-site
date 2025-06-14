@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 
-export const useFollowersStore = defineStore('followers', {
+export const useFollowingStore = defineStore('following', {
   state: () => ({
-    followers: [
+    following: [
       'George Weeks',
       'Dr Cl Yatawara',
       'Emerencio Nvopa',
@@ -31,6 +31,6 @@ export const useFollowersStore = defineStore('followers', {
     ] as string[],
   }),
   getters: {
-    followerCount: (state) => state.followers.length,
+    followingCount: (state) => state.following.length,
   },
 })

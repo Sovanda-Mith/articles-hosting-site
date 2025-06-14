@@ -1,7 +1,8 @@
 <template>
-  <h1 class="text-3xl font-bold mb-6">Steven Gambardella</h1>
+  <p class="text-h2">{{ UsernameStore.username }}</p>
 </template>
 
 <script setup lang="ts">
-
+import { useUsernameStore } from '../../js/stores/username/userName'
+const UsernameStore = useUsernameStore()
 </script>
