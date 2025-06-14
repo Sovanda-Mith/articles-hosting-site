@@ -14,12 +14,13 @@
    ```
 
 3. Start all services with Docker Compose:
+   for Development (auto use node_env=developement and node_dockerfile=Dockerfile.node.dev)
    ```bash
    sudo docker compose up --build -d
    ```
    for Production:
    ```bash
-   sudo NODE_ENV=production NODE_ENV=Dockerfile.node docker compose up --build -d
+   sudo NODE_ENV=production NODE_DOCKERFILE=Dockerfile.node docker compose up --build -d
    ```
    
    > **Note**: The Docker build process automatically handles:
@@ -27,17 +28,17 @@
    > - Setting proper file permissions for `storage/` and `bootstrap/cache/`
    > - Laravel optimization commands (in production mode)
 
-4. Run database migrations:
+5. Run database migrations:
    ```bash
    sudo docker compose exec app php artisan migrate
    ```
 
-5. (Optional) Generate application key if not set in .env:
+6. (Optional) Generate application key if not set in .env:
    ```bash
    sudo docker compose exec app php artisan key:generate
    ```
 
-6. Access the application:
+7. Access the application:
    - **Main Application (Laravel + Nginx)**: [http://localhost:8000](http://localhost:8000)
    - **Frontend Assets (Node.js)**: [http://localhost:3000](http://localhost:3000)
    - **MinIO Console**: [http://localhost:9001](http://localhost:9001)
