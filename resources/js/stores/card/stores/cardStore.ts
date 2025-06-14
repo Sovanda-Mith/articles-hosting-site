@@ -53,6 +53,24 @@ export const useCardStore = defineStore('cardStore', {
           comments: 280,
           image: '/photo.png',
         },
+        {
+          id: 6,
+          title: 'The Art of Photography',
+          description: 'A collection of fine art photography.',
+          date: 'Jan 12',
+          likes: 628,
+          comments: 280,
+          image: '/photo.png',
+        },
+        {
+          id: 7,
+          title: 'The Art of Photography',
+          description: 'A collection of fine art photography.',
+          date: 'Jan 12',
+          likes: 628,
+          comments: 280,
+          image: '/photo.png',
+        },
 
       ]
     }
