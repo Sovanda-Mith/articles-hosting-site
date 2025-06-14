@@ -7,7 +7,7 @@
         </div>
 
         <div>
-            <p class="text-md font-extrabold font-['Poppins'] pb-3">
+            <p class="text-xl font-extrabold font-['Poppins'] pb-3">
                 {{title}}
             </p>
         </div>

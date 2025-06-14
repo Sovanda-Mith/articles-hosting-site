@@ -2,7 +2,7 @@
     <AppHeader></AppHeader>
         <div class="flex flex-row justify-center items-start ml-72 mr-40 mt-20 mb-32 sm:ml-32  ">
 
-            <div class="flex flex-col lg:pr-8 xl:pr-32 ">
+            <div class="flex flex-col md:w-[100%]  lg:pr-8 xl:pr-32 ">
 
                 <div class="sticky top-1/12 bg-white">
                     <div class=" flex items-center justify-between  px-4">
@@ -32,36 +32,6 @@
                 </div>
 
                 <div>
-                    <!-- <trending_preview
-                        profile_img = "/feedpage_img/profile1.jpg"
-                        publisherName="Sky_blue"
-                        title="Nature Doesn't Rush, So Why Are You?"
-                        pub_date="Mar 10"
-                    />
-                    <trending_preview
-                        profile_img = "/feedpage_img/profile1.jpg"
-                        publisherName="Sky_blue"
-                        title="Nature Doesn't Rush, So Why Are You?"
-                        pub_date="Mar 10"
-                    />
-                    <trending_preview
-                        profile_img = "/feedpage_img/profile1.jpg"
-                        publisherName="Sky_blue"
-                        title="Nature Doesn't Rush, So Why Are You?"
-                        pub_date="Mar 10"
-                    />
-                    <trending_preview
-                        profile_img = "/feedpage_img/profile1.jpg"
-                        publisherName="Sky_blue"
-                        title="Nature Doesn't Rush, So Why Are You?"
-                        pub_date="Mar 10"
-                    />
-                    <trending_preview
-                        profile_img = "/feedpage_img/profile1.jpg"
-                        publisherName="Sky_blue"
-                        title="Nature Doesn't Rush, So Why Are You?"
-                        pub_date="Mar 10"
-                    /> -->
                     <trending_preview
                         v-for="article in articles"
                         :key="article.id"
