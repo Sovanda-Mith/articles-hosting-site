@@ -45,12 +45,12 @@
     <textarea
       placeholder="Title"
       v-model="title"
-      class="text-5xl font-serif font-bold p-[1rem] pl-[2rem] placeholder:text-[#868e96] text-[#212529] focus:outline-none border-none w-full resize-none overflow-hidden leading-tight"
+      class="text-5xl font-serif font-bold p-[1rem] placeholder:text-[#868e96] text-[#212529] focus:outline-none border-none w-full resize-none overflow-hidden leading-tight"
       rows="1"
       @input="autoResize"
     />
     <div class="flex flex-col w-full">
-      <div v-if="uploadedImages.length" class="mt-4 pl-[2rem]">
+      <div v-if="uploadedImages.length" class="mt-4">
         <div class="flex flex-wrap gap-4">
           <div
             v-for="(img, index) in uploadedImages"
@@ -66,7 +66,7 @@
         </div>
       </div>
       <div v-else class="w-full h-[500px]">
-        <label for="image-upload" class="btn ml-[2rem] w-full h-full" title="Add Image">
+        <label for="image-upload" class="btn w-full h-full" title="Add Image">
           <span class="text-xs font-serif text-[#868e96] flex justify-center">Add Cover Image</span>
         </label>
 
@@ -88,7 +88,7 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, onBeforeUnmount, defineExpose } from 'vue';
+  import { ref, onMounted, onBeforeUnmount } from 'vue';
   import { useEditor, EditorContent } from '@tiptap/vue-3';
   import StarterKit from '@tiptap/starter-kit';
   import Underline from '@tiptap/extension-underline';
@@ -274,7 +274,6 @@
     min-height: 150px;
     border-radius: 8px;
     padding: 1rem;
-    padding-left: 2rem;
     font-size: 21px;
     font-family: sans-serif;
     line-height: 1.6;

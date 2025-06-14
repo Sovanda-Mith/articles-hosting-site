@@ -47,14 +47,25 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
-        $validated = $request->validated();
+        try {
+            $validated = $request->validated();
 
-        // Debug: Check what data is being received
-        \Log::info('Validated data:', $validated);
+            // Debug: Check what data is being received
+            \Log::info('Validated data:', $validated);
 
-        $user = $this->createNewUser($validated);
+            $user = $this->createNewUser($validated);
 
-        return response()->json(new UserResource($user), 201);
+            return response()->json([
+                'message' => 'User created successfully',
+                'user' => new UserResource($user)
+            ], 201);
+        } catch (\Exception $e) {
+            \Log::error('User creation error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to create user',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function createNewUser(array $data): User
@@ -148,7 +159,6 @@ class UserController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-
             'message' => 'Logged out successfully'
         ], 200);
     }

@@ -69,7 +69,7 @@ Route::controller(UploadController::class)->prefix('upload')->group(
 
 // Route::post('articles/', [ArticleController::class, 'store']);
 // Article Routes (Protected)
-Route::prefix('articles')->group(function () {
+Route::middleware(['auth:sanctum'])->prefix('articles')->group(function () {
     Route::post('/', [ArticleController::class, 'store']);
     Route::put('/{article}', [ArticleController::class, 'update']);
     Route::delete('/{article}', [ArticleController::class, 'destroy']);
@@ -83,6 +83,7 @@ Route::apiResource('follows', FollowController::class)
 Route::middleware(['auth:sanctum'])->prefix('follows')->group(function () {
     Route::get('/getFollowers/{userId}', [FollowController::class, 'getFollowers']);
     Route::get('/getFollowing/{userId}', [FollowController::class, 'getFollowing']);
+    Route::post('/checkIfFollowing', [FollowController::class, 'checkIfFollowing']);
 });
 
 // User Routes
@@ -96,9 +97,8 @@ Route::post('/auth/logout', [UserController::class, 'logout'])
     ->name('logout');
 
 // Comment Routes
-Route::middleware(['auth:anctum'])->prefix('article/{article_id}')->group(function () {
+Route::middleware(['auth:sanctum'])->prefix('article/{article_id}')->group(function () {
     Route::get('/comments', [CommentController::class, 'index']);
-    Route::get('comment/{id}', [CommentController::class, 'show']);
     Route::post('/comment', [CommentController::class, 'store']);
     Route::put('comment/{id}', [CommentController::class, 'update']);
     Route::delete('comment/{id}', [CommentController::class, 'destroy']);
@@ -106,8 +106,9 @@ Route::middleware(['auth:anctum'])->prefix('article/{article_id}')->group(functi
 
 // Like Routes
 Route::middleware(['auth:sanctum'])->prefix('article/{article_id}')->group(function () {
+    Route::get('/isLiked', [LikeController::class, 'checkIsLiked']);
     Route::get('/likes', [LikeController::class, 'getArticleLikes']);
-    Route::post('/like', [LikeController::class, 'toggleArticleLikes']);
+    Route::post('/like', [LikeController::class, 'toggleArticleLike']);
 });
 Route::middleware(['auth:sanctum'])->get('/user/liked-articles', [LikeController::class, 'getUserLikedArticles']);
 

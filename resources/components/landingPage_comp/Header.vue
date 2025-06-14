@@ -14,6 +14,8 @@
   import '../../css/app.css';
   import { useUserStore } from '@/stores/features/user';
 
+  import logo from '../../assets/landingPage_img/logo.webp';
+
   const userStore = useUserStore();
 
   const isMenuOpen = ref(false);
@@ -96,7 +98,7 @@
     <router-link to="/">
       <div class="logo_container flex justify-center items-center sm:gap-3 md">
         <div class="logo w-[38px] h-[38px] rounded-[8px]">
-          <img src="/landingPage_img/logo.webp" alt="" />
+          <img :src="logo" alt="" />
         </div>
         <h5 class="logo_name">Bloggist</h5>
       </div>

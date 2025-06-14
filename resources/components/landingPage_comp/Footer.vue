@@ -4,7 +4,7 @@
       <!-- logo -->
       <div class="flex justify-center items-center gap-3">
         <div class="w-[38px] h-[38px] rounded-[8px]">
-          <img src="/landingPage_img/logo.webp" alt="" />
+          <img :src="logo" alt="" />
         </div>
         <h5 class="text-white">Bloggist</h5>
       </div>
@@ -31,9 +31,9 @@
       <div class="flex items-center gap-10">
         <!-- icons -->
         <div class="flex gap-3">
-          <img src="/landingPage_img/facebookIcons.png" alt="" class="icons" />
-          <img src="/landingPage_img/twitterIcons.png" alt="" class="icons" />
-          <img src="/landingPage_img/igIcons.png" alt="" class="icons" />
+          <img :src="facebookIcon" alt="" class="icons" />
+          <img :src="twitterIcon" alt="" class="icons" />
+          <img :src="igIcon" alt="" class="icons" />
         </div>
         <!-- language -->
         <div>
@@ -70,6 +70,12 @@
     height: 30px;
   }
 </style>
+<script setup lang="ts">
+  import logo from '../../assets/landingPage_img/logo.webp';
+  import facebookIcon from '../../assets/landingPage_img/facebookIcons.png';
+  import twitterIcon from '../../assets/landingPage_img/twitterIcons.png';
+  import igIcon from '../../assets/landingPage_img/igIcons.png';
+</script>
 <script lang="ts">
   export default {
     name: 'Footer',

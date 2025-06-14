@@ -1,6 +1,7 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { nextTick, onMounted, ref, computed } from 'vue';
   import axios from 'axios';
+  import { useRouter } from 'vue-router';
   import ArticleContent from '@/components/detailarticlePage_comp/ArticleContent.vue';
   import Comment from '@/components/detailarticlePage_comp/Comment.vue';
   import DetailFooter from '@/components/detailarticlePage_comp/DetailFooter.vue';
@@ -10,8 +11,31 @@
   import dayjs from 'dayjs';
   import relativeTime from 'dayjs/plugin/relativeTime';
   import { useUserStore } from '@/stores/features/user';
+  import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+  } from '@/components/ui/dialog';
+
+  import { Button } from '@/components/ui/button';
+  import { Input } from '@/components/ui/input';
+
+  const showAll = ref(false);
+
+  const displayedComments = computed(() =>
+    showAll.value ? comments.value : comments.value.slice(0, 3)
+  );
+
+  const toggleShow = () => {
+    showAll.value = !showAll.value;
+  };
 
   const userStore = useUserStore();
+
+  const router = useRouter();
 
   const props = defineProps({
     id: String,
@@ -23,13 +47,194 @@
 
   const author = ref<User>();
 
+  const comments = ref([]);
+
+  const commentContent = ref('');
+
+  const isCommentDialogOpen = ref(false);
+
+  const editCommentContent = ref('');
+
+  const editingCommentId = ref(null);
+
+  const editComment = (comment_id, content) => {
+    isCommentDialogOpen.value = true;
+    editCommentContent.value = content;
+    editingCommentId.value = comment_id;
+  };
+
+  const saveComment = async (comment_id) => {
+    try {
+      const response = await axios.put(
+        `/api/article/${article.value.article_id}/comment/${comment_id}`,
+        {
+          content: editCommentContent.value,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userStore.user.token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        isCommentDialogOpen.value = false;
+        comments.value = comments.value.map((comment) => {
+          if (comment.comment_id === comment_id) {
+            comment.content = editCommentContent.value;
+          }
+          return comment;
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const isDeleteDialogOpen = ref(false);
+
+  const deleteCommentId = ref(null);
+
+  const showConfimationDialog = (comment_id) => {
+    isDeleteDialogOpen.value = true;
+    deleteCommentId.value = comment_id;
+  };
+
+  const deleteComment = async (comment_id) => {
+    try {
+      const response = await axios.delete(
+        `/api/article/${article.value.article_id}/comment/${comment_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userStore.user.token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        comments.value = comments.value.filter((comment) => comment.comment_id !== comment_id);
+        article.value.comments_count -= 1;
+        isDeleteDialogOpen.value = false;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const addComment = async () => {
+    try {
+      const response = await axios.post(
+        `/api/article/${props.id}/comment`,
+        {
+          content: commentContent.value,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userStore.user.token}`,
+          },
+        }
+      );
+      if (response.status === 201) {
+        commentContent.value = '';
+        comments.value.push(response.data.comment);
+        article.value.comments_count += 1;
+
+        nextTick(() => {
+          newComment.value?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const isFollowing = ref(false);
+
+  const checkIfFollowing = async () => {
+    try {
+      const response = await axios.post(
+        `/api/follows/checkIfFollowing`,
+        {
+          following_id: author.value.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userStore.user.token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        isFollowing.value = response.data.following;
+        followId.value = response.data.follow_id;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const followId = ref();
+
+  const toggleFollowAuthor = async () => {
+    if (isFollowing.value) {
+      await unfollowAuthor();
+      return;
+    }
+    try {
+      const response = await axios.post(
+        `/api/follows`,
+        {
+          following_id: author.value.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userStore.user.token}`,
+          },
+        }
+      );
+      if (response.status === 201) {
+        isFollowing.value = true;
+        followId.value = response.data.id;
+        author.value.followers_count += 1;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const unfollowAuthor = async () => {
+    try {
+      const response = await axios.delete(`/api/follows/${followId.value}`, {
+        headers: {
+          Authorization: `Bearer ${userStore.user.token}`,
+        },
+      });
+      if (response.status === 204) {
+        isFollowing.value = false;
+        followId.value = null;
+        author.value.followers_count -= 1;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const writeComment = ref(null);
+
+  const scrollToComments = () => {
+    if (writeComment.value) {
+      writeComment.value.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const newComment = ref(null);
+
   dayjs.extend(relativeTime);
 
   let timeAgo = ref('');
 
+  const isLiked = ref(false);
+
   const getArticleAndItsCategories = async () => {
     try {
-      console.log(userStore.user + ' ' + props.id);
       const response = await axios.get(`/api/articles/${props.id}`);
       if (response.status === 200) {
         article.value = {
@@ -46,6 +251,8 @@
           created_at: response.data.created_at,
           updated_at: response.data.updated_at,
         };
+
+        isLiked.value = article.value.likes_count > 0;
 
         timeAgo = dayjs(article?.value.created_at).fromNow();
 
@@ -78,15 +285,116 @@
               role: userResponse.data.data.role,
             };
           }
-        } catch (error) {}
+        } catch (error) {
+          console.error('Error fetching user:', error);
+        }
+
+        try {
+          const likeResponse = await axios.get(`/api/article/${props.id}/likes`, {
+            headers: {
+              Authorization: `Bearer ${userStore.user.token}`,
+            },
+          });
+
+          if (likeResponse.status === 200) {
+            article.value.likes_count = likeResponse.data.likes_count;
+          }
+        } catch (error) {
+          console.error('Error fetching likes:', error);
+        }
+
+        try {
+          const commentResponse = await axios.get(`/api/article/${props.id}/comments`, {
+            headers: {
+              Authorization: `Bearer ${userStore.user.token}`,
+            },
+          });
+
+          if (commentResponse.status === 200) {
+            article.value.comments_count = commentResponse.data.comments_count;
+            comments.value = commentResponse.data.comments;
+          }
+        } catch (error) {
+          console.error('Error fetching comments:', error);
+        }
+
+        try {
+          const followersResponse = await axios.get(
+            `/api/follows/getFollowers/${author.value.id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${userStore.user.token}`,
+              },
+            }
+          );
+
+          if (followersResponse.status === 200) {
+            author.value.followers_count = followersResponse.data.length;
+          }
+        } catch (error) {
+          console.error('Error fetching followers:', error);
+        }
+
+        try {
+          const followingResponse = await axios.get(
+            `/api/follows/getFollowing/${author.value.id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${userStore.user.token}`,
+              },
+            }
+          );
+
+          if (followingResponse.status === 200) {
+            author.value.following_count = followingResponse.data.length;
+          }
+        } catch (error) {
+          console.error('Error fetching following:', error);
+        }
       }
     } catch (error) {
       console.error('Error fetching article:', error);
     }
   };
 
-  onMounted(() => {
-    getArticleAndItsCategories();
+  const toggleLike = async () => {
+    try {
+      const response = await axios.post(`/api/article/${props.id}/like`, null, {
+        headers: {
+          Authorization: `Bearer ${userStore.user.token}`,
+        },
+      });
+      if (response.status === 200) {
+        isLiked.value = response.data.is_liked;
+        article.value.likes_count = response.data.likes_count;
+      }
+    } catch (error) {
+      console.error('Error liking article:', error);
+    }
+  };
+
+  const stripHtml = (html) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  };
+
+  const readTime = computed(() => {
+    const wordsPerMinute = 200;
+    const wordCount = stripHtml(article.value?.content).split(' ').length || 0;
+    const minutes = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
+    return minutes;
+  });
+
+  const isOwner = computed(() => userStore.user?.id === author.value?.id);
+
+  const goToEditArticle = () => {
+    router.push({ name: 'EditArticle', params: { id: props.id } });
+  };
+
+  onMounted(async () => {
+    await getArticleAndItsCategories();
+    await checkIfFollowing();
   });
 </script>
 
@@ -101,22 +409,41 @@
     <h3 class="text-lg sm:text-xl md:text-2xl text-gray-500 pb-3 sm:pb-5 font-medium">
       {{ article?.subtitle }}
     </h3>
-    <div class="flex flex-col sm:flex-row gap-2 pb-5">
-      <img :src="author?.avatar" class="w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-full" />
-      <div class="flex flex-col pl-0 sm:pl-2">
-        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <span>{{ author?.name }}</span>
-          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
-          <span class="hover:underline underline-offset-2">Follow</span>
+
+    <div class="flex justify-between">
+      <div class="flex flex-col sm:flex-row gap-2 pb-5">
+        <img :src="author?.avatar" class="w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-full" />
+        <div class="flex flex-col pl-0 sm:pl-2">
+          <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <span>{{ author?.name }}</span>
+            <div class="flex items-center gap-2 sm:gap-3 flex-wrap" v-if="!isOwner">
+              <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
+              <span
+                class="hover:underline underline-offset-2 cursor-pointer"
+                @click="toggleFollowAuthor"
+                >{{ isFollowing ? 'Following' : 'Follow' }}</span
+              >
+            </div>
+          </div>
+          <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <span class="text-gray-500 font-normal text-xs sm:text-sm">Published in</span>
+            <span class="font-bold text-sm sm:text-base">{{ author?.name }}</span>
+            <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
+            <span class="text-gray-500 font-normal text-xs sm:text-sm"
+              >{{ readTime == 1 ? readTime + ' min' : readTime + ' mins' }} read
+            </span>
+            <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
+            <span class="text-gray-500 font-normal text-xs sm:text-sm">{{ timeAgo }}</span>
+          </div>
         </div>
-        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <span class="text-gray-500 font-normal text-xs sm:text-sm">Published in</span>
-          <span class="font-bold text-sm sm:text-base">{{ author?.name }}</span>
-          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
-          <span class="text-gray-500 font-normal text-xs sm:text-sm">10 min read</span>
-          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
-          <span class="text-gray-500 font-normal text-xs sm:text-sm">{{ timeAgo }}</span>
-        </div>
+      </div>
+      <div v-if="isOwner" class="flex justify-end">
+        <Button
+          class="text-sm sm:text-base bg-orange-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-orange-600 transition cursor-pointer"
+          @click="goToEditArticle"
+        >
+          Edit Article
+        </Button>
       </div>
     </div>
     <div
@@ -124,12 +451,21 @@
     >
       <div class="flex items-center gap-6 sm:gap-10">
         <div class="flex items-center gap-1 sm:gap-2">
-          <i class="pi pi-heart" style="font-size: 20px"></i>
-          <span>1.2K</span>
+          <i
+            class="pi"
+            :class="isLiked ? 'pi-heart-fill text-red-500' : 'pi-heart'"
+            style="font-size: 20px; cursor: pointer"
+            @click="toggleLike"
+          ></i>
+          <span>{{ article?.likes_count }}</span>
         </div>
         <div class="flex items-center gap-1 sm:gap-2">
-          <i class="pi pi-comment" style="font-size: 20px"></i>
-          <span>8</span>
+          <i
+            class="pi pi-comment cursor-pointer"
+            style="font-size: 20px"
+            @click="scrollToComments"
+          ></i>
+          <span>{{ article?.comments_count }}</span>
         </div>
       </div>
       <div class="flex items-center gap-6 sm:gap-15">
@@ -164,9 +500,13 @@
         <div class="flex flex-col space-y-1">
           <span class="text-lg sm:text-2xl font-bold">{{ author?.name }}</span>
           <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <span class="text-gray-500 text-sm sm:text-lg">1K Followers</span>
+            <span class="text-gray-500 text-sm sm:text-lg"
+              >{{ author?.followers_count }} Followers</span
+            >
             <i class="pi pi-circle-fill" style="font-size: 3px"></i>
-            <span class="text-gray-500 text-sm sm:text-lg">500 Following</span>
+            <span class="text-gray-500 text-sm sm:text-lg"
+              >{{ author?.following_count }} Following</span
+            >
           </div>
           <p class="text-xs sm:text-sm">
             {{ author?.bio }}
@@ -174,16 +514,28 @@
         </div>
       </div>
       <button
-        class="text-white bg-black font-semibold px-4 sm:px-6 py-2 sm:py-4 rounded-2xl mt-4 md:mt-0 w-full md:w-auto"
+        v-if="!isOwner"
+        class="text-white bg-black font-semibold px-4 sm:px-6 py-2 sm:py-4 rounded-2xl mt-4 md:mt-0 w-full md:w-auto cursor-pointer"
+        @click="toggleFollowAuthor"
       >
-        Follow
+        {{ isFollowing ? 'Following' : 'Follow' }}
+      </button>
+      <button
+        v-else
+        class="text-white bg-black font-semibold px-4 sm:px-6 py-2 sm:py-4 rounded-2xl mt-4 md:mt-0 w-full md:w-auto cursor-pointer"
+        @click="router.push({ path: '/profile' })"
+      >
+        Edit Profile
       </button>
     </div>
   </div>
   <div class="border-t-2 border-gray-100 w-full">
-    <div class="w-full max-w-4xl h-auto flex flex-col justify-center mx-auto px-4 sm:px-6 lg:px-8">
+    <div
+      ref="writeComment"
+      class="w-full max-w-4xl h-auto flex flex-col justify-center mx-auto px-4 sm:px-6 lg:px-8"
+    >
       <h2 class="font-bold text-2xl sm:text-3xl md:text-4xl pl-0 sm:pl-5 my-6 sm:my-10">
-        Response (8)
+        Response ({{ article?.comments_count }})
       </h2>
       <div class="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-5 pl-0 sm:pl-5">
         <img
@@ -197,29 +549,76 @@
       <div class="bg-gray-100 rounded-2xl p-3 sm:p-5 w-full shadow-sm">
         <div class="mb-4 sm:mb-8">
           <textarea
+            v-model="commentContent"
             placeholder="What are your thoughts?"
             class="w-full h-24 sm:h-40 p-0 bg-transparent border-none outline-none resize-none text-gray-500 text-base sm:text-xl placeholder-gray-500 leading-relaxed font-semibold"
           ></textarea>
         </div>
         <div class="flex justify-end items-center gap-3 sm:gap-6">
-          <button class="px-3 sm:px-4 py-1 sm:py-2 text-black font-medium text-sm sm:text-base">
+          <button
+            class="px-3 sm:px-4 py-1 sm:py-2 text-black font-medium text-sm sm:text-base cursor-pointer"
+            @click="commentContent = ''"
+          >
             Cancel
           </button>
           <button
-            class="px-3 sm:px-4 py-1 sm:py-2 rounded-full font-medium text-sm sm:text-base bg-gray-400 text-white"
+            class="px-3 sm:px-4 py-1 sm:py-2 rounded-full font-medium text-sm sm:text-base bg-gray-400 text-white hover:bg-gray-500 cursor-pointer"
+            @click="addComment"
           >
             Respond
           </button>
         </div>
       </div>
-      <div class="flex flex-col mt-6 sm:mt-10">
-        <Comment />
-        <Comment />
+      <div ref="newComment" class="flex flex-col mt-6 sm:mt-10">
+        <Comment
+          v-for="comment in displayedComments"
+          :key="comment.comment_id"
+          :comment_id="comment.comment_id"
+          :user_id="comment.user_id"
+          :name="comment.user.name"
+          :avatar="comment.user.avatar"
+          :content="comment.content"
+          :timeAgo="dayjs(comment.created_at).fromNow()"
+          @edit="editComment"
+          @delete="showConfimationDialog"
+        />
       </div>
+      <Dialog v-model:open="isCommentDialogOpen">
+        <DialogContent class="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Comment</DialogTitle>
+            <DialogDescription>How do you want to edit your comment?</DialogDescription>
+          </DialogHeader>
+
+          <div class="grid gap-2 py-4">
+            <Input v-model="editCommentContent" class="col-span-4" />
+          </div>
+
+          <DialogFooter>
+            <Button @click="saveComment(editingCommentId)">Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog v-model:open="isDeleteDialogOpen">
+        <DialogContent class="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Comment</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this comment?</DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button @click="isDeleteDialogOpen = false" class="bg-gray-500">No</Button>
+            <Button @click="deleteComment(deleteCommentId)" class="bg-red-500 hover:bg-red-600"
+              >Yes</Button
+            >
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <a
-        href=""
+        v-if="comments.length > 3"
+        @click="toggleShow"
         class="w-fit border border-black rounded-full py-2 sm:py-3 px-4 sm:px-6 my-6 sm:my-10 text-base sm:text-lg font-semibold"
-        >See all responses</a
+        >{{ showAll ? 'Show Less' : 'See all responses' }}</a
       >
     </div>
   </div>
