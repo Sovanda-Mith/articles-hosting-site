@@ -19,7 +19,7 @@
    ```
    for Production:
    ```bash
-   sudo NODE_ENV=production docker compose up --build -d
+   sudo NODE_ENV=production NODE_ENV=Dockerfile.node docker compose up --build -d
    ```
    
    > **Note**: The Docker build process automatically handles:
