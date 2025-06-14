@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { nextTick, onMounted, ref, computed } from 'vue';
   import axios from 'axios';
+  import { useRouter } from 'vue-router';
   import ArticleContent from '@/components/detailarticlePage_comp/ArticleContent.vue';
   import Comment from '@/components/detailarticlePage_comp/Comment.vue';
   import DetailFooter from '@/components/detailarticlePage_comp/DetailFooter.vue';
@@ -10,6 +11,17 @@
   import dayjs from 'dayjs';
   import relativeTime from 'dayjs/plugin/relativeTime';
   import { useUserStore } from '@/stores/features/user';
+  import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+  } from '@/components/ui/dialog';
+
+  import { Button } from '@/components/ui/button';
+  import { Input } from '@/components/ui/input';
 
   const showAll = ref(false);
 
@@ -22,6 +34,8 @@
   };
 
   const userStore = useUserStore();
+
+  const router = useRouter();
 
   const props = defineProps({
     id: String,
@@ -36,6 +50,75 @@
   const comments = ref([]);
 
   const commentContent = ref('');
+
+  const isCommentDialogOpen = ref(false);
+
+  const editCommentContent = ref('');
+
+  const editingCommentId = ref(null);
+
+  const editComment = (comment_id, content) => {
+    isCommentDialogOpen.value = true;
+    editCommentContent.value = content;
+    editingCommentId.value = comment_id;
+  };
+
+  const saveComment = async (comment_id) => {
+    try {
+      const response = await axios.put(
+        `/api/article/${article.value.article_id}/comment/${comment_id}`,
+        {
+          content: editCommentContent.value,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userStore.user.token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        isCommentDialogOpen.value = false;
+        comments.value = comments.value.map((comment) => {
+          if (comment.comment_id === comment_id) {
+            comment.content = editCommentContent.value;
+          }
+          return comment;
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const isDeleteDialogOpen = ref(false);
+
+  const deleteCommentId = ref(null);
+
+  const showConfimationDialog = (comment_id) => {
+    isDeleteDialogOpen.value = true;
+    deleteCommentId.value = comment_id;
+  };
+
+  const deleteComment = async (comment_id) => {
+    try {
+      const response = await axios.delete(
+        `/api/article/${article.value.article_id}/comment/${comment_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userStore.user.token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        comments.value = comments.value.filter((comment) => comment.comment_id !== comment_id);
+        article.value.comments_count -= 1;
+        isDeleteDialogOpen.value = false;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const addComment = async () => {
     try {
@@ -290,6 +373,25 @@
     }
   };
 
+  const stripHtml = (html) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  };
+
+  const readTime = computed(() => {
+    const wordsPerMinute = 200;
+    const wordCount = stripHtml(article.value?.content).split(' ').length || 0;
+    const minutes = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
+    return minutes;
+  });
+
+  const isOwner = computed(() => userStore.user?.id === author.value?.id);
+
+  const goToEditArticle = () => {
+    router.push({ name: 'EditArticle', params: { id: props.id } });
+  };
+
   onMounted(async () => {
     await getArticleAndItsCategories();
     await checkIfFollowing();
@@ -307,26 +409,41 @@
     <h3 class="text-lg sm:text-xl md:text-2xl text-gray-500 pb-3 sm:pb-5 font-medium">
       {{ article?.subtitle }}
     </h3>
-    <div class="flex flex-col sm:flex-row gap-2 pb-5">
-      <img :src="author?.avatar" class="w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-full" />
-      <div class="flex flex-col pl-0 sm:pl-2">
-        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <span>{{ author?.name }}</span>
-          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
-          <span
-            class="hover:underline underline-offset-2 cursor-pointer"
-            @click="toggleFollowAuthor"
-            >{{ isFollowing ? 'Following' : 'Follow' }}</span
-          >
+
+    <div class="flex justify-between">
+      <div class="flex flex-col sm:flex-row gap-2 pb-5">
+        <img :src="author?.avatar" class="w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-full" />
+        <div class="flex flex-col pl-0 sm:pl-2">
+          <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <span>{{ author?.name }}</span>
+            <div class="flex items-center gap-2 sm:gap-3 flex-wrap" v-if="!isOwner">
+              <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
+              <span
+                class="hover:underline underline-offset-2 cursor-pointer"
+                @click="toggleFollowAuthor"
+                >{{ isFollowing ? 'Following' : 'Follow' }}</span
+              >
+            </div>
+          </div>
+          <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <span class="text-gray-500 font-normal text-xs sm:text-sm">Published in</span>
+            <span class="font-bold text-sm sm:text-base">{{ author?.name }}</span>
+            <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
+            <span class="text-gray-500 font-normal text-xs sm:text-sm"
+              >{{ readTime == 1 ? readTime + ' min' : readTime + ' mins' }} read
+            </span>
+            <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
+            <span class="text-gray-500 font-normal text-xs sm:text-sm">{{ timeAgo }}</span>
+          </div>
         </div>
-        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <span class="text-gray-500 font-normal text-xs sm:text-sm">Published in</span>
-          <span class="font-bold text-sm sm:text-base">{{ author?.name }}</span>
-          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
-          <span class="text-gray-500 font-normal text-xs sm:text-sm">10 min read</span>
-          <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
-          <span class="text-gray-500 font-normal text-xs sm:text-sm">{{ timeAgo }}</span>
-        </div>
+      </div>
+      <div v-if="isOwner" class="flex justify-end">
+        <Button
+          class="text-sm sm:text-base bg-orange-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-orange-600 transition cursor-pointer"
+          @click="goToEditArticle"
+        >
+          Edit Article
+        </Button>
       </div>
     </div>
     <div
@@ -397,10 +514,18 @@
         </div>
       </div>
       <button
+        v-if="!isOwner"
         class="text-white bg-black font-semibold px-4 sm:px-6 py-2 sm:py-4 rounded-2xl mt-4 md:mt-0 w-full md:w-auto cursor-pointer"
         @click="toggleFollowAuthor"
       >
         {{ isFollowing ? 'Following' : 'Follow' }}
+      </button>
+      <button
+        v-else
+        class="text-white bg-black font-semibold px-4 sm:px-6 py-2 sm:py-4 rounded-2xl mt-4 md:mt-0 w-full md:w-auto cursor-pointer"
+        @click="router.push({ path: '/profile' })"
+      >
+        Edit Profile
       </button>
     </div>
   </div>
@@ -448,14 +573,47 @@
         <Comment
           v-for="comment in displayedComments"
           :key="comment.comment_id"
-          :id="comment.comment_id"
+          :comment_id="comment.comment_id"
           :user_id="comment.user_id"
           :name="comment.user.name"
           :avatar="comment.user.avatar"
           :content="comment.content"
           :timeAgo="dayjs(comment.created_at).fromNow()"
+          @edit="editComment"
+          @delete="showConfimationDialog"
         />
       </div>
+      <Dialog v-model:open="isCommentDialogOpen">
+        <DialogContent class="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Comment</DialogTitle>
+            <DialogDescription>How do you want to edit your comment?</DialogDescription>
+          </DialogHeader>
+
+          <div class="grid gap-2 py-4">
+            <Input v-model="editCommentContent" class="col-span-4" />
+          </div>
+
+          <DialogFooter>
+            <Button @click="saveComment(editingCommentId)">Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog v-model:open="isDeleteDialogOpen">
+        <DialogContent class="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Comment</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this comment?</DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button @click="isDeleteDialogOpen = false" class="bg-gray-500">No</Button>
+            <Button @click="deleteComment(deleteCommentId)" class="bg-red-500 hover:bg-red-600"
+              >Yes</Button
+            >
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <a
         v-if="comments.length > 3"
         @click="toggleShow"

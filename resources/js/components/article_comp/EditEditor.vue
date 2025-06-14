@@ -51,17 +51,28 @@
     />
     <div class="flex flex-col w-full">
       <div v-if="uploadedImages.length" class="mt-4">
-        <div class="flex flex-wrap gap-4">
+        <div class="flex flex-wrap gap-4 relative">
           <div
             v-for="(img, index) in uploadedImages"
             :key="index"
-            class="relative md:max-h-[500px] lg:max-h-[800px] max-w-full"
+            class="relative md:max-h-[500px] lg:max-h-[800px] max-w-full group cursor-pointer"
           >
             <img
               :src="img.src"
               :alt="img.name"
               class="object-cover w-full h-full rounded-md shadow"
             />
+            <!-- Blurry overlay with replace button -->
+            <div
+              class="absolute inset-0 bg-white/30 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-md"
+            >
+              <label
+                for="image-upload"
+                class="btn btn-sm cursor-pointer bg-white/80 hover:bg-white text-gray-800 border-none shadow-sm"
+              >
+                Replace
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -69,15 +80,15 @@
         <label for="image-upload" class="btn w-full h-full" title="Add Image">
           <span class="text-xs font-serif text-[#868e96] flex justify-center">Add Cover Image</span>
         </label>
-
-        <input
-          type="file"
-          accept="image/*"
-          id="image-upload"
-          class="hidden"
-          @change="handleImageSelect"
-        />
       </div>
+
+      <input
+        type="file"
+        accept="image/*"
+        id="image-upload"
+        class="hidden"
+        @change="handleImageSelect"
+      />
     </div>
 
     <!-- Editor -->
@@ -88,13 +99,14 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, onBeforeUnmount } from 'vue';
+  import { ref, onMounted, onBeforeUnmount, defineExpose } from 'vue';
   import { useEditor, EditorContent } from '@tiptap/vue-3';
   import StarterKit from '@tiptap/starter-kit';
   import Underline from '@tiptap/extension-underline';
   import Placeholder from '@tiptap/extension-placeholder';
   import Link from '@tiptap/extension-link';
   import Code from '@tiptap/extension-code';
+  import { useRoute } from 'vue-router';
 
   // Lucide icons
   import {
@@ -116,6 +128,45 @@
     DialogFooter,
   } from '@/components/ui/dialog';
   import { Input } from '@/components/ui/input';
+
+  const route = useRoute();
+  const articleId = route.params.id;
+
+  const selectedCategoryIds = ref([]);
+
+  const loadArticle = async () => {
+    try {
+      const response = await axios.get(`/api/articles/${articleId}`);
+
+      if (response.status === 200) {
+        title.value = response.data.title;
+        uploadedImages.value = [
+          {
+            src: response.data.image,
+            name: response.data.title,
+          },
+        ];
+        subtitle.value = response.data.subtitle;
+
+        editor.value.commands.setContent(response.data.content);
+
+        try {
+          const categoryResponse = await axios.get(`/api/articleCategory/${articleId}`);
+          if (categoryResponse.status === 200) {
+            categoryResponse.data.map((category) => {
+              selectedCategoryIds.value.push(category.category_id);
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching article categories:', error);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const subtitle = ref('');
 
   const isLinkDialogOpen = ref(false);
   const linkUrl = ref('');
@@ -208,6 +259,7 @@
       const response = await axios.post('/api/upload/cover', formData);
 
       if (response.status === 200 && response.data.url) {
+        // This will replace any existing image with the new one
         uploadedImages.value = [{ src: response.data.url, name: file.name }];
       } else {
         console.error('Upload failed:', data.message || 'Unknown error');
@@ -215,6 +267,9 @@
     } catch (err) {
       console.error('Error uploading image:', err);
     }
+
+    // Reset the input to allow selecting the same file again
+    event.target.value = '';
   };
 
   const cmd = (command, attrs = {}) => {
@@ -261,10 +316,17 @@
     document.removeEventListener('mouseup', checkSelection);
   });
 
+  onMounted(async () => {
+    await loadArticle();
+  });
+
   defineExpose({
+    articleId,
     title,
+    subtitle,
     editor,
     uploadedImages,
+    selectedCategoryIds,
     handleImageSelect,
   });
 </script>

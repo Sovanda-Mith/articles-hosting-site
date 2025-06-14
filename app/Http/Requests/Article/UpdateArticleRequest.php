@@ -25,7 +25,7 @@ class UpdateArticleRequest extends FormRequest
             'title' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'content' => 'required|string',
-            'image' => 'nullable|image',
+            'image' => 'nullable|string',
             'status' => 'required|in:draft,published',
         ];
     }

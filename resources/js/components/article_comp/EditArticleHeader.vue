@@ -9,7 +9,7 @@
         </div>
         <h5 class="logo_name">Bloggist</h5>
         <div class="text-[18px]">
-          Draft in <b>{{ user.name }}</b>
+          Edit in <b>{{ user.name }}</b>
         </div>
       </div>
     </router-link>
@@ -17,10 +17,10 @@
     <div class="flex justify-center items-center gap-[40px] relative">
       <div class="flex gap-[40px]">
         <div
-          @click="handlePublish"
+          @click="handleUpdate"
           class="body-big flex items-center space-x-1 bg-green-500 px-4 rounded-xl !text-white cursor-pointer hover:bg-green-600 navList"
         >
-          <p>Publish</p>
+          <p>Update</p>
         </div>
         <router-link to="#" class="navList body-big">
           <img
@@ -94,10 +94,10 @@
   import { onMounted, ref } from 'vue';
   import axios from 'axios';
 
-  const emit = defineEmits(['publish']);
+  const emit = defineEmits(['update']);
 
-  const handlePublish = () => {
-    emit('publish');
+  const handleUpdate = () => {
+    emit('update');
   };
 
   const isMenuOpen = ref(false);
@@ -105,7 +105,6 @@
     isMenuOpen.value = !isMenuOpen.value;
   };
 
-  // const user = ref('Mith Sovanda');
   const user = ref({
     name: '',
     pfp: '',

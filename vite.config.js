@@ -7,6 +7,11 @@ import fs from 'fs';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+// Check if SSL certificates exist
+// const sslKeyPath = path.resolve(__dirname, 'docker/ssl/localhost-key.pem');
+// const sslCertPath = path.resolve(__dirname, 'docker/ssl/localhost.pem');
+// const hasSSL = fs.existsSync(sslKeyPath) && fs.existsSync(sslCertPath);
+
 export default defineConfig({
   // plugins: [
   //     laravel({
@@ -45,27 +50,16 @@ export default defineConfig({
     },
   },
   server: {
-    // SSL is only needed for development HMR with HTTPS sites
-    https: !isProduction ? (() => {
-      try {
-        if (fs.existsSync('./docker/ssl/cloudflare-origin.key') && fs.existsSync('./docker/ssl/cloudflare-origin.crt')) {
-          console.log('SSL certificates loaded for development HMR.');
-          return {
-            key: fs.readFileSync('./docker/ssl/cloudflare-origin.key'),
-            cert: fs.readFileSync('./docker/ssl/cloudflare-origin.crt'),
-          };
-        }
-        console.log('No SSL certificates found, using HTTP for development.');
-        return false;
-      } catch (error) {
-        console.warn('Failed to load SSL certificates:', error.message);
-        return false;
-      }
-    })() : false, // Production builds don't need Vite dev server
+    // Conditionally enable HTTPS only if SSL certificates exist
+    // https: hasSSL ? {
+    //   key: fs.readFileSync(sslKeyPath),
+    //   cert: fs.readFileSync(sslCertPath),
+    // } : false,
+    // https: false,
     cors: true,
     hmr: {
-      host: isProduction ? 'bloggist.fun' : 'localhost', // Use localhost for Docker development
-      protocol: isProduction ? 'wss' : 'ws', // Use ws for Docker development
+      host: isProduction? 'bloggist.fun':'localhost',
+      protocol: isProduction ? 'wss' : 'ws',
       port: 3000,
     },
     port: 3000,
