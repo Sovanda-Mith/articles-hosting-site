@@ -33,11 +33,11 @@ services:
   node:
     build:
       context: .
-      dockerfile: Dockerfile.node
+      dockerfile: ${NODE_DOCKERFILE:-Dockerfile.node.dev}
     image: my-laravel-node
     container_name: my-laravel-node
     ports:
-      - '3000:3000'
+      - '3000:3000'  # Vite dev server port
     restart: unless-stopped
     working_dir: /var/www/
     volumes:
@@ -66,13 +66,13 @@ services:
       - MYSQL_USER=${DB_USERNAME:-laravel}
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-root}
       - MYSQL_PASSWORD=${DB_PASSWORD:-laravel}
-      - MYSQL_PORT=${DB_PORT:-3306}
+      # - MYSQL_PORT=${DB_PORT:-3309}
     volumes:
       - dbdata:/var/lib/mysql
     networks:
       - app-network
-    # ports:
-    #   - '3306:3306'  # REMOVED: Don't expose database to internet!
+    ports:
+      - '3309:3306'
 
   minio:
     image: minio/minio:latest

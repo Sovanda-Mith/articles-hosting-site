@@ -8,14 +8,29 @@ import fs from 'fs';
 const isProduction = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
+  // plugins: [
+  //     laravel({
+  //       input: ['resources/css/app.css', 'resources/js/app.ts'],
+  //       refresh: true,
+  //       buildDirectory: 'build',
+  //     }),
+  //     tailwindcss(),
+  //     vue(),
+  // ],
   plugins: [
-      laravel({
-        input: ['resources/css/app.css', 'resources/js/app.ts'],
-        refresh: true,
-        buildDirectory: 'build',
-      }),
-      tailwindcss(),
-      vue(),
+    laravel({
+      input: ['resources/css/app.css', 'resources/js/app.ts'],
+      refresh: true,
+    }),
+    tailwindcss(),
+    vue({
+      template: {
+        transformAssetUrls: {
+          base: null,
+          includeAbsolute: false,
+        },
+      },
+    }),
   ],
   build: {
     outDir: 'public/build',
@@ -49,9 +64,9 @@ export default defineConfig({
     })() : false, // Production builds don't need Vite dev server
     cors: true,
     hmr: {
-      host: isProduction ? false : 'bloggist.fun', // HMR only needed in development
-      protocol: isProduction ? undefined : 'wss',
-      port: isProduction ? undefined : 3000,
+      host: isProduction ? 'bloggist.fun' : 'localhost', // Use localhost for Docker development
+      protocol: isProduction ? 'wss' : 'ws', // Use ws for Docker development
+      port: 3000,
     },
     port: 3000,
     host: '0.0.0.0',
