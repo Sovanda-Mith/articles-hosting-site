@@ -72,32 +72,6 @@ This project runs multiple Docker containers:
 - **db**: MySQL 8.0 database on port 3309
 - **minio**: MinIO object storage with console on port 9001
 
-### Environment Configuration
-
-The Docker setup supports both development and production environments:
-
-- **Development**: Set `DOCKER_TARGET=development` in your `.env` file
-- **Production**: Set `DOCKER_TARGET=production` in your `.env` file
-
-Key environment variables to configure in `.env`:
-
-```env
-# App Environment
-APP_ENV=local
-APP_DEBUG=true
-DOCKER_TARGET=development
-
-# Database
-DB_DATABASE=ArticlesHostingSite
-DB_USERNAME=laravel
-DB_PASSWORD=laravel
-DB_ROOT_PASSWORD=root
-
-# MinIO Storage
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
-```
-
 ## Container Management
 
 ### Accessing Containers
