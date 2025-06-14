@@ -7,7 +7,14 @@
         <Home v-if="tabStore.activeTab === 'home'" />
         <About v-if="tabStore.activeTab === 'about'" />
       </div>
-      <Sidebar />
+      <Sidebar
+        name="John Doe"
+        avatarUrl=""
+        :following="100"
+        bio="Web developer and tech enthusiast"
+        link="https://example.com"
+        linkText="My Website"
+      />
     </div>
     <Footer />
   </div>
