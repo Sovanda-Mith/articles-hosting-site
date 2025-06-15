@@ -1,5 +1,5 @@
  <template>
-    <AppHeader></AppHeader>
+    <AppHeader />
         <div class="flex flex-row justify-center items-start ml-72 mr-40 mt-20 mb-32 sm:ml-32  ">
 
             <div class="flex flex-col lg:pr-8 xl:pr-32 ">
@@ -73,6 +73,7 @@
                         :commentNum="article.comments_count?.toString() || '0'"
                         :preview_img="article.image || '/feedpage_img/img1.jpg'"
                         :viewCount="article.view_count?.toString() || '0'"
+                        :articleId="article.id"
                     />
                     <router-link to="/feed/trending" active-class="active-tab" class="text-sm text-gray-500 hover:underline  ">See the full list</router-link>
                 </div>

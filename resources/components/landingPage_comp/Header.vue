@@ -12,7 +12,7 @@
   } from 'reka-ui';
   import { ref, onMounted } from 'vue';
   import '../../css/app.css';
-  import { useUserStore } from '@/stores/features/user';
+  import { useUserStore } from '@/stores/features/users/user';
 
   import logo from '../../assets/landingPage_img/logo.webp';
 
@@ -119,6 +119,17 @@
             <router-link to="/contact" class="navList body-big" active-class="active"
               >Contact</router-link
             >
+          </li>
+          <li>
+            <router-link to="/new-article" class="navList body-big flex items-center space-x-1">
+              <img
+                src="@/assets/settingsPage_img/write.png"
+                alt="Write"
+                title="Write"
+                class="w-[30px] h-[30px]"
+              />
+              <p>Write</p>
+            </router-link>
           </li>
         </ul>
       </nav>
