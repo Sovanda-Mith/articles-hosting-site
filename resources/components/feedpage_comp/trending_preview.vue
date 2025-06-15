@@ -4,12 +4,12 @@
             <img class="w-8 h-8 rounded-full object-cover" :src="profile_img" alt="Profile picture">
             <p class="pl-2 text-sm">{{ publisherName }}</p>
         </div>
-
         <RouterLink :to="`/article/${articleId}`">
           <p class="text-md font-extrabold font-['Poppins'] pb-3">
             {{title}}
           </p>
         </RouterLink>
+
         <div class="flex justify-between items-center space-x-4 ">
             <div class="text-xs">{{ pub_date }}</div>
 

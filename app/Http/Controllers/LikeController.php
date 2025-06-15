@@ -67,6 +67,29 @@ class LikeController extends Controller
         //
     }
 
+    public function getUserLikedArticles()
+    {
+        try {
+            $user = Auth::user();
+            
+            $articles = $user->likedArticles()
+                           ->with(['author', 'categories']) 
+                           ->paginate(10);
+    
+            return response()->json([
+                'success' => true,
+                'articles' => $articles
+            ]);
+    
+        } catch (\Exception $e) {
+            \Log::error('Error fetching liked articles: '.$e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
     public function getIsLiked(string $article_id): JsonResponse
     {
         $user = Auth::id();
