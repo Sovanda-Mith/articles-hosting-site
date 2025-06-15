@@ -38,6 +38,8 @@
         :clapNum="article.likes_count?.toString() || '0'"
         :commentNum="article.comments_count?.toString() || '0'"
         :preview_img="article.image || '/feedpage_img/img1.jpg'"
+        :viewCount="article.view_count?.toString() || '0'"
+        :articleId="article.id"
       />
     </div>
 
@@ -98,40 +100,48 @@
     error.value = null;
     currentPage.value = 1;
     hasMoreArticles.value = true;
+    // try {
+    //   await articleStore.fetchArticles();
+    //   console.log('Articles loaded successfully:', articles.value);
+    // } catch (err) {
+    //   error.value = err instanceof Error ? err.message : 'Unknown error occurred';
+    //   console.error('Error loading articles:', err);
+    // } finally {
+    //   isLoading.value = false;
+    // }
     try {
-      await articleStore.fetchArticles();
+      const response = await articleStore.fetchArticles(1, false); // explicitly pass page and append flag
       console.log('Articles loaded successfully:', articles.value);
+
+      // Update hasMoreArticles based on response
+      hasMoreArticles.value = response.current_page < response.last_page;
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Unknown error occurred';
       console.error('Error loading articles:', err);
-    } finally {
-      isLoading.value = false;
     }
   };
 
   const loadMoreArticles = async () => {
+    // Check local loading state
     if (isLoadingMore.value || !hasMoreArticles.value) return;
 
     isLoadingMore.value = true;
     error.value = null;
 
     try {
-      currentPage.value += 1;
-      const newArticles = await articleStore.fetchMoreArticles(currentPage.value);
+      const nextPage = currentPage.value + 1;
+      const response = await articleStore.fetchArticles(nextPage, true); // append = true
 
-      if (newArticles.current_page < newArticles.last_page) {
-        hasMoreArticles.value = true;
-      } else {
-        hasMoreArticles.value = false;
-      }
-      console.log('More articles loaded:', newArticles);
+      currentPage.value = response.current_page;
+      hasMoreArticles.value = response.current_page < response.last_page;
+
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Unknown error occurred';
       console.error('Error loading more articles:', err);
     } finally {
       isLoadingMore.value = false;
     }
-  }
+  };
 
   // Format date
   const formatDate = (dateString: string) => {

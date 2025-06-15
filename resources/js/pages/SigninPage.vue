@@ -19,9 +19,7 @@
           <h5>Create an account</h5>
           <p class="text-center text-[#666666]">
             Join our platform and bring your ideas to life! Sign in to access your personalized
-            writing space, collaborate with others, and share your creativity. Whether you're crafting
-            stories, articles, or insights, we provide the tools to help you write and publish
-            effortlessly.
+            writing space, collaborate with others, and share your creativity.
           </p>
         </div>
 
@@ -315,7 +313,9 @@
   import { useForm, Form } from 'vee-validate';
   import * as yup from 'yup';
   import { ref, watch } from 'vue';
-  // import { Icon } from '@iconify/vue';
+  import { useUserStore } from '@/stores/features/users/user';
+  import { useRouter } from 'vue-router';
+
   import {
     DialogClose,
     DialogContent,
@@ -326,20 +326,16 @@
     DialogTitle,
     DialogTrigger,
   } from 'reka-ui';
-  import router from '@/routes';
   import logoImage from '../assets/landingPage_img/logo.webp';
+  import axios from 'axios';
   // import {Router} from '@/vue-router';
 
   // Reactive variables for error and success messages
   const errorMessage = ref('');
   const successMessage = ref('');
   const isLoading = ref(false);
-
-  // const form = reactive({
-  //   email: '',
-  //   username: '',
-  //   password: '',
-  // });
+  const userStore = useUserStore();
+  const router = useRouter();
 
 
   const { errors, handleSubmit, defineField } = useForm({
@@ -369,78 +365,66 @@
     isLoading.value = true;
 
     try {
-      const response = await fetch('/api/users', {
-        method: 'POST',
+      const response = await axios.post('/api/users', {
+        email: values.email,
+        name: values.name,
+        password: values.password,
+      }, {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'X-Requested-With': 'XMLHttpRequest',
         },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: values.email,
-          name: values.name,
-          password: values.password,
-        }),
+        withCredentials: true, // Include credentials for CSRF protection
       });
 
-      const data = await response.json();
+      const data = await response.data;
 
-      if (!response.ok) {
-        // Handle different types of errors
-        if (response.status === 422) {
-          // Validation errors
-          if (data.errors) {
-            const validationErrors = Object.values(data.errors).flat();
-            errorMessage.value = validationErrors.join(', ');
-          } else {
-            errorMessage.value = data.message || 'Validation failed. Please check your input.';
-          }
-        } else if (response.status === 409) {
-          // Conflict (e.g., email already exists)
-          errorMessage.value = data.message || 'Email already exists. Please use a different email.';
-        } else {
-          // Other server errors
-          errorMessage.value = data.message || 'An error occurred while creating your account. Please try again.';
-        }
-      } else {
+      if(response.status == 200 || response.status == 201) {
         // Success
-        // console.log('Success:', data);
         successMessage.value = 'Account created successfully! Welcome to Bloggist!';
-        //log in the user
-        try{
-          const response = await fetch('/api/users/login', {
-            method: 'POST',
+        // Log in the user
+        try {
+          const signInResponse = await axios.post('/api/users/login', {
+            email: values.email,
+            password: values.password,
+          }, {
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
               'X-Requested-With': 'XMLHttpRequest',
             },
-            credentials: 'include',
-            body: JSON.stringify({
-              email: values.email,
-              password: values.password,
-            }),
+            withCredentials: true, // Include credentials for CSRF protection
           });
 
-          const dataUser = await response.json();
+          if (signInResponse.status === 200 || signInResponse.status === 201) {
+            const data = signInResponse.data;
+            // put in store
+            userStore.setUserData({
+              id: data.user.id,
+              name: data.user.name,
+              email: data.user.email,
+              avatar: data.user.avatar,
+              username: data.user.username,
+              bio: data.user.bio,
+              gender: data.user.gender,
+              role: data.user.role,
+              token: data.token,
+            });
+            localStorage.setItem('auth_token', signInResponse.data.token); // Store the JWT token
+            localStorage.setItem('userId', JSON.stringify(signInResponse.data.user.id)); // Store user data
 
-          if(response.ok) {
-            localStorage.setItem('auth_token', dataUser.token); // Store the JWT token
-            localStorage.setItem('userId', JSON.stringify(dataUser.user.id)); // Store user data
-
-            //redirect logic here
+            // Redirect logic here
             setTimeout(() => {
-              router.push('/feed').then(() => {
-                window.location.reload();
-              });
+              router.push('/feed');
             }, 1000);
           }
-        } catch (error) {
-          console.error('Login Error:', error);
+        } catch (loginError) {
+          console.error('Login Error:', loginError);
           errorMessage.value = 'Login failed. Please try again.';
         }
-
+      } else {
+        errorMessage.value = data.message || 'An error occurred while creating your account. Please try again.';
       }
     } catch (error) {
       console.error('Error:', error);

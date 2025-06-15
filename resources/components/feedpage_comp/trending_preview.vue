@@ -1,16 +1,14 @@
 <template>
-
     <div class=" border-b border-gray-300 py-2 pl-3 mt-3">
         <div class="flex items-center py-1">
             <img class="w-8 h-8 rounded-full object-cover" :src="profile_img" alt="Profile picture">
             <p class="pl-2 text-sm">{{ publisherName }}</p>
         </div>
-
-        <div>
-            <p class="text-xl font-extrabold font-['Poppins'] pb-3">
-                {{title}}
-            </p>
-        </div>
+        <RouterLink :to="`/article/${articleId}`">
+          <p class="text-md font-extrabold font-['Poppins'] pb-3">
+            {{title}}
+          </p>
+        </RouterLink>
 
         <div class="flex justify-between items-center space-x-4 ">
             <div class="text-xs">{{ pub_date }}</div>
@@ -80,6 +78,10 @@
       viewCount: {
         type: String,
         default: '1.2K views',
+      },
+      articleId: {
+        type: Number,
+        required: true,
       },
     },
   };

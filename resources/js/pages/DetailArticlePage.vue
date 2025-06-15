@@ -10,7 +10,7 @@
   import { type Category, type Article, type User } from '@/lib/types';
   import dayjs from 'dayjs';
   import relativeTime from 'dayjs/plugin/relativeTime';
-  import { useUserStore } from '@/stores/features/user';
+  import { useUserStore } from '@/stores/features/users/user';
   import {
     Dialog,
     DialogContent,
@@ -254,7 +254,7 @@
 
         isLiked.value = article.value.likes_count > 0;
 
-        timeAgo = dayjs(article?.value.created_at).fromNow();
+        timeAgo.value = dayjs(article?.value.created_at).fromNow();
 
         try {
           const categoryResponse = await axios.get(`/api/articleCategory/${props.id}`);
