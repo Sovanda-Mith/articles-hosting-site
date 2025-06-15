@@ -9,10 +9,15 @@
     <div class="flex flex-col sm:flex-row gap-4">
       <div class="flex flex-col space-y-4 sm:space-y-6 sm:pr-5 flex-1 min-w-0">
         <!-- title & subtitle  -->
+        <router-link :to="`/article/${articleId}`" class="pb-2">
+          <p class="text-xl py-1 sm:py-2 font-extrabold">{{ title }}</p>
+          <p class="text-sm text-gray-500">{{ subtitle }}</p>
+        </router-link>
+        <!-- </router-link>
         <div class="pb-2">
           <p class="text-xl py-1 sm:py-2 font-extrabold">{{ title }}</p>
           <p class="text-sm text-gray-500">{{ subtitle }}</p>
-        </div>
+        </div> -->
 
         <!-- icons  -->
         <div class="flex justify-between items-start gap-2 text-sm">
@@ -135,6 +140,8 @@
     </div>
   </div>
 </template>
+<style>
+</style>
 
 <script lang="ts">
   export default {
@@ -175,6 +182,10 @@
       viewCount: {
         type: String,
         required: false,
+      },
+      articleId: {
+        type: [String, Number],
+        required: true,
       },
     },
   };

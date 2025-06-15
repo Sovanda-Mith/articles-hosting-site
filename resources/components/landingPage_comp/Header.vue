@@ -12,6 +12,11 @@
   } from 'reka-ui';
   import { ref, onMounted } from 'vue';
   import '../../css/app.css';
+  import { useUserStore } from '@/stores/features/users/user';
+
+  import logo from '../../assets/landingPage_img/logo.webp';
+
+  const userStore = useUserStore();
 
   const isMenuOpen = ref(false);
   const isAuthenticated = ref(false);
@@ -73,6 +78,7 @@
       });
 
       if (response.ok) {
+        userStore.clearUserData();
         localStorage.removeItem('auth_token');
         // alert('Logged out successfully');
         isAuthenticated.value = false;
@@ -92,7 +98,7 @@
     <router-link to="/">
       <div class="logo_container flex justify-center items-center sm:gap-3 md">
         <div class="logo w-[38px] h-[38px] rounded-[8px]">
-          <img src="/landingPage_img/logo.webp" alt="" />
+          <img :src="logo" alt="" />
         </div>
         <h5 class="logo_name">Bloggist</h5>
       </div>
@@ -113,6 +119,17 @@
             <router-link to="/contact" class="navList body-big" active-class="active"
               >Contact</router-link
             >
+          </li>
+          <li>
+            <router-link to="/new-article" class="navList body-big flex items-center space-x-1">
+              <img
+                src="@/assets/settingsPage_img/write.png"
+                alt="Write"
+                title="Write"
+                class="w-[30px] h-[30px]"
+              />
+              <p>Write</p>
+            </router-link>
           </li>
         </ul>
       </nav>

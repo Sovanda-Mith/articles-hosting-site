@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
         //     'pf_image' => 'https://via.placeholder.com/150x150.png?text=User2',
         //     'role_id' => $userRole->role_id,
         // ]);
-        
+
         // Call UserSeeder
         $this->call([
             UserSeeder::class,
@@ -57,7 +57,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
         ]);
-
+        // Call UserSeeder
+        $this->call([
+            UserSeeder::class,
+        ]);
         // Call LikeSeeder
         $this->call([
             LikeSeeder::class,

@@ -27,7 +27,16 @@ class ArticleCategoryController extends Controller
 
         $article->categories()->sync($validated['category_ids']);
 
-        return response()->json(['message' => 'Categories updated successfully', 'redirect' => '/profile'], 200);
+        return response()->json(['message' => 'Categories updated successfully', 'redirect' => "/article/{$validated['article_id']}"], 200);
+    }
+
+    public function show($article)
+    {
+        $article = Article::findOrFail($article);
+
+        $categories = $article->categories;
+
+        return response()->json($categories);
     }
 
 }

@@ -10,7 +10,7 @@
         <router-link to="/" class="w-fit">
           <div class="logo_container flex justify-start items-center sm:gap-3 md">
             <div class="logo w-[38px] h-[38px] rounded-[8px]">
-              <img src="/landingPage_img/logo.webp" alt="" />
+              <img :src="logoImage" alt="" />
             </div>
             <h5 class="logo_name text-white">Bloggist</h5>
           </div>
@@ -19,16 +19,14 @@
         <!-- Heading and text -->
         <h3 class="md:text-3xl">Start writing with us</h3>
         <p class="text-gray-300 max-w-md text-sm md:text-base">
-          Join our platform and bring your ideas to life! Sign in to access your personalized
-          writing space, collaborate with others, and share your creativity. Whether you're crafting
-          stories, articles, or insights, we provide the tools to help you write and publish
-          effortlessly.
+          Welcome back! Sign in to access your writing space, continue your projects, and share
+          your creativity with the world.
         </p>
       </div>
 
       <!-- Image placeholder - You'll replace this with your own image -->
       <div class="w-[380px] h-[380x] flex justify-center lg:justify-start">
-        <img src="/landingPage_img/login.png" alt="" />
+        <img :src="loginImage" alt="" />
       </div>
     </div>
 
@@ -41,7 +39,8 @@
 
       <!-- Social sign in buttons -->
       <div class="space-y-3 md:space-y-4 mb-4 md:mb-6">
-        <button @click="signInwithGoogle"
+        <button
+          @click="signInwithGoogle"
           class="flex items-center gap-2 justify-center w-full py-2 md:py-3 px-4 border border-gray-300 rounded-4xl hover:bg-gray-50 transition-colors"
         >
           <svg
@@ -133,7 +132,11 @@
         <div v-if="errorMessage" class="mb-4 p-4 rounded-lg bg-red-50 border border-red-200">
           <div class="flex items-center">
             <svg class="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              ></path>
             </svg>
             <span class="text-red-700 text-sm font-medium">{{ errorMessage }}</span>
           </div>
@@ -142,7 +145,11 @@
         <div v-if="successMessage" class="mb-4 p-4 rounded-lg bg-green-50 border border-green-200">
           <div class="flex items-center">
             <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              ></path>
             </svg>
             <span class="text-green-700 text-sm font-medium">{{ successMessage }}</span>
           </div>
@@ -480,6 +487,14 @@
   } from '@/components/ui/sheet';
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
+  import axios from 'axios';
+  import { useUserStore } from '@/stores/features/users/user';
+
+  // Import images properly for Vite
+  import logoImage from '../assets/landingPage_img/logo.webp';
+  import loginImage from '../assets/landingPage_img/login.png';
+
+  const userStore = useUserStore();
 
   const router = useRouter();
 
@@ -517,32 +532,36 @@
       };
 
       //make a post request to the backend to login
-      const response = await fetch('/api/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(user),
+      const response = await axios.post('/api/users/login', user);
+
+      const data = response.data;
+
+      userStore.setUserData({
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        avatar: data.user.avatar,
+        username: data.user.username,
+        bio: data.user.bio,
+        gender: data.user.gender,
+        role: data.user.role,
+        token: data.token,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        successMessage.value = "Login successful!";
+      if (response.status === 200) {
+        successMessage.value = 'Login successful!';
         localStorage.setItem('auth_token', data.token); // Store JWT token in localStorage for checking authentication later
         localStorage.setItem('userId', JSON.stringify(data.user.id)); // Store user data
         // console.log("User data:", data.user);
         setTimeout(() => {
           router.push('/feed');
         }, 1500); // 1.5 second delay before redirecting
-
       } else {
-        errorMessage.value = data.message || "Failed to login. Please check your credentials.";
+        errorMessage.value = data.message || 'Failed to login. Please check your credentials.';
       }
     } catch (error) {
       console.error('Error:', error);
       errorMessage.value = 'An error occurred while logging in. Please try again.';
     }
-
   };
 </script>

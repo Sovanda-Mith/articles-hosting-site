@@ -8,10 +8,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\UserController;
-
+use App\Http\Controllers\ForYouController;
+use App\Http\Controllers\BookmarkController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -53,6 +56,7 @@ Route::controller(CategoryController::class)->prefix('category')->group(
 Route::controller(ArticleCategoryController::class)->prefix('articleCategory')->group(
     function () {
         Route::post('/', 'update');
+        Route::get('/{article}', 'show');
     }
 );
 
@@ -79,6 +83,7 @@ Route::apiResource('follows', FollowController::class)
 Route::middleware(['auth:sanctum'])->prefix('follows')->group(function () {
     Route::get('/getFollowers/{userId}', [FollowController::class, 'getFollowers']);
     Route::get('/getFollowing/{userId}', [FollowController::class, 'getFollowing']);
+    Route::post('/checkIfFollowing', [FollowController::class, 'checkIfFollowing']);
 });
 
 // User Routes
@@ -90,3 +95,32 @@ Route::post('users/login', [UserController::class, 'login'])
 Route::post('/auth/logout', [UserController::class, 'logout'])
     ->middleware('auth:sanctum')
     ->name('logout');
+
+// Comment Routes
+Route::middleware(['auth:sanctum'])->prefix('article/{article_id}')->group(function () {
+    Route::get('/comments', [CommentController::class, 'index']);
+    Route::post('/comment', [CommentController::class, 'store']);
+    Route::put('comment/{id}', [CommentController::class, 'update']);
+    Route::delete('comment/{id}', [CommentController::class, 'destroy']);
+});
+
+// Like Routes
+Route::middleware(['auth:sanctum'])->prefix('article/{article_id}')->group(function () {
+    Route::get('/isLiked', [LikeController::class, 'checkIsLiked']);
+    Route::get('/likes', [LikeController::class, 'getArticleLikes']);
+    Route::post('/like', [LikeController::class, 'toggleArticleLike']);
+});
+Route::middleware(['auth:sanctum'])->get('/user/liked-articles', [LikeController::class, 'getUserLikedArticles']);
+
+
+Route::middleware(['auth:sanctum'])->prefix('comment/{comment_id}')->group(function () {
+    Route::get('/likes', [LikeController::class, 'getCommentLikes']);
+    Route::post('/like', [LikeController::class, 'toggleCommentLikes']);
+});
+
+// Bookedmark Routes
+Route::middleware(['auth:sanctum'])->post('/article/{article_id}/bookmark', [BookmarkController::class, 'toggleBookmark']);
+Route::middleware(['auth:sanctum'])->get('/user/bookmarked-articles', [BookmarkController::class, 'getUserBookmarkedArticles']);
+Route::middleware('auth:sanctum')->get('/user/for-you', [ForYouController::class, 'getForYouArticles']);
+
+Route::middleware('auth:sanctum')->get('/foryou', [ForYouController::class, 'getForYouArticles']);

@@ -19,6 +19,10 @@ const routes: RouteRecordRaw[] = [
         path: '/aboutus',
         component: () => import('../js/pages/AboutusPage.vue'),
       },
+      {
+        path: '/contact',
+        component: () => import('../js/pages/ContactPage.vue'),
+      },
     ],
   },
   {
@@ -79,26 +83,34 @@ const routes: RouteRecordRaw[] = [
       title: 'Articles Feed',
     },
     children: [
-        {
-            path: "", 
-            redirect: "/feed/foryou"
-        },
-        {
-            path: "foryou",
-            component: () => import("../js/pages/Foryoupage.vue")
-        },
-        {
-            path: "following",
-            component: () => import("../js/pages/FollowingPage.vue")
-        },
-    ]
+      {
+        path: '',
+        redirect: '/feed/foryou',
+      },
+      {
+        path: 'foryou',
+        component: () => import('../js/pages/Foryoupage.vue'),
+      },
+      {
+        path: 'following',
+        component: () => import('../js/pages/FollowingPage.vue'),
+      },
+    ],
   },
   {
-      path: "/feed/trending",
-      component: () => import("../js/pages/TrendingPage.vue"),
-      meta: {
-          title: "TrendingPage"
-      }
+    path: '/feed/trending',
+    component: () => import('../js/pages/TrendingPage.vue'),
+    meta: {
+      title: 'TrendingPage',
+    },
+  },
+  {
+    path: '/article/:id',
+    component: () => import('../js/pages/DetailArticlePage.vue'),
+    props: true,
+    meta: {
+      title: 'DetailArticle',
+    },
   },
   {
     path: '/profile',
@@ -119,6 +131,14 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../js/pages/article/NewArticle.vue'),
     meta: {
       title: 'New Article',
+    },
+  },
+  {
+    path: '/edit-article/:id',
+    component: () => import('@/pages/EditArticlePage.vue'),
+    name: 'EditArticle',
+    meta: {
+      title: 'Edit Article',
     },
   },
 

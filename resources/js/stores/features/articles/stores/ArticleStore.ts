@@ -3,6 +3,7 @@ import type ArticleInterface from '../types/ArticleInterface';
 // import { ArticleStatus } from '../types/ArticleInterface'
 import { computed, ref } from 'vue';
 import { ArticleApi } from '../api/ArticleApi';
+import { nextTick } from 'vue';
 
 export const useArticleStore = defineStore('article', () => {
   //state
@@ -11,6 +12,10 @@ export const useArticleStore = defineStore('article', () => {
   const currentPage = ref<number>(1);
   const lastPage = ref<number>(1);
   const totalArticles = ref<number>(0);
+  const isLoading = ref(false);
+  const isLoadingMore = ref(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let currentRequest: Promise<any> | null = null;
 
   //getters
   const getAllArticles = computed(() => articles.value);
@@ -22,80 +27,126 @@ export const useArticleStore = defineStore('article', () => {
   });
 
   //actions
-  const fetchArticles = async (page: number = 1) => {
-    const response = await ArticleApi.getArticles(page);
+  const fetchArticles = async (page: number = 1, append: boolean = false) => {
+    // Prevent multiple simultaneous requests
+    if (isLoading.value && page === 1) return;
+    if (isLoadingMore.value && page > 1) return;
 
+    // Set loading states
     if (page === 1) {
-      articles.value = response.articles;
+      isLoading.value = true;
     } else {
-      articles.value = [...articles.value, ...response.articles];
+      isLoadingMore.value = true;
     }
 
-    currentPage.value = response.current_page;
-    lastPage.value = response.last_page;
-    totalArticles.value = response.total;
+    try {
+      // Cancel previous request if it exists
+      if (currentRequest) {
+        // You might want to implement request cancellation here
+      }
 
-    return response;
+      currentRequest = ArticleApi.getArticles(page);
+      const response = await currentRequest;
+
+      console.log('fetchArticles', response, 'page:', page);
+
+      // Use nextTick to ensure DOM updates are processed
+      await nextTick(() => {
+        if (page === 1 && !append) {
+          articles.value = response.articles;
+        } else {
+          // Prevent duplicates by checking IDs
+          const existingIds = new Set(articles.value.map(article => article.id));
+          const newArticles = response.articles.filter(article => !existingIds.has(article.id));
+          articles.value = [...articles.value, ...newArticles];
+        }
+
+        currentPage.value = response.current_page;
+        lastPage.value = response.last_page;
+        totalArticles.value = response.total;
+      });
+
+      return response;
+    } finally {
+      currentRequest = null;
+      isLoading.value = false;
+      isLoadingMore.value = false;
+    }
   };
 
-  const fetchMoreArticles = async (page: number) => {
-    const response = await ArticleApi.getArticles(page);
-
-    articles.value = [...articles.value, ...response.articles];
-
-    currentPage.value = response.current_page;
-    lastPage.value = response.last_page;
-    totalArticles.value = response.total;
-
-    return response;
-  };
-
-  const fetchFollowingArticles = async (user_id: number, page: number = 1) => {
-    const response = await ArticleApi.getFollowingArticles(user_id, page);
+  // Simplified - remove fetchMoreArticles since fetchArticles handles both cases
+  const fetchFollowingArticles = async (user_id: number, page: number = 1, append: boolean = false) => {
+    if (isLoading.value && page === 1) return;
+    if (isLoadingMore.value && page > 1) return;
 
     if (page === 1) {
-      articles.value = response.articles;
+      isLoading.value = true;
     } else {
-      articles.value = [...articles.value, ...response.articles];
+      isLoadingMore.value = true;
     }
 
-    currentPage.value = response.current_page;
-    lastPage.value = response.last_page;
-    totalArticles.value = response.total;
+    try {
+      const response = await ArticleApi.getFollowingArticles(user_id, page);
 
-    return response;
+      await nextTick(() => {
+        if (page === 1 && !append) {
+          articles.value = response.articles;
+        } else {
+          const existingIds = new Set(articles.value.map(article => article.id));
+          const newArticles = response.articles.filter(article => !existingIds.has(article.id));
+          articles.value = [...articles.value, ...newArticles];
+        }
+
+        currentPage.value = response.current_page;
+        lastPage.value = response.last_page;
+        totalArticles.value = response.total;
+      });
+
+      return response;
+    } finally {
+      isLoading.value = false;
+      isLoadingMore.value = false;
+    }
   };
-  const fetchMoreFollowingArticles = async (user_id: number, page: number) => {
-    const response = await ArticleApi.getFollowingArticles(user_id, page);
 
-    articles.value = [...articles.value, ...response.articles];
+  const fetchTrendingArticles = async (page: number = 1, append: boolean = false) => {
+    if (isLoading.value && page === 1) return;
+    if (isLoadingMore.value && page > 1) return;
 
-    currentPage.value = response.current_page;
-    lastPage.value = response.last_page;
-    totalArticles.value = response.total;
+    if (page === 1) {
+      isLoading.value = true;
+    } else {
+      isLoadingMore.value = true;
+    }
 
-    return response;
+    try {
+      const response = await ArticleApi.getTrendingArticles(page);
+
+      console.log('fetchTrendingArticles', response, 'page:', page);
+
+      await nextTick(() => {
+        if (page === 1 && !append) {
+          articles.value = response.articles;
+        } else {
+          const existingIds = new Set(articles.value.map(article => article.id));
+          const newArticles = response.articles.filter(article => !existingIds.has(article.id));
+          articles.value = [...articles.value, ...newArticles];
+        }
+
+        currentPage.value = response.current_page;
+        lastPage.value = response.last_page;
+        totalArticles.value = response.total;
+      });
+
+      return response;
+    } finally {
+      isLoading.value = false;
+      isLoadingMore.value = false;
+    }
   };
-
   const fetchArticleById = async (id: number) => {
     const response = await ArticleApi.getArticleById(id);
     currArticle.value = response;
-    return response;
-  };
-
-  const fetchTrendingArticles = async (page: number = 1) => {
-    const response = await ArticleApi.getTrendingArticles(page);
-
-    if (page === 1) {
-      articles.value = response.articles;
-    } else {
-      articles.value = [...articles.value, ...response.articles];
-    }
-
-    currentPage.value = response.current_page;
-    lastPage.value = response.last_page;
-    totalArticles.value = response.total;
-
     return response;
   };
 
@@ -125,10 +176,10 @@ export const useArticleStore = defineStore('article', () => {
     getFollowingArticles,
     hasMoreArticles,
     fetchArticles,
-    fetchMoreArticles,
+    // fetchMoreArticles,
     resetArticles,
     fetchFollowingArticles,
-    fetchMoreFollowingArticles,
+    // fetchMoreFollowingArticles,
     fetchTrendingArticles,
     fetchArticleById,
     formatDate,

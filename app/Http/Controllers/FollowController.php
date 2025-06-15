@@ -96,12 +96,35 @@ class FollowController extends Controller
         return response()->json(null, 204);
     }
 
+    public function checkIfFollowing(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+          'following_id' => 'required|exists:users,id',
+        ]);
+
+        $follower_id = auth()->id();
+
+        $follow = Follow::where('follower_id', $follower_id)
+            ->where('following_id', $validated['following_id'])
+            ->first();
+
+        if ($follow) {
+            return response()->json(['following' => true, 'follow_id' => $follow->following_id]);
+        } else {
+            return response()->json(['following' => false, 'follow_id' => null]);
+        }
+    }
+
     // get number of followers and following for a user
     public function getFollowers(string $userId): JsonResponse
     {
         $followers = Follow::where('following_id', $userId)
             ->with('follower')
             ->paginate(10);
+
+        if (!$followers) {
+            return response()->json(['message' => 'No followers found'], 404);
+        }
 
         return response()->json(FollowResource::collection($followers));
     }

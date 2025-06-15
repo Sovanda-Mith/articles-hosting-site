@@ -8,7 +8,9 @@
           <img src="@/assets/settingsPage_img/logo.webp" alt="logo" />
         </div>
         <h5 class="logo_name">Bloggist</h5>
-        <div class="text-[18px]">Draft in {{ user.name }}</div>
+        <div class="text-[18px]">
+          Draft in <b>{{ user.name }}</b>
+        </div>
       </div>
     </router-link>
 
@@ -28,10 +30,7 @@
             class="w-[30px] h-[30px]"
           />
         </router-link>
-        <Router-link
-          to="/profile"
-          class=" border-1 border-gray-300 rounded-lg py-1 px-2"
-        >
+        <Router-link to="/profile" class="border-1 border-gray-300 rounded-lg py-1 px-2">
           <span class="text-gray-800 font-bold">{{ user.name }}</span>
         </Router-link>
         <router-link to="/profile">
@@ -108,7 +107,8 @@
 
   // const user = ref('Mith Sovanda');
   const user = ref({
-    name: '', pfp: '',
+    name: '',
+    pfp: '',
   });
 
   onMounted(async () => {
@@ -130,7 +130,6 @@
       console.error('Error fetching user data:', error);
     }
   };
-
 </script>
 
 <style scoped>
