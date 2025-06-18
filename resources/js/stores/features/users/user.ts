@@ -13,6 +13,7 @@ export const useUserStore = defineStore('user', {
       gender: '',
       role: '',
       token: '',
+      link:  '' ,
     } as User,
   }),
   actions: {
@@ -30,6 +31,7 @@ export const useUserStore = defineStore('user', {
         gender: '',
         role: '',
         token: '',
+        link: '' ,
       };
     },
   },
