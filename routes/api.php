@@ -15,6 +15,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ForYouController;
 use App\Http\Controllers\BookmarkController;
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -33,10 +34,15 @@ Route::get('articles/trending', [ArticleController::class, 'getTrending']);
 Route::get('articles/{article}', [ArticleController::class, 'show']);
 
 // Settings Routes
-Route::controller(SettingController::class)->prefix('settings')->group(
+Route::middleware('auth:sanctum')->controller(SettingController::class)->prefix('settings')->group(
     function () {
         Route::get('/blockedUser', 'blockedUsers');
+        Route::post('/blockedUser', 'blockUser');
+        Route::delete('/unblockUser/{blockedUserId}', 'unblockUser');
         Route::get('/mutedUser', 'mutedUsers');
+        Route::post('/mutedUser', 'muteUser');
+        Route::delete('/unmuteUser/{mutedUserId}', 'unmuteUser');
+        Route::get('/notification', 'getNotificationSettings');
         Route::post('/notification', 'updateNotificationSettings');
         Route::get('/download', 'downloadUserData');
     }
