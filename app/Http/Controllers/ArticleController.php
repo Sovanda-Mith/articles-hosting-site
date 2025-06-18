@@ -24,6 +24,7 @@ class ArticleController extends Controller
         $limit = $request->get('limit', 10);
 
         $articles = Article::with(['likes', 'comments'])
+            ->orderBy('article_id', 'asc')
             ->paginate($limit, ['*'], 'page', $page);
 
         return response()->json([
@@ -54,6 +55,7 @@ class ArticleController extends Controller
         // Get articles from all followed users with pagination
         $articles = Article::with(['likes', 'comments', 'user'])
             ->whereIn('user_id', $followingIds)
+            ->orderBy('created_at', 'desc')
             ->paginate($limit, ['*'], 'page', $page);
 
         return response()->json([

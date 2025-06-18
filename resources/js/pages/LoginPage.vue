@@ -488,7 +488,7 @@
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   import axios from 'axios';
-  import { useUserStore } from '@/stores/features/user';
+  import { useUserStore } from '@/stores/features/users/user';
 
   // Import images properly for Vite
   import logoImage from '../assets/landingPage_img/logo.webp';

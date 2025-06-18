@@ -10,6 +10,18 @@ use function GuzzleHttp\json_encode;
 
 class SettingController extends Controller
 {
+    public function getNotificationSettings()
+    {
+        if (!auth()->user()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = auth()->user();
+
+        return $user->settings()->first();
+    }
+
+
     public function blockedUsers()
     {
         if (!auth()->user()) {
@@ -18,12 +30,67 @@ class SettingController extends Controller
         return auth()->user()->blockedUsers()->get();
     }
 
+    public function blockUser(Request $request)
+    {
+        if (!auth()->user()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = auth()->user();
+
+        $validated = $request->validate([
+            'blocked_user_id' => 'required|exists:users,id',
+        ]);
+
+        $user->blockedUsers()->attach($validated['blocked_user_id']);
+        return response()->json(['message' => 'User blocked successfully']);
+    }
+
+    public function unblockUser(String $blockedUserId)
+    {
+        if (!auth()->user()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $user = auth()->user();
+
+        $user->blockedUsers()->detach($blockedUserId);
+        return response()->json(['message' => 'User unblocked successfully']);
+    }
+
     public function mutedUsers()
     {
         if (!auth()->user()) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         return auth()->user()->mutedUsers()->get();
+    }
+
+    public function muteUser(Request $request)
+    {
+        if (!auth()->user()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = auth()->user();
+
+        $validated = $request->validate([
+            'muted_user_id' => 'required|exists:users,id',
+        ]);
+
+        $user->mutedUsers()->attach($validated['muted_user_id']);
+        return response()->json(['message' => 'User muted successfully']);
+    }
+
+    public function unmuteUser(String $mutedUserId)
+    {
+        if (!auth()->user()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = auth()->user();
+
+        $user->mutedUsers()->detach($mutedUserId);
+        return response()->json(['message' => 'User unmuted successfully']);
     }
 
     public function updateNotificationSettings(Request $request)

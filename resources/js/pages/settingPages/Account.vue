@@ -61,6 +61,7 @@
               <textarea
                 type="text"
                 maxlength="150"
+                placeholder="Describe yourself, your ambition, and inspiration"
                 class="bg-[#f2f2f2] rounded-md pl-[20px] mt-[10px] p-[10px] h-[250px]"
                 v-model="bio"
               />
@@ -81,14 +82,14 @@
 
     <div class="flex flex-col">
       <Dialog>
-        <DialogTrigger>
+        <DialogTrigger @click="fetchMutedWriters">
           <span class="font-medium h-[50px] cursor-pointer flex items-center normal-case">
             Muted Authors
           </span>
         </DialogTrigger>
         <DialogContent class="max-h-[500px] overflow-y-auto rounded-lg p-[30px] space-y-6">
           <DialogHeader>
-            <span class="text-center font-semibold text-3xl"> Muted Writers </span>
+            <span class="text-center font-semibold text-3xl"> Muted Authors </span>
           </DialogHeader>
           <div class="flex flex-col space-y-[20px]">
             <span class="text-gray-500 text-sm"
@@ -106,7 +107,8 @@
                   {{ writer.name }}
                 </span>
                 <button
-                  class="text-red-600 hover:text-red-800 font-medium transition-colors duration-200 normal-case justify-self-start"
+                  @click="unmuteWriter(writer.id)"
+                  class="text-red-600 hover:text-red-800 font-medium transition-colors duration-200 normal-case justify-self-start cursor-pointer"
                 >
                   Unmute
                 </button>
@@ -119,7 +121,7 @@
         </DialogContent>
       </Dialog>
       <Dialog>
-        <DialogTrigger>
+        <DialogTrigger @click="fetchBlockedUsers">
           <span class="font-medium h-[50px] cursor-pointer flex items-center normal-case">
             Blocked Users
           </span>
@@ -143,7 +145,8 @@
                   {{ user.name }}
                 </span>
                 <button
-                  class="text-red-600 hover:text-red-800 font-medium transition-colors duration-200 normal-case justify-self-start"
+                  @click="unblockUser(user.id)"
+                  class="text-red-600 hover:text-red-800 font-medium transition-colors duration-200 normal-case justify-self-start cursor-pointer"
                 >
                   Unblock
                 </button>
@@ -201,20 +204,73 @@
     DialogTrigger,
   } from '@/components/ui/dialog';
   import { ref } from 'vue';
+  import { useUserStore } from '@/stores/features/users/user';
+  import axios from 'axios';
 
-  const name = ref<string>('John Doe');
-  const email = ref<string>('john.die@gmail.com');
-  const bio = ref<string>('');
+  const userStore = useUserStore();
 
-  const mutedWriters = ref([
-    { id: 1, name: 'John Doe' },
-    { id: 2, name: 'Mary Doe' },
-    { id: 3, name: 'Jane Doe' },
-  ]);
+  const name = ref<string>(userStore.user?.name || '');
+  const email = ref<string>(userStore.user?.email || '');
+  const bio = ref<string>(userStore.user?.bio || '');
 
-  const blockedUsers = ref([
-    { id: 1, name: 'Tom Smith' },
-    { id: 2, name: 'Scott Smith' },
-    { id: 3, name: 'John Smith' },
-  ]);
+  const mutedWriters = ref([]);
+  const blockedUsers = ref([]);
+
+  const fetchMutedWriters = async () => {
+    try {
+      const response = await axios.get('/api/settings/mutedUser', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+      });
+
+      if (response.status === 200) {
+        mutedWriters.value = response.data;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const unmuteWriter = async (id: number) => {
+    try {
+      await axios.delete(`/api/settings/unmuteUser/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+      });
+      fetchMutedWriters();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchBlockedUsers = async () => {
+    try {
+      const response = await axios.get('/api/settings/blockedUser', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+      });
+
+      if (response.status === 200) {
+        blockedUsers.value = response.data;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const unblockUser = async (id: number) => {
+    try {
+      await axios.delete(`/api/settings/unblockUser/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+      });
+      fetchBlockedUsers();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 </script>

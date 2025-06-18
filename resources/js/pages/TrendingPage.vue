@@ -37,6 +37,7 @@
                     :commentNum="article.comments_count?.toString() || '0'"
                     :preview_img="article.image || '/feedpage_img/img1.jpg'"
                     :viewCount="article.view_count?.toString() || '0'"
+                    :articleId="article.id"
                 />
             </div>
         </div>

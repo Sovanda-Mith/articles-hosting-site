@@ -106,7 +106,7 @@ class User extends Authenticatable
      */
     public function settings()
     {
-        return $this->hasOne(UserSettings::class);
+        return $this->hasOne(UserSetting::class);
     }
 
     /**
@@ -152,5 +152,17 @@ class User extends Authenticatable
     public function following(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id');
+    }
+
+    /**
+     * Relationships to bookmark
+    */
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+    public function bookmarkedArticles(): BelongsToMany
+    {
+        return $this->belongsToMany(Article::class, 'article_bookmarks', 'user_id', 'article_id');
     }
 }

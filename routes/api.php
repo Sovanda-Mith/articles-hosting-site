@@ -13,6 +13,8 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ForYouController;
+use App\Http\Controllers\BookmarkController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -32,10 +34,15 @@ Route::get('articles/trending', [ArticleController::class, 'getTrending']);
 Route::get('articles/{article}', [ArticleController::class, 'show']);
 
 // Settings Routes
-Route::controller(SettingController::class)->prefix('settings')->group(
+Route::middleware('auth:sanctum')->controller(SettingController::class)->prefix('settings')->group(
     function () {
         Route::get('/blockedUser', 'blockedUsers');
+        Route::post('/blockedUser', 'blockUser');
+        Route::delete('/unblockUser/{blockedUserId}', 'unblockUser');
         Route::get('/mutedUser', 'mutedUsers');
+        Route::post('/mutedUser', 'muteUser');
+        Route::delete('/unmuteUser/{mutedUserId}', 'unmuteUser');
+        Route::get('/notification', 'getNotificationSettings');
         Route::post('/notification', 'updateNotificationSettings');
         Route::get('/download', 'downloadUserData');
     }
@@ -109,8 +116,17 @@ Route::middleware(['auth:sanctum'])->prefix('article/{article_id}')->group(funct
     Route::get('/likes', [LikeController::class, 'getArticleLikes']);
     Route::post('/like', [LikeController::class, 'toggleArticleLike']);
 });
+Route::middleware(['auth:sanctum'])->get('/user/liked-articles', [LikeController::class, 'getUserLikedArticles']);
+
 
 Route::middleware(['auth:sanctum'])->prefix('comment/{comment_id}')->group(function () {
     Route::get('/likes', [LikeController::class, 'getCommentLikes']);
     Route::post('/like', [LikeController::class, 'toggleCommentLikes']);
 });
+
+// Bookedmark Routes
+Route::middleware(['auth:sanctum'])->post('/article/{article_id}/bookmark', [BookmarkController::class, 'toggleBookmark']);
+Route::middleware(['auth:sanctum'])->get('/user/bookmarked-articles', [BookmarkController::class, 'getUserBookmarkedArticles']);
+Route::middleware('auth:sanctum')->get('/user/for-you', [ForYouController::class, 'getForYouArticles']);
+
+Route::middleware('auth:sanctum')->get('/foryou', [ForYouController::class, 'getForYouArticles']);
