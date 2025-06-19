@@ -78,7 +78,7 @@ import profileImg from '../../../public/landingPage_img/profile.png'
 import { useFollowingStore } from '@/stores/followingList/following'
 import { useFollowersStore } from '@/stores/followerList/follower'
 import FollowingList from '../../components/profileComponents/FollowingList.vue'
-import { useUserStore } from '@/stores/features/user'
+import { useUserStore } from '@/stores/features/users/user'
 import { Button } from '../../js/components/ui/button'
 
 const userStore = useUserStore()

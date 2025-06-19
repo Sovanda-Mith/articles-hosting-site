@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useUserStore } from '@/stores/features/user'
+import { useUserStore } from '@/stores/features/users/user'
 const userStore = useUserStore()
 
 const showMenu = ref(false)
