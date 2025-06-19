@@ -21,6 +21,38 @@ class SettingController extends Controller
         return $user->settings()->first();
     }
 
+    public function updateProfileInformation(Request $request)
+    {
+        if (!auth()->user()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = auth()->user();
+
+        $validated = $request->validate([
+          'name' => 'nullable|string|max:255',
+          'bio' => 'nullable|string|max:255',
+          'pf_image' => 'nullable|string',
+        ]);
+
+        $user->update($validated);
+
+        return response()->json(['message' => 'Profile information updated successfully']);
+    }
+
+    public function deleteAccount()
+    {
+        if (!auth()->user()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $user = auth()->user();
+
+        $user->delete();
+
+        return response()->json(['message' => 'Account deleted successfully']);
+    }
+
 
     public function blockedUsers()
     {
