@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import profileImg from '../../../public/landingPage_img/profile.png'
-import { useUserStore } from '../../js/stores/features/user'
+import { useUserStore } from '../../js/stores/features/users/user'
 import { useListStore } from '../../js/stores/storyList/listStore'
 
 const userStore = useUserStore()

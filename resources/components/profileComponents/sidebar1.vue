@@ -134,8 +134,8 @@ import { useFollowingStore } from '@/stores/followingList/following'
 import { useFollowersStore } from '@/stores/followerList/follower'
 import { useListStore } from '../../js/stores/storyList/listStore'
 import FollowingList from './FollowingList.vue'
-import { useUserStore } from '@/stores/features/user'
-import { Button } from '@/components/ui/button';
+import { useUserStore } from '@/stores/features/users/user'
+import { Button } from '@/components/ui/button'
 
 
 const userStore = useUserStore()
