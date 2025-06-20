@@ -7,12 +7,13 @@
       </p>
     </header>
     <div class="space-y-3 text-base text-gray-700">
-      <p>
+      <!-- <p>
         I am a history PhD, independent philosophy scholar, and essayist. My passion is making complex ideas accessible and useful.
       </p>
       <p>
         With experience in marketing strategy and a busy family life, I bring a unique perspective to every topic I explore.
-      </p>
+      </p> -->
+      {{ aboutMe }}
     </div>
     <footer class="flex flex-col sm:flex-row gap-4 pt-4 border-t justify-between items-start sm:items-center">
       <div class="flex items-center gap-2">
@@ -39,9 +40,17 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import type { User } from '../../lib/types/user';
+import { useUserStore } from '@/stores/features/users/user';
+import { computed } from 'vue';
 defineOptions({
   name: 'ViewerProfileAbout'
 });
+
+const userStore = useUserStore();
+const user = computed(() => userStore.user as User | null);
+
+const aboutMe = computed(() => user.value?.bio || 'No bio available.')
 </script>

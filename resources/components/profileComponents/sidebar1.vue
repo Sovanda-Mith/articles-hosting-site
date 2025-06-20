@@ -130,9 +130,9 @@
 defineOptions({ name: 'ProfileSidebar' })
 import { ref, computed } from 'vue'
 import profileImg from '../../../public/landingPage_img/profile.png'
-import { useFollowingStore } from '@/stores/followingList/following'
-import { useFollowersStore } from '@/stores/followerList/follower'
-import { useListStore } from '../../js/stores/storyList/listStore'
+import { useFollowingStore } from '@/stores/features/followingList/following'
+import { useFollowersStore } from '@/stores/features/followerList/follower'
+import { useListStore } from '../../js/stores/features/storyList/listStore'
 import FollowingList from './FollowingList.vue'
 import { useUserStore } from '@/stores/features/users/user'
 import { Button } from '@/components/ui/button'

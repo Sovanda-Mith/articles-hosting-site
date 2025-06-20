@@ -45,6 +45,8 @@ Route::middleware('auth:sanctum')->controller(SettingController::class)->prefix(
         Route::get('/notification', 'getNotificationSettings');
         Route::post('/notification', 'updateNotificationSettings');
         Route::get('/download', 'downloadUserData');
+        Route::put('/updateProfile', 'updateProfileInformation');
+        Route::delete('/deleteAccount', 'deleteAccount');
     }
 );
 
@@ -70,6 +72,7 @@ Route::controller(ArticleCategoryController::class)->prefix('articleCategory')->
 Route::controller(UploadController::class)->prefix('upload')->group(
     function () {
         Route::post('/cover', 'uploadCover');
+        Route::post('/avatar', 'uploadProfileImage');
     }
 );
 
