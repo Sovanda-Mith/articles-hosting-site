@@ -1,6 +1,5 @@
-<<<<<<< HEAD
 <script setup lang="ts">
-  import { ref, onMounted, watch } from 'vue';
+  import { ref, onMounted, onUnmounted, watch } from 'vue';
   import { Editor, EditorContent } from '@tiptap/vue-3';
   import StarterKit from '@tiptap/starter-kit';
   import Link from '@tiptap/extension-link';
@@ -30,16 +29,22 @@
     });
   });
 
+  onUnmounted(() => {
+    editor.value?.destroy();
+  });
+
   watch(
     () => props.content,
     (newContent) => {
-      editor.value?.commands.setContent(newContent);
+      if (editor.value && newContent !== editor.value.getHTML()) {
+        editor.value.commands.setContent(newContent);
+      }
     }
   );
 </script>
 
 <template>
   <div>
-    <EditorContent v-if="editor" :editor="editor" />
+    <EditorContent v-if="editor" :editor="editor as any" />
   </div>
 </template>

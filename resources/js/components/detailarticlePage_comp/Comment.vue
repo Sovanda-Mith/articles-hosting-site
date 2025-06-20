@@ -1,5 +1,6 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-  import { useUserStore } from '@/stores/features/user';
+  import { useUserStore } from '@/stores/features/users/user';
   import { computed } from 'vue';
   import {
     DropdownMenuRoot,

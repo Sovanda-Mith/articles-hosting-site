@@ -15,7 +15,7 @@ export const useCardStore = defineStore('cardStore', {
           date: 'Mar 12',
           likes: 234,
           comments: 43,
-          image: '/medium.png',
+          image: '/feedpage_img/img1.jpg',
         },
         {
           id: 2,
@@ -24,7 +24,7 @@ export const useCardStore = defineStore('cardStore', {
           date: 'Jan 12',
           likes: 628,
           comments: 280,
-          image: '/medium.png',
+          image: '/feedpage_img/img1.jpg',
         },
         {
           id: 3,
@@ -33,7 +33,7 @@ export const useCardStore = defineStore('cardStore', {
           date: '',
           likes: 0,
           comments: 0,
-          image: '/medium.png',
+          image: '/feedpage_img/img1.jpg',
         },
         {
           id: 4,
@@ -42,7 +42,7 @@ export const useCardStore = defineStore('cardStore', {
           date: 'Jan 12',
           likes: 428,
           comments: 280,
-          image: '/medium.png',
+          image: '/feedpage_img/img1.jpg',
         },
         {
           id: 5,
@@ -51,7 +51,25 @@ export const useCardStore = defineStore('cardStore', {
           date: 'Jan 12',
           likes: 628,
           comments: 280,
-          image: '/photo.png',
+          image: '/feedpage_img/img1.jpg',
+        },
+        {
+          id: 6,
+          title: 'The Art of Photography',
+          description: 'A collection of fine art photography.',
+          date: 'Jan 12',
+          likes: 628,
+          comments: 280,
+          image: '/feedpage_img/img1.jpg',
+        },
+        {
+          id: 7,
+          title: 'The Art of Photography',
+          description: 'A collection of fine art photography.',
+          date: 'Jan 12',
+          likes: 628,
+          comments: 280,
+          image: '/feedpage_img/img1.jpg',
         },
 
       ]
