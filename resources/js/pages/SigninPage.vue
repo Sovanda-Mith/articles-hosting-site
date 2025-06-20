@@ -428,12 +428,21 @@
           if(response.ok) {
             localStorage.setItem('auth_token', dataUser.token); // Store the JWT token
             localStorage.setItem('userId', JSON.stringify(dataUser.user.id)); // Store user data
+            localStorage.setItem('role', JSON.stringify(dataUser.user.role)); // Store user data
+
 
             //redirect logic here
             setTimeout(() => {
-              router.push('/feed').then(() => {
-                window.location.reload();
-              });
+                if(dataUser.user.role === "admin"){
+                    router.push('/admin').then(() => {
+                    window.location.reload();
+                });
+              }else{
+                router.push('/feed').then(() => {
+                    window.location.reload();
+                });
+              }
+              
             }, 1000);
           }
         } catch (error) {

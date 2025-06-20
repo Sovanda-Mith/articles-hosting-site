@@ -12,7 +12,7 @@
   } from 'reka-ui';
   import { ref, onMounted } from 'vue';
   import '../../css/app.css';
-  import { useUserStore } from '@/stores/features/user';
+  import { useUserStore } from '@/stores/features/custom-persistedstate';
 
   import logo from '../../assets/landingPage_img/logo.webp';
 
@@ -443,7 +443,7 @@
 
   /* Modern button styles */
   button {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(2, 2, 2, 0.1);
     transition: all 0.2s ease;
     font-weight: 600;
     border: none;

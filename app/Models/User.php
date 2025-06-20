@@ -28,11 +28,18 @@ class User extends Authenticatable
         'password',
         'google_id',
         'username',
+        'occupation',
         'bio',
         'pf_image',
         'gender',
         'is_admin',
+        'is_allowed',
         'role_id',
+        'address_line',
+        'city',
+        'country',
+        'phone_number',
+        'dob',
     ];
 
 

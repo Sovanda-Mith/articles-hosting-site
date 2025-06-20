@@ -28,6 +28,7 @@ class ArticleController extends Controller
 
         return response()->json([
             'data' => ArticleResource::collection($articles),
+            
             'meta' => [
                 'current_page' => $articles->currentPage(),
                 'last_page' => $articles->lastPage(),

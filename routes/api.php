@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\admin\ArticleAdminController;
+use App\Http\Controllers\admin\UserAdminController;
+use App\Http\Controllers\admin\AccountAdminController;
 use App\Http\Controllers\ArticleCategoryController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Http\Request;
@@ -113,4 +118,29 @@ Route::middleware(['auth:sanctum'])->prefix('article/{article_id}')->group(funct
 Route::middleware(['auth:sanctum'])->prefix('comment/{comment_id}')->group(function () {
     Route::get('/likes', [LikeController::class, 'getCommentLikes']);
     Route::post('/like', [LikeController::class, 'toggleCommentLikes']);
+});
+
+// Admin routes
+Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
+    //Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'statistic']);
+
+    //Report
+    Route::get('/report', [ReportController::class, 'find']);
+    Route::delete('/report', [ReportController::class, 'deleteMany']);
+    Route::post('/report/{id}', [ReportController::class, 'update']);
+    Route::post('/report', [ReportController::class, 'store']);
+
+    //User
+    Route::get('/user', [UserAdminController::class, 'index']);
+    Route::delete('/user/{id}', [UserAdminController::class, 'delete']);
+    Route::post('/user/{id}', [UserAdminController::class, 'update']);
+    Route::post('/user', [UserAdminController::class, 'store']);
+
+    // Article
+    Route::get('/article', [ArticleAdminController::class, 'index']);
+
+    // Account
+    Route::get('/profile', [AccountAdminController::class, 'profile']);
+    Route::post('/profile', [AccountAdminController::class, 'update']);
 });

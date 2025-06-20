@@ -14,8 +14,8 @@ class ArticleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create 20 random articles from random users
-        Article::factory()->count(40)->create();
+        // Create 80 random articles from random users
+        Article::factory()->count(80)->create();
 
     }
 }
