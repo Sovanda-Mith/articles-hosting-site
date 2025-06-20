@@ -55,6 +55,13 @@ class UserController extends Controller
 
             $user = $this->createNewUser($validated);
 
+            $user->settings()->create([
+              'user_id' => $user->id,
+              'notify_on_article' => true,
+              'notify_on_follow' => true,
+              'new_feature' => false
+            ]);
+
             return response()->json([
                 'message' => 'User created successfully',
                 'user' => new UserResource($user)

@@ -106,7 +106,7 @@ class User extends Authenticatable
      */
     public function settings()
     {
-        return $this->hasOne(UserSettings::class);
+        return $this->hasOne(UserSetting::class);
     }
 
     /**

@@ -1,59 +1,68 @@
 <template>
   <aside class="p-6 bg-card text-card-foreground rounded-lg shadow-md max-w-sm">
-    <!-- Avatar and Name -->
     <div class="text-center">
       <img
         :src="avatarUrl"
         alt="Profile picture"
         class="mx-auto w-24 h-24 rounded-full border-2 border-border mb-2"
       />
-      <p class="text-h7">{{ UsernameStore.username }}</p>
+      <p class="text-h5">{{ displayName }}</p>
 
-      <!-- Follower Stats -->
       <div class="body-1 mt-1 flex justify-center gap-8 text-muted-foreground select-none">
-        <span><strong>{{ followersStore.followerCount }}</strong> Followers</span>
-        <span><strong>{{ followingStore.followingCount }}</strong> Following</span>
+        <span><strong>{{ followerCount }}</strong> Followers</span>
+        <span><strong>{{ followingCount }}</strong> Following</span>
       </div>
 
-      <!-- Settings Button -->
-      <button
-        @click="$emit('open-settings')"
-        class="mt-4 px-6 py-2 rounded-full text-sm font-bold uppercase transition bg-primary text-primary-foreground hover:bg-primary/80"
-      >
+      <Button @click="$emit('settings')" class="mt-4 px-6 py-2">
         Settings
-      </button>
+      </Button>
     </div>
 
-    <!-- Bio + Link + Following List -->
     <div class="mt-6 border-t border-border pt-4 body-1 text-foreground">
-      <!-- Bio -->
-      <p class="mb-4">{{ bio }}</p>
+      <p class="text-h7 mb-3 text-card-foreground">About Me</p>
 
-      <!-- External Link -->
-      <p class="mb-4">
-        Writes <span class="font-semibold">The Sophist</span>:
+      <p class="mb-6 leading-relaxed text-base text-muted-foreground">
+        {{ aboutMe }}
+      </p>
+
+      <p
+        v-if="userLink"
+        class="mb-4 flex items-center gap-2 text-primary hover:text-primary-foreground transition cursor-pointer"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 shrink-0"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.828 10.172a4 4 0 010 5.656l-3.536 3.536a4 4 0 01-5.656-5.656l1.414-1.414m6.364-2.828a4 4 0 015.656 5.656l-1.414 1.414m-4.242-4.242L9.172 9.172"
+          />
+        </svg>
         <a
-          :href="link"
-          class="text-primary underline hover:text-primary-foreground transition"
+          :href="userLink"
           target="_blank"
           rel="noopener noreferrer"
+          class="underline font-semibold"
         >
-          {{ linkText }}
+          {{ userLink }}
         </a>
       </p>
 
-      <!-- Following List Section -->
       <section class="mt-6">
         <p class="font-semibold text-card-foreground mb-3">Following</p>
         <div class="max-h-[480px] overflow-y-auto border border-border rounded-md p-2 scrollbar-hide">
-          <FollowingList :max="showAllFollowing ? undefined : 5" />
+          <FollowingList :max="showAllFollowing ? undefined : 5" :following="followingList" />
         </div>
 
-        <!-- Show More/Less Button -->
         <button
           v-if="actualFollowingCount > 5"
-          @click="showAllFollowing = !showAllFollowing"
-          class="mt-2 text-xs underline cursor-pointer text-primary hover:text-primary-foreground transition"
+          @click="toggleShowAllFollowing"
+          class="mt-2 text-xs underline text-primary hover:text-primary-foreground transition"
         >
           {{ showAllFollowing ? 'See less...' : 'See more...' }}
         </button>
@@ -62,37 +71,36 @@
   </aside>
 </template>
 
-
 <script setup lang="ts">
 defineOptions({ name: 'ProfileSidebar' })
 import { ref, computed } from 'vue'
 import profileImg from '../../../public/landingPage_img/profile.png'
 import { useFollowingStore } from '@/stores/followingList/following'
 import { useFollowersStore } from '@/stores/followerList/follower'
-import FollowingList from './FollowingList.vue'
-import { useUsernameStore } from '../../js/stores/username/userName'
+import FollowingList from '../../components/profileComponents/FollowingList.vue'
+import { useUserStore } from '@/stores/features/users/user'
+import { Button } from '../../js/components/ui/button'
 
-interface Props {
-  name: string
-  avatarUrl: string
-  following: number
-  followerCount: string
-  bio: string
-  link: string
-  linkText: string
-}
+const userStore = useUserStore()
+const user = computed(() => userStore.user || {})
 
-const props = defineProps<Props>()
+const avatarUrl = computed(() => user.value.avatar || profileImg)
+const displayName = computed(() => user.value.name || user.value.username || 'Anonymous')
+const aboutMe = computed(() => user.value.bio || 'No bio available.')
+const userLink = computed(() => user.value.link || '')
 
-const avatarUrl = computed(() => props.avatarUrl || profileImg)
 const showAllFollowing = ref(false)
+function toggleShowAllFollowing() {
+  showAllFollowing.value = !showAllFollowing.value
+}
 
 const followersStore = useFollowersStore()
 const followingStore = useFollowingStore()
 
+const followerCount = computed(() => followersStore.followerCount)
+const followingCount = computed(() => followingStore.followingCount)
 const actualFollowingCount = computed(() => followingStore.following.length)
-
-const UsernameStore = useUsernameStore()
+const followingList = computed(() => followingStore.following)
 </script>
 
 <style scoped>
