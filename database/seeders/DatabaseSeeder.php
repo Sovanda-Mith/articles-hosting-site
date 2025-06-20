@@ -19,20 +19,20 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Get the user role ID
-        // $userRole = \App\Models\Role::where('name', 'user')->first();
+        $userRole = \App\Models\Role::where('name', 'user')->first();
         $adminRole = \App\Models\Role::where('name', 'admin')->first();
 
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'username' => 'usernameAdmin',
-            'bio' => 'This is a test bio for admin.',
-            'gender' => 'male',
-            'pf_image' => 'https://via.placeholder.com/150x150.png?text=UserAdmin',
-            'role_id' => $adminRole->role_id,
-        ]);
+        // User::factory()->create([
+        //     'name' => 'Admin',
+        //     'email' => 'admin@example.com',
+        //     'username' => 'admin',
+        //     'bio' => 'This is a test bio for admin.',
+        //     'gender' => 'male',
+        //     'pf_image' => 'https://via.placeholder.com/150x150.png?text=UserAdmin',
+        //     'role_id' => $adminRole->role_id,
+        // ]);
 
         // User::factory()->create([
         //     'name' => 'Test User 2',
@@ -43,6 +43,26 @@ class DatabaseSeeder extends Seeder
         //     'pf_image' => 'https://via.placeholder.com/150x150.png?text=User2',
         //     'role_id' => $userRole->role_id,
         // ]);
+        collect([
+            [
+                'name' => 'Admin',
+                'email' => 'admin@example.com',
+                'username' => 'admin',
+                'bio' => 'This is a test bio for admin.',
+                'gender' => 'male',
+                'pf_image' => env('APP_URL', 'http://localhost:3000/') . 'resources/assets/images/teamAvatar.png',
+                'role_id' => $adminRole->role_id,
+            ],
+            [
+                'name' => 'user',
+                'email' => 'user@example.com',
+                'username' => 'user',
+                'bio' => 'This is a test bio for normal user.',
+                'gender' => 'female',
+                'pf_image' => env('APP_URL', 'http://localhost:3000/') . 'resources/assets/images/teamAvatar.png',
+                'role_id' => $userRole->role_id,
+            ],
+        ])->each(fn ($user) => User::factory()->create($user));
 
         // Call UserSeeder
         $this->call([
@@ -74,5 +94,16 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FollowSeeder::class,
         ]);
+
+        // Call ReportSeeder
+        $this->call([
+            ReportSeeder::class,
+        ]);
+        
+        // Call BanwordSeeder
+        $this->call([
+            BanwordSeeder::class,
+        ]);
+
     }
 }

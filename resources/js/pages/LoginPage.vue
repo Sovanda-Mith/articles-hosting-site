@@ -488,7 +488,7 @@
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   import axios from 'axios';
-  import { useUserStore } from '@/stores/features/users/user';
+  import { useUserStore } from '@/stores/features/custom-persistedstate';
 
   // Import images properly for Vite
   import logoImage from '../assets/landingPage_img/logo.webp';
@@ -553,9 +553,25 @@
         localStorage.setItem('auth_token', data.token); // Store JWT token in localStorage for checking authentication later
         localStorage.setItem('userId', JSON.stringify(data.user.id)); // Store user data
         // console.log("User data:", data.user);
+        // setTimeout(() => {
+        //   router.push('/feed');
+        // }, 1500); // 1.5 second delay before redirecting
+
+        localStorage.setItem('role', JSON.stringify(data.user.role)); // Store user role
+        //redirect logic here
         setTimeout(() => {
-          router.push('/feed');
-        }, 1500); // 1.5 second delay before redirecting
+            const storedRole = JSON.parse(localStorage.getItem('role') || '""');
+
+            if (storedRole === 'admin') {
+              // Redirect to admin page
+              window.location.href = '/admin'; // Change to your actual admin route
+            } else {
+              // Redirect to user/feed page
+              window.location.href = '/feed'; 
+            }
+          
+        }, 1500);
+
       } else {
         errorMessage.value = data.message || 'Failed to login. Please check your credentials.';
       }
