@@ -12,6 +12,7 @@
         name="John Doe"
         avatarUrl=""
         :following="100"
+        followerCount="200"
         bio="Web developer and tech enthusiast"
         link="https://example.com"
         linkText="My Website"
