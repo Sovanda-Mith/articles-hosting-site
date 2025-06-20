@@ -74,33 +74,32 @@
 <script setup lang="ts">
 defineOptions({ name: 'ProfileSidebar' })
 import { ref, computed } from 'vue'
+import type { User } from '../../js/lib/types/user'
 import profileImg from '../../../public/landingPage_img/profile.png'
-import { useFollowingStore } from '@/stores/followingList/following'
-import { useFollowersStore } from '@/stores/followerList/follower'
 import FollowingList from '../../components/profileComponents/FollowingList.vue'
 import { useUserStore } from '@/stores/features/users/user'
 import { Button } from '../../js/components/ui/button'
+import { useFollowStore } from '@/stores/features/follows/stores/FollowStore'
 
 const userStore = useUserStore()
-const user = computed(() => userStore.user || {})
+const user = computed(() => userStore.user as User | null)
 
-const avatarUrl = computed(() => user.value.avatar || profileImg)
-const displayName = computed(() => user.value.name || user.value.username || 'Anonymous')
-const aboutMe = computed(() => user.value.bio || 'No bio available.')
-const userLink = computed(() => user.value.link || '')
+const avatarUrl = computed(() => user.value?.avatar || profileImg)
+const displayName = computed(() => user.value?.name || user.value?.username || 'Anonymous')
+const aboutMe = computed(() => user.value?.bio || 'No bio available.')
+const userLink = computed(() => user.value?.link || '')
 
 const showAllFollowing = ref(false)
 function toggleShowAllFollowing() {
   showAllFollowing.value = !showAllFollowing.value
 }
 
-const followersStore = useFollowersStore()
-const followingStore = useFollowingStore()
+const followStore = useFollowStore()
 
-const followerCount = computed(() => followersStore.followerCount)
-const followingCount = computed(() => followingStore.followingCount)
-const actualFollowingCount = computed(() => followingStore.following.length)
-const followingList = computed(() => followingStore.following)
+const followerCount = computed(() => followStore.followers.length)
+const followingCount = computed(() => followStore.following.length)
+const actualFollowingCount = computed(() => followStore.following.length)
+const followingList = computed(() => followStore.following)
 </script>
 
 <style scoped>
