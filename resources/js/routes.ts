@@ -40,7 +40,7 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: '/settings',
+    path: '/settings/',
     component: () => import('../js/pages/settingPages/Settings.vue'),
     meta: {
       title: 'Settings',
