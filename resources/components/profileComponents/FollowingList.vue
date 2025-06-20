@@ -1,19 +1,19 @@
 <template>
   <ul class="space-y-2">
     <li
-      v-for="following in displayedFollowing"
+      v-for="following in followStore.following"
       :key="following.id"
       class="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition"
     >
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center overflow-hidden">
           <img
-            src="/logo.png"
+            :src="following.following?.avatar || '/logo.png'"
             alt="avatar"
             class="w-6 h-6 object-contain"
           />
         </div>
-        <span class="subtitle-2 text-foreground">{{ following.name }}</span>
+        <span class="subtitle-2 text-foreground">{{ following.following?.name }}</span>
       </div>
       <button class="text-muted-foreground hover:text-foreground transition">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -28,19 +28,20 @@
 
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useFollowingStore } from '@/stores/followingList/following'
+// import { computed } from 'vue'
+// import { useFollowingStore } from '@/stores/features/followingList/following'
+import { useFollowStore } from '@/stores/features/follows/stores/FollowStore'
+import { onMounted } from 'vue'
 
-interface Props {
-  max?: number
+// const props = defineProps<Props>()
+const followStore = useFollowStore()
+const userId = Number(localStorage.getItem('userId'))
+
+const getFollowingList = async () => {
+  await followStore.fetchFollowing(userId)
 }
 
-const props = defineProps<Props>()
-const followingStore = useFollowingStore()
-
-const displayedFollowing = computed(() => {
-  return props.max !== undefined
-    ? followingStore.following.slice(0, props.max)
-    : followingStore.following
+onMounted(() => {
+  getFollowingList()
 })
 </script>

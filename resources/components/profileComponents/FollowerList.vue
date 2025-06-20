@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useFollowersStore } from '@/stores/followerList/follower'
+import { useFollowersStore } from '@/stores/features/followerList/follower'
 
 interface Props {
   max?: number
