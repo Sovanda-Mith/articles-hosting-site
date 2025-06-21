@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\admin\ArticleAdminController;
+use App\Http\Controllers\admin\UserAdminController;
+use App\Http\Controllers\admin\AccountAdminController;
 use App\Http\Controllers\ArticleCategoryController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Http\Request;
@@ -15,6 +20,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ForYouController;
 use App\Http\Controllers\BookmarkController;
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -33,12 +39,19 @@ Route::get('articles/trending', [ArticleController::class, 'getTrending']);
 Route::get('articles/{article}', [ArticleController::class, 'show']);
 
 // Settings Routes
-Route::controller(SettingController::class)->prefix('settings')->group(
+Route::middleware('auth:sanctum')->controller(SettingController::class)->prefix('settings')->group(
     function () {
         Route::get('/blockedUser', 'blockedUsers');
+        Route::post('/blockedUser', 'blockUser');
+        Route::delete('/unblockUser/{blockedUserId}', 'unblockUser');
         Route::get('/mutedUser', 'mutedUsers');
+        Route::post('/mutedUser', 'muteUser');
+        Route::delete('/unmuteUser/{mutedUserId}', 'unmuteUser');
+        Route::get('/notification', 'getNotificationSettings');
         Route::post('/notification', 'updateNotificationSettings');
         Route::get('/download', 'downloadUserData');
+        Route::put('/updateProfile', 'updateProfileInformation');
+        Route::delete('/deleteAccount', 'deleteAccount');
     }
 );
 
@@ -64,6 +77,7 @@ Route::controller(ArticleCategoryController::class)->prefix('articleCategory')->
 Route::controller(UploadController::class)->prefix('upload')->group(
     function () {
         Route::post('/cover', 'uploadCover');
+        Route::post('/avatar', 'uploadProfileImage');
     }
 );
 
@@ -118,8 +132,34 @@ Route::middleware(['auth:sanctum'])->prefix('comment/{comment_id}')->group(funct
     Route::post('/like', [LikeController::class, 'toggleCommentLikes']);
 });
 
+// Admin routes
+Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
+    //Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'statistic']);
+
+    //Report
+    Route::get('/report', [ReportController::class, 'find']);
+    Route::delete('/report', [ReportController::class, 'deleteMany']);
+    Route::post('/report/{id}', [ReportController::class, 'update']);
+    Route::post('/report', [ReportController::class, 'store']);
+
+    //User
+    Route::get('/user', [UserAdminController::class, 'index']);
+    Route::delete('/user/{id}', [UserAdminController::class, 'delete']);
+    Route::post('/user/{id}', [UserAdminController::class, 'update']);
+    Route::post('/user', [UserAdminController::class, 'store']);
+
+    // Article
+    Route::get('/article', [ArticleAdminController::class, 'index']);
+
+    // Account
+    Route::get('/profile', [AccountAdminController::class, 'profile']);
+    Route::post('/profile', [AccountAdminController::class, 'update']);
+});
+
 // Bookedmark Routes
 Route::middleware(['auth:sanctum'])->post('/article/{article_id}/bookmark', [BookmarkController::class, 'toggleBookmark']);
 Route::middleware(['auth:sanctum'])->get('/user/bookmarked-articles', [BookmarkController::class, 'getUserBookmarkedArticles']);
 
 Route::middleware('auth:sanctum')->get('/foryou', [ForYouController::class, 'getForYouArticles']);
+

@@ -69,6 +69,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['vee-validate', 'yup'],
+    include: ['vee-validate', 'yup', '@headlessui/vue'],
   },
 });

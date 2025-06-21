@@ -23,9 +23,9 @@ class ArticleFactory extends Factory
             'content' => $this->faker->paragraphs(rand(3, 7), true),
             'user_id' => User::inRandomOrder()->first()->id ?? User::factory(),
             'view_count' => $this->faker->numberBetween(0, 1000),
-            // 'image' => $this->faker->imageUrl(640, 480, 'article', true),
+            'image' => env('APP_URL', 'http://localhost:3000/') .'public/images/smp_article.jpg',
             'status' => $this->faker->randomElement(['draft', 'published']),
-            'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'created_at' => $this->faker->dateTimeBetween('-1 week', 'now'),
             'updated_at' => function (array $attributes) {
                 return $this->faker->dateTimeBetween($attributes['created_at'], 'now');
             },
