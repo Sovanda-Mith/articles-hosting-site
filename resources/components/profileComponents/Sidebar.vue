@@ -1,5 +1,6 @@
 <template>
-  <aside class="p-6 bg-card text-card-foreground rounded-lg shadow-md max-w-sm">
+  <aside class="p-6 bg-card text-card-foreground rounded-lg shadow-md max-w-sm relative">
+    <!-- Avatar & Username -->
     <div class="text-center">
       <img
         :src="avatarUrl"
@@ -7,24 +8,28 @@
         class="mx-auto w-24 h-24 rounded-full border-2 border-border mb-2"
       />
       <p class="text-h5">{{ displayName }}</p>
-
       <div class="body-1 mt-1 flex justify-center gap-8 text-muted-foreground select-none">
         <span><strong>{{ followerCount }}</strong> Followers</span>
         <span><strong>{{ followingCount }}</strong> Following</span>
       </div>
-
-      <Button @click="$emit('settings')" class="mt-4 px-6 py-2">
-        Settings
-      </Button>
+      <div class="flex justify-center gap-3 mt-4">
+        <Button
+          @click="goToSettings"
+          variant="outline"
+          class="px-4 py-2 flex items-center gap-2"
+          title="Settings"
+        >
+          Settings
+        </Button>
+      </div>
     </div>
 
-    <div class="mt-6 border-t border-border pt-4 body-1 text-foreground">
-      <p class="text-h7 mb-3 text-card-foreground">About Me</p>
-
-      <p class="mb-6 leading-relaxed text-base text-muted-foreground">
+    <!-- About Me -->
+    <div class="mt-6 border-t border-border pt-4">
+      <p class="text-h6 mb-3 text-card-foreground">About Me</p>
+      <p class="body-1 mb-6 leading-relaxed text-muted-foreground">
         {{ aboutMe }}
       </p>
-
       <p
         v-if="userLink"
         class="mb-4 flex items-center gap-2 text-primary hover:text-primary-foreground transition cursor-pointer"
@@ -53,12 +58,12 @@
         </a>
       </p>
 
+      <!-- Following List -->
       <section class="mt-6">
         <p class="font-semibold text-card-foreground mb-3">Following</p>
         <div class="max-h-[480px] overflow-y-auto border border-border rounded-md p-2 scrollbar-hide">
-          <FollowingList :max="showAllFollowing ? undefined : 5" :following="followingList" />
+          <FollowingList :list="followingList" :max="showAllFollowing ? undefined : 5" />
         </div>
-
         <button
           v-if="actualFollowingCount > 5"
           @click="toggleShowAllFollowing"
@@ -67,40 +72,74 @@
           {{ showAllFollowing ? 'See less...' : 'See more...' }}
         </button>
       </section>
+
+      <!-- Follower List -->
+      <section class="mt-6">
+        <p class="font-semibold text-card-foreground mb-3">Follower</p>
+        <div class="max-h-[480px] overflow-y-auto border border-border rounded-md p-2 scrollbar-hide">
+          <FollowerList :list="followerList" :max="showAllFollower ? undefined : 5" />
+        </div>
+        <button
+          v-if="actualFollowerCount > 5"
+          @click="toggleShowAllFollower"
+          class="mt-2 text-xs underline text-primary hover:text-primary-foreground transition"
+        >
+          {{ showAllFollower ? 'See less...' : 'See more...' }}
+        </button>
+      </section>
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
 defineOptions({ name: 'ProfileSidebar' })
-import { ref, computed } from 'vue'
+
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import type { User } from '../../js/lib/types/user'
 import profileImg from '../../../public/landingPage_img/profile.png'
-import { useFollowingStore } from '@/stores/followingList/following'
-import { useFollowersStore } from '@/stores/followerList/follower'
-import FollowingList from '../../components/profileComponents/FollowingList.vue'
-import { useUserStore } from '@/stores/features/users/user'
+import { useUserStore } from '../../js/stores/features/users/user'
+import { useFollowStore } from '../../js/stores/features/follows/stores/FollowStore'
 import { Button } from '../../js/components/ui/button'
 
+const router = useRouter()
 const userStore = useUserStore()
-const user = computed(() => userStore.user || {})
+const followStore = useFollowStore()
 
-const avatarUrl = computed(() => user.value.avatar || profileImg)
-const displayName = computed(() => user.value.name || user.value.username || 'Anonymous')
-const aboutMe = computed(() => user.value.bio || 'No bio available.')
-const userLink = computed(() => user.value.link || '')
+const user = computed(() => userStore.user as User | null)
+const avatarUrl = computed(() => user.value?.avatar || profileImg)
+const displayName = computed(() => user.value?.name || user.value?.username || 'Anonymous')
+const aboutMe = computed(() => user.value?.bio || 'No bio available.')
+const userLink = computed(() => user.value?.link || '')
 
+const showAllFollower = ref(false)
 const showAllFollowing = ref(false)
+
+const followerList = computed(() => followStore.followers)
+const followingList = computed(() => followStore.following)
+
+const followerCount = computed(() => followStore.followers.length)
+const followingCount = computed(() => followStore.following.length)
+
+const actualFollowerCount = computed(() => followStore.followers.length)
+const actualFollowingCount = computed(() => followStore.following.length)
+
+function goToSettings() {
+  router.push('/settings')
+}
 function toggleShowAllFollowing() {
   showAllFollowing.value = !showAllFollowing.value
 }
+function toggleShowAllFollower() {
+  showAllFollower.value = !showAllFollower.value
+}
 
-const followersStore = useFollowersStore()
-const followingStore = useFollowingStore()
-
-const followerCount = computed(() => followersStore.followerCount)
-const followingCount = computed(() => followingStore.followingCount)
-const actualFollowingCount = computed(() => followingStore.following.length)
-const followingList = computed(() => followingStore.following)
+onMounted(async () => {
+  if (user.value?.id) {
+    await followStore.fetchFollowers(user.value.id)
+    await followStore.fetchFollowing(user.value.id)
+  }
+})
 </script>
 
 <style scoped>

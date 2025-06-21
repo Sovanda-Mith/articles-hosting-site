@@ -1,21 +1,22 @@
 <template>
-    <div class="flex flex-col justify-start gap-5 h-full">
+    <LoadingSpinner v-if="isLoading" />
+    <div v-else class="flex flex-col justify-start gap-5 h-full">
         <div class="flex justify-evenly items-start gap-5">
             <div class="bg-white h-40 rounded-2xl w-1/4 flex flex-col justify-center items-center gap-3 shadow-sm">
                 <div class="text-gray-700">Total Users</div>
-                <p class="text-lg">1,000</p>
+                <p class="text-lg">{{ userCount }}</p>
             </div>
             <div class="bg-white h-40 rounded-2xl w-1/4 flex flex-col justify-center items-center gap-3 shadow-sm">
                 <div class="text-gray-700">Total Articles</div>
-                <p class="text-lg">1,000</p>
+                <p class="text-lg">{{ articleCount }}</p>
             </div>
             <div class="bg-white h-40 rounded-2xl w-1/4 flex flex-col justify-center items-center gap-3 shadow-sm">
                 <div class="text-gray-700">Total Reports</div>
-                <p class="text-lg">1,000</p>
+                <p class="text-lg">{{ reportCount }}</p>
             </div>
             <div class="bg-white h-40 rounded-2xl w-1/4 flex flex-col justify-center items-center gap-3 shadow-sm">
                 <div class="text-gray-700">Total Banned Words</div>
-                <p class="text-lg">1,000</p>
+                <p class="text-lg">{{ bannedWordCount }}</p>
             </div>
         </div>
         <div class="flex gap-5 h-full">
@@ -95,13 +96,22 @@
 
 
     </div>
-</div>
+    </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import LoadingSpinner from '@/pages/adminPages/__shared__/UI/LoadingSpinner.vue'
+const isLoading = ref(true)
+
+// Dashboard counts
+const userCount = ref(0)
+const articleCount = ref(0)
+const reportCount = ref(0)
+const bannedWordCount = ref(0)
 
 // Bar
-const data = ref([40, 70, 50, 90, 60, 30, 80])
+const data = ref([])
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 const maxValue = 100
 const chartHeight = 400 // pixels
@@ -114,18 +124,31 @@ interface RankEntry {
 }
 
 // Rank
-const rankings = ref<RankEntry[]>([
-  { name: 'Merry', articles: 100 },
-  { name: 'Johny', articles: 80 },
-  { name: 'Noly', articles: 72 },
-  { name: 'Sunny', articles: 69 },
-  { name: 'Moly', articles: 50 },
-  { name: 'Zuzy', articles: 33 },
-  { name: 'Merry', articles: 100 },
-  { name: 'Johny', articles: 80 },
-  { name: 'Noly', articles: 72 },
-  { name: 'Sunny', articles: 69 },
-  
-])
+const rankings = ref<RankEntry[]>([])
+
+onMounted(async () => {
+  try {
+    const jwtToken = localStorage.getItem('auth_token');
+
+    if (!jwtToken) {
+    return;
+    }
+    const response = await axios.get('http://localhost:8000/api/admin/dashboard', {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    })
+    isLoading.value = false
+    const d = response.data
+    userCount.value = d.user_count
+    articleCount.value = d.article_count
+    reportCount.value = d.report_count
+    bannedWordCount.value = d.banned_word_count
+    data.value = d.weekly_articles
+    rankings.value = d.top_users
+  } catch (error) {
+    console.error('Failed to load dashboard:', error)
+  }
+})
 
 </script>

@@ -1,4 +1,7 @@
 <template>
+  <div v-if="isOpen">
+  <confirmDialog @action="deleteSelectedReports"></confirmDialog>
+  </div>
   <div class="p-6 bg-white rounded shadow text-sm h-full overflow-y-auto">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-semibold">Reports ({{ reports.length }})</h2>
@@ -17,8 +20,12 @@
                 />
             </div>
         </div>
-        <button class="text-blue-600 cursor-pointer">Create</button>
-        <button class="text-blue-600 cursor-pointer">Delete</button>
+        <button class="text-blue-600 cursor-pointer"
+        @click="openCreateDialog"
+        >Create</button>
+        <button class="text-blue-600 cursor-pointer" 
+        @click="toggleDialog"
+        >Delete</button>
         <button class="text-gray-500 hover:text-blue-600 cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
@@ -50,6 +57,7 @@
             v-for="(report, index) in reports"
             :key="index"
             class="hover:bg-gray-100 border-t border-gray-200"
+            
           >
             <td class="p-2"><input 
                 type="checkbox" 
@@ -63,7 +71,7 @@
             <td class="p-2">{{ report.problem }}</td>
             <td class="p-2">{{ report.articleId }}</td>
             <td class="p-2">{{ report.issued }}</td>
-            <td class="p-2">
+            <td class="p-2" @click="openEditDialog(report)">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="w-4 h-4 text-gray-500 hover:text-blue-600 cursor-pointer"
@@ -85,41 +93,211 @@
     </div>
   </div>
 
+  <!-- update -->
+  <EditReportDialog
+  :show="showEdit"
+  :report="selectedReport"
+  :reporter-options="reporterOptions"
+  @close="showEdit = false"
+  @save="updateReport"
+  />
+   <!-- Add Create Report Dialog -->
+  <CreateReportDialog
+    :show="showCreate"
+    :reporter-options="reporterOptions"
+    @close="showCreate = false"
+    @save="createReport"
+  />
 </template>
 
-<script lang="ts" setup>
-import { ref, watch } from 'vue'
-interface Report {
-  id: string
-  reporter: string
-  problem: string
-  articleId: string
-  issued: string
-  selected: boolean
+  <script lang="ts" setup>
+  import { ref, watch, onMounted, computed } from 'vue'
+  import axios from 'axios'
+  import confirmDialog from '../__shared__/dialog/confirm-dialog.vue'
+  import EditReportDialog from '../__shared__/dialog/EditReportDialog.vue'
+  import CreateReportDialog from '../__shared__/dialog/CreateReportDialog.vue' 
+  
+  interface Report {
+    id: string
+    reporter_id: number
+    reporter: string
+    problem: string
+    articleId: string
+    issued: string
+    selected: boolean
+  }
+
+  const showCreate = ref(false)  // dialog state for create
+
+  // Open create dialog handler
+  const openCreateDialog = () => {
+    showCreate.value = true;
+  }
+  const isOpen = ref(false);
+  const selectAll = ref(false)
+  const reports = ref<Report[]>([])
+  const reporterOptions = computed(() => {
+    const unique = new Map()
+    reports.value.forEach(r => {
+      if (r.reporter_id && r.reporter) {
+        unique.set(r.reporter_id, r.reporter)
+      }
+    })
+    return Array.from(unique.entries()).map(([id, name]) => ({ id, name }))
+  })
+
+
+  const toggleDialog = () => {
+    const selectedReports = reports.value.filter(report => report.selected);
+    if(selectedReports.length > 0){
+      isOpen.value = !isOpen.value;
+    }
+  };
+
+  async function fetchReports(){
+    
+    try {
+      const jwtToken = localStorage.getItem('auth_token');
+      if (!jwtToken) return;
+
+      const response = await axios.get('http://localhost:8000/api/admin/report', {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      })
+
+      // Map your API response to your Report interface structure
+      reports.value = response.data.map((r: any) => ({
+        id: r.report_id,
+        reporter_id: r.reporter_id,
+        reporter: r.reporter,
+        problem: r.reason,
+        articleId: r.article_id,
+        issued: r.issued_date,
+        selected: false,
+      })).sort((a, b) => {
+        // Assuming id is numeric string; convert to number for sorting
+        return Number(a.id) - Number(b.id);
+      })
+
+      // Update selectAll if needed
+      checkSelectAll()
+
+    } catch (error) {
+      console.error('Failed to load report:', error)
+    }
+  };
+
+  onMounted(fetchReports);
+
+  // Watch "selectAll" and update all reports
+  watch(selectAll, (val) => {
+    reports.value.forEach((report) => {
+      report.selected = val
+    })
+  })
+
+  // Update "selectAll" when any individual checkbox is changed
+  function checkSelectAll() {
+    selectAll.value = reports.value.length > 0 && reports.value.every((report) => report.selected)
+  }
+
+  async function deleteSelectedReports() {
+    const selectedReports = reports.value.filter(report => report.selected);
+
+    if (selectedReports.length === 0) {
+      alert('No reports selected.');
+      return;
+    }
+
+    try {
+      const jwtToken = localStorage.getItem('auth_token');
+      if (!jwtToken) return;
+
+      const idsToDelete = selectedReports.map(r => r.id);
+
+      await axios.delete('http://localhost:8000/api/admin/report', {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        },
+        data: {
+          reportIds: idsToDelete
+        }
+      });
+
+      // Remove deleted reports from local state
+      reports.value = reports.value.filter(report => !report.selected);
+      selectAll.value = false;
+    } catch (error) {
+      console.error('Failed to delete reports:', error);
+      alert('Failed to delete reports.');
+    }
 }
 
-const selectAll = ref(false)
 
-const reports = ref<Report[]>(
-  Array.from({ length: 15 }, () => ({
-    id: '500009086',
-    reporter: 'Sony',
-    problem: 'Harmful Content',
-    articleId: '1000112233',
-    issued: '1 hour ago',
-    selected: false,
-  }))
-)
 
-// Watch "selectAll" and update all reports
-watch(selectAll, (val) => {
-  reports.value.forEach((report) => {
-    report.selected = val
-  })
-})
+const showEdit = ref(false)
+const selectedReport = ref(null)
 
-// Update "selectAll" when any individual checkbox is changed
-function checkSelectAll() {
-  selectAll.value = reports.value.every((report) => report.selected)
+function openEditDialog(report) {
+  selectedReport.value = report
+  showEdit.value = true
+}
+
+async function updateReport(updated) {
+  const jwtToken = localStorage.getItem('auth_token');
+  if (!jwtToken) return;
+
+  try {
+     const response = await axios.post(
+     `http://localhost:8000/api/admin/report/${updated.id}`, 
+     {
+        reporter_id: updated.reporter_id, 
+        problem: updated.problem,
+        article_id: updated.article_id
+     },
+     {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    })
+    console.log(response)
+    // Reload reports after update
+    await fetchReports();
+  } catch (error) {
+    console.error('Failed to update report:', error);
+  }
+}
+
+// Handle create save
+async function createReport(newReport) {
+  const jwtToken = localStorage.getItem('auth_token');
+  console.log("hey")
+  if (!jwtToken) return;
+
+  try {
+    const response = await axios.post(
+      'http://localhost:8000/api/admin/report',
+      {
+        reporter_id: newReport.reporter_id,
+        problem: newReport.problem,
+        article_id: newReport.article_id
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      }
+    );
+
+    // console.log('Created:', response.data);
+    // Close dialog and refresh report list
+    showCreate.value = false;
+    await fetchReports();
+
+  } catch (error) {
+    console.error('Failed to create report:', error);
+  }
 }
 </script>
+
