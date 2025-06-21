@@ -120,8 +120,15 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/bookmarks/:id',
+    component: () => import('../js/pages/BookmarksPage.vue'),
+    meta: {
+      title: 'Bookmarks',
+    },
+  },
+  {
     path: '/viewer',
-    component: () => import('../js/pages/ViewerPofilePage.vue'),
+    component: () => import('../js/pages/ViewerProfilePage.vue'),
     meta: {
       title: 'User Profile',
     },

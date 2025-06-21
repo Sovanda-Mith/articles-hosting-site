@@ -11,6 +11,7 @@
       <Sidebar />
     </div>
   </div>
+  <Footer />
 </template>
 
 <script setup lang="ts">
@@ -21,6 +22,7 @@
   import Home from '../pages/profile/Home.vue';
   import About from '../pages/profile/About.vue';
   import Header from '../../components/landingPage_comp/Header.vue';
+  import Footer from '../../components/landingPage_comp/Footer.vue';
 
   const tabStore = useTabStore();
 </script>
