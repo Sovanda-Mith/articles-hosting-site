@@ -252,8 +252,6 @@
           updated_at: response.data.updated_at,
         };
 
-        isLiked.value = article.value.likes_count > 0;
-
         timeAgo.value = dayjs(article?.value.created_at).fromNow();
 
         try {
@@ -298,6 +296,9 @@
 
           if (likeResponse.status === 200) {
             article.value.likes_count = likeResponse.data.likes_count;
+            isLiked.value = likeResponse.data.likes.some((like) => {
+              return like.user_id === userStore.user.id;
+            });
           }
         } catch (error) {
           console.error('Error fetching likes:', error);
