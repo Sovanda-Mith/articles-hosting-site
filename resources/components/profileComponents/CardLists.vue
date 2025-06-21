@@ -1,5 +1,11 @@
+
 <template>
-  <div class="space-y-4">
+  <div
+    class="space-y-4"
+    :class="{
+      'max-h-[40rem] overflow-y-auto pr-2 scrollbar-hide': cardStore.cards.length > 5
+    }"
+  >
     <Card
       v-for="card in cardStore.cards"
       :key="card.id"
@@ -25,3 +31,14 @@ onMounted(() => {
   cardStore.loadCards()
 })
 </script>
+
+<style scoped>
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>

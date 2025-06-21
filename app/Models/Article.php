@@ -69,4 +69,15 @@ class Article extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    /**
+     * Relationships to bookmarks
+    */
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class, 'article_id', 'article_id');
+    }
+    public function bookmarkedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'article_bookmarks', 'article_id', 'user_id');
+    }
 }
