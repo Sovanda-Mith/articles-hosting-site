@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: ${DOCKER_TARGET:-development}  # Use development by default
+      target: ${DOCKER_TARGET:-production}  # changed this
     image: my-laravel-app
     container_name: my-laravel-app
     restart: unless-stopped
@@ -12,6 +12,7 @@ services:
       - ./:/var/www
       - /var/www/vendor
       - ./.env:/var/www/.env
+      - ./data:/var/www/storage/app/csv
     environment:
       - APP_ENV=${APP_ENV:-local}
       - APP_DEBUG=${APP_DEBUG:-true}
@@ -33,7 +34,7 @@ services:
   node:
     build:
       context: .
-      dockerfile: ${NODE_DOCKERFILE:-Dockerfile.node.dev}
+      dockerfile: ${NODE_DOCKERFILE:-Dockerfile.node} #changed this
     image: my-laravel-node
     container_name: my-laravel-node
     ports:
@@ -45,7 +46,7 @@ services:
       - node_modules:/var/www/node_modules
       - ./docker/ssl/:/var/www/docker/ssl
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
+      - NODE_ENV=${NODE_ENV:-production}
     networks:
       - app-network
     depends_on:

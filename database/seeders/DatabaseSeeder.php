@@ -74,5 +74,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FollowSeeder::class,
         ]);
+
+        //call csv seeder
+        $this->call([
+            CsvDataSeeder::class,
+        ]);
     }
 }
