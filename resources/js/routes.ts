@@ -1,5 +1,6 @@
 import { createWebHistory, createRouter, type RouteRecordRaw } from 'vue-router';
 import NotFound from './pages/NotFound.vue';
+import { useUserStore } from './stores/features/custom-persistedstate';
 
 const routes: RouteRecordRaw[] = [
   //specify type of route
@@ -44,6 +45,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../js/pages/settingPages/Settings.vue'),
     meta: {
       title: 'Settings',
+      requiresAuth: true,
     },
     children: [
       {
@@ -110,6 +112,7 @@ const routes: RouteRecordRaw[] = [
     props: true,
     meta: {
       title: 'DetailArticle',
+      requiresAuth: true,
     },
   },
   {
@@ -117,8 +120,10 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../js/pages/ProfilePage.vue'),
     meta: {
       title: 'My Profile',
+      requiresAuth: true,
     },
   },
+  /*
   {
     path: '/bookmarks/:id',
     component: () => import('../js/pages/BookmarksPage.vue'),
@@ -126,6 +131,7 @@ const routes: RouteRecordRaw[] = [
       title: 'Bookmarks',
     },
   },
+  */
   {
     path: '/viewer',
     component: () => import('../js/pages/ViewerProfilePage.vue'),
@@ -138,6 +144,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../js/pages/article/NewArticle.vue'),
     meta: {
       title: 'New Article',
+      requiresAuth: true,
     },
   },
   {
@@ -146,6 +153,7 @@ const routes: RouteRecordRaw[] = [
     name: 'EditArticle',
     meta: {
       title: 'Edit Article',
+      requiresAuth: true,
     },
   },
 
@@ -203,7 +211,14 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   document.title = (to.meta.title as string) || 'Articles Hosting Site';
-  next();
+
+  const userStore = useUserStore();
+
+  if (to.meta.requiresAuth && !userStore.user?.token) {
+    next({ path: '/login' });
+  } else {
+    next();
+  }
 });
 
 export default router;
