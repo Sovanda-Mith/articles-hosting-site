@@ -7,6 +7,7 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'ProfileHome' })
 import { ref } from 'vue'
 import ReadingList from '../../../../resources/components/profileComponents/ReadingList.vue'
 import BookmarkLists from '../../../../resources/components/profileComponents/bookmarkLists.vue'
@@ -23,8 +24,3 @@ function handleBack() {
 }
 </script>
 
-<script lang="ts">
-export default {
-  name: 'ProfileHome'
-}
-</script>
