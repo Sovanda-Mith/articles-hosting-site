@@ -12,7 +12,6 @@
         <span><strong>{{ followerCount }}</strong> Followers</span>
         <span><strong>{{ followingCount }}</strong> Following</span>
       </div>
-
       <div class="flex justify-center gap-3 mt-4">
         <Button
           @click="goToSettings"
@@ -31,7 +30,6 @@
       <p class="body-1 mb-6 leading-relaxed text-muted-foreground">
         {{ aboutMe }}
       </p>
-
       <p
         v-if="userLink"
         class="mb-4 flex items-center gap-2 text-primary hover:text-primary-foreground transition cursor-pointer"
@@ -64,7 +62,7 @@
       <section class="mt-6">
         <p class="font-semibold text-card-foreground mb-3">Following</p>
         <div class="max-h-[480px] overflow-y-auto border border-border rounded-md p-2 scrollbar-hide">
-          <FollowingList :max="showAllFollowing ? undefined : 5" :following="followingList" />
+          <FollowingList :list="followingList" :max="showAllFollowing ? undefined : 5" />
         </div>
         <button
           v-if="actualFollowingCount > 5"
@@ -74,51 +72,72 @@
           {{ showAllFollowing ? 'See less...' : 'See more...' }}
         </button>
       </section>
+
+      <!-- Follower List -->
+      <section class="mt-6">
+        <p class="font-semibold text-card-foreground mb-3">Follower</p>
+        <div class="max-h-[480px] overflow-y-auto border border-border rounded-md p-2 scrollbar-hide">
+          <FollowerList :list="followerList" :max="showAllFollower ? undefined : 5" />
+        </div>
+        <button
+          v-if="actualFollowerCount > 5"
+          @click="toggleShowAllFollower"
+          class="mt-2 text-xs underline text-primary hover:text-primary-foreground transition"
+        >
+          {{ showAllFollower ? 'See less...' : 'See more...' }}
+        </button>
+      </section>
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
 defineOptions({ name: 'ProfileSidebar' })
+
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import type { User } from '../../js/lib/types/user'
 import profileImg from '../../../public/landingPage_img/profile.png'
-import FollowingList from '../../components/profileComponents/FollowingList.vue'
 import { useUserStore } from '../../js/stores/features/users/user'
 import { useFollowStore } from '../../js/stores/features/follows/stores/FollowStore'
-import { useRouter } from 'vue-router'
 import { Button } from '../../js/components/ui/button'
 
 const router = useRouter()
-
-function goToSettings() {
-  router.push('/settings')
-}
 const userStore = useUserStore()
-const user = computed(() => userStore.user as User | null)
+const followStore = useFollowStore()
 
+const user = computed(() => userStore.user as User | null)
 const avatarUrl = computed(() => user.value?.avatar || profileImg)
 const displayName = computed(() => user.value?.name || user.value?.username || 'Anonymous')
 const aboutMe = computed(() => user.value?.bio || 'No bio available.')
 const userLink = computed(() => user.value?.link || '')
 
+const showAllFollower = ref(false)
 const showAllFollowing = ref(false)
-function toggleShowAllFollowing() {
-  showAllFollowing.value = !showAllFollowing.value
-}
 
-const followStore = useFollowStore()
+const followerList = computed(() => followStore.followers)
+const followingList = computed(() => followStore.following)
 
 const followerCount = computed(() => followStore.followers.length)
 const followingCount = computed(() => followStore.following.length)
-const actualFollowingCount = computed(() => followStore.following.length)
-const followingList = computed(() => followStore.following)
 
-// Fetch followers and following from API when user is available
+const actualFollowerCount = computed(() => followStore.followers.length)
+const actualFollowingCount = computed(() => followStore.following.length)
+
+function goToSettings() {
+  router.push('/settings')
+}
+function toggleShowAllFollowing() {
+  showAllFollowing.value = !showAllFollowing.value
+}
+function toggleShowAllFollower() {
+  showAllFollower.value = !showAllFollower.value
+}
+
 onMounted(async () => {
   if (user.value?.id) {
-    await followStore.loadFollowers(user.value.id)
-    await followStore.loadFollowing(user.value.id)
+    await followStore.fetchFollowers(user.value.id)
+    await followStore.fetchFollowing(user.value.id)
   }
 })
 </script>

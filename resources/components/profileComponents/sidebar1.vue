@@ -107,6 +107,19 @@
           {{ showAllFollowing ? 'See less...' : 'See more...' }}
         </button>
       </section>
+      <section class="mt-6">
+          <p class="font-semibold text-card-foreground mb-3">Followers</p>
+          <div class="max-h-[480px] overflow-y-auto border border-border rounded-md p-2 scrollbar-hide">
+            <FollowerList :max="showAllFollower ? undefined : 5" :followers="followerList" />
+          </div>
+          <button
+            v-if="actualFollowerCount > 5"
+            @click="toggleShowAllFollower"
+            class="mt-2 text-xs underline text-primary hover:text-primary-foreground transition"
+          >
+            {{ showAllFollower ? 'See less...' : 'See more...' }}
+          </button>
+        </section>
 
       <!-- Bookmarks Section -->
       <section class="mt-6">
@@ -159,10 +172,9 @@
 <script setup lang="ts">
 defineOptions({ name: 'ProfileSidebar' })
 
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import type { User } from '../../js/lib/types/user'
 import profileImg from '../../../public/landingPage_img/profile.png'
-import FollowingList from '../../components/profileComponents/FollowingList.vue'
 import { useUserStore } from '../../js/stores/features/users/user'
 import { Button } from '../../js/components/ui/button'
 import { useFollowStore } from '../../js/stores/features/follows/stores/FollowStore'
@@ -189,6 +201,11 @@ const followingCount = computed(() => followStore.following.length)
 const actualFollowingCount = computed(() => followStore.following.length)
 const followingList = computed(() => followStore.following)
 
+const showAllFollower = ref(false)
+const toggleShowAllFollower = () => (showAllFollower.value = !showAllFollower.value)
+const actualFollowerCount = computed(() => followStore.followers.length)
+const followerList = computed(() => followStore.followers)
+
 const handleFollowClick = () => {
   if (isFollowed.value) {
     showPopup.value = true
@@ -202,15 +219,12 @@ const confirmUnfollow = () => {
   showPopup.value = false
 }
 
-const fetchFollowData = async () => {
+onMounted(async () => {
   if (user.value?.id) {
-    await followStore.loadFollowers(user.value.id)
-    await followStore.loadFollowing(user.value.id)
+    await followStore.fetchFollowers(user.value.id)
+    await followStore.fetchFollowing(user.value.id)
   }
-}
-
-onMounted(fetchFollowData)
-watch(() => user.value?.id, fetchFollowData)
+})
 
 // --- Bookmarks Section ---
 const bookmarkStore = useBookmarkStore()

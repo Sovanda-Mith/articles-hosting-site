@@ -10,11 +10,11 @@
         <!-- Author Info -->
         <div class="flex items-center gap-3 text-base font-semibold">
           <img
-            :src="article.avatar || '/feedpage_img/profile1.jpg'"
+            :src="article.image || '/feedpage_img/profile1.jpg'"
             alt="Avatar"
             class="w-8 h-8 rounded-full object-cover"
           />
-          <span>{{ article.username || 'Unknown User' }}</span>
+          <span>{{ article.user_id || 'Unknown User' }}</span>
         </div>
 
         <!-- Article Content -->
@@ -23,16 +23,16 @@
             <h3 class="text-h5 leading-snug">
               {{ article.title || 'Untitled' }}
             </h3>
-            <p class="body-1 text-muted-foreground mb-3" :class="{ italic: !article.description }">
-              {{ article.description || 'No description provided.' }}
+            <p class="body-1 text-muted-foreground mb-3" :class="{ italic: !article.subtitle }">
+              {{ article.subtitle || 'No description provided.' }}
             </p>
             <div class="flex items-center text-sm text-muted-foreground space-x-6">
-              <span>{{ formatDate(article.date) }}</span>
+              <span>{{ formatDate(article.created_at) }}</span>
               <span class="flex items-center gap-2">
-                <i class="ri-hand-heart-line"></i> {{ article.likes ?? 0 }}
+                <i class="ri-hand-heart-line"></i> {{ article.likes_count || 0 }}
               </span>
               <span class="flex items-center gap-2">
-                <i class="ri-chat-3-line"></i> {{ article.comments ?? 0 }}
+                <i class="ri-chat-3-line"></i> {{ article.comments_count || 0 }}
               </span>
             </div>
           </div>
@@ -53,7 +53,6 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
 import { useArticleStore } from '../../js/stores/features/articles/stores/ArticleStore'
-import { ArticleApi } from '../../js/stores/features/articles/api/ArticleApi'
 
 const articleStore = useArticleStore()
 
@@ -64,8 +63,7 @@ const scrollableClass = computed(() =>
 )
 
 onMounted(async () => {
-  const res = await ArticleApi.getArticles(1, 20)
-  articleStore.articles = res.articles
+  await articleStore.fetchArticles(1, false)
 })
 
 function formatDate(dateStr?: string): string {
