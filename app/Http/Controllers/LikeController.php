@@ -72,13 +72,14 @@ class LikeController extends Controller
         try {
             $user = Auth::user();
             
-            $articles = $user->likedArticles()
-                           ->with(['author', 'categories']) 
-                           ->paginate(10);
+            $articles = $user->likedArticles()->pluck('articles.article_id');
+                        //    ->paginate(10);
     
             return response()->json([
                 'success' => true,
-                'articles' => $articles
+                'user' => $user->id,
+                'liked articles' => $articles,
+                'count' => $articles->count(),
             ]);
     
         } catch (\Exception $e) {

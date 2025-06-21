@@ -121,6 +121,5 @@ Route::middleware(['auth:sanctum'])->prefix('comment/{comment_id}')->group(funct
 // Bookedmark Routes
 Route::middleware(['auth:sanctum'])->post('/article/{article_id}/bookmark', [BookmarkController::class, 'toggleBookmark']);
 Route::middleware(['auth:sanctum'])->get('/user/bookmarked-articles', [BookmarkController::class, 'getUserBookmarkedArticles']);
-Route::middleware('auth:sanctum')->get('/user/for-you', [ForYouController::class, 'getForYouArticles']);
 
 Route::middleware('auth:sanctum')->get('/foryou', [ForYouController::class, 'getForYouArticles']);
