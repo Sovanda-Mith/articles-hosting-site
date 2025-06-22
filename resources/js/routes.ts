@@ -117,7 +117,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/profile',
-    component: () => import('../js/pages/ProfilePage.vue'),
+    component: () => import('../js/pages/myProfilePage.vue'),
     meta: {
       title: 'My Profile',
       requiresAuth: true,
@@ -134,7 +134,7 @@ const routes: RouteRecordRaw[] = [
   */
   {
     path: '/viewer',
-    component: () => import('../js/pages/ViewerProfilePage.vue'),
+    component: () => import('../js/pages/userProfilePage.vue'),
     meta: {
       title: 'User Profile',
     },
