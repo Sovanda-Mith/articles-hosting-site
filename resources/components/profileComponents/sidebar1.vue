@@ -7,7 +7,7 @@
         alt="Profile picture"
         class="mx-auto w-24 h-24 rounded-full border-2 border-border mb-2"
       />
-      <p class="font-semibold text-lg">{{ user.name || user.username || 'Anonymous' }}</p>
+      <p class="font-semibold text-lg">{{ props.user.name || props.user.username || 'Anonymous' }}</p>
 
       <div class="body-1 mt-1 flex justify-center gap-8 text-muted-foreground select-none">
         <span><strong>{{ followerCount }}</strong> Followers</span>
@@ -22,10 +22,10 @@
           {{ isFollowing ? 'Followed' : 'Follow' }}
         </Button>
         <Button
-          :href="user.email ? `mailto:${user.email}` : undefined"
+          :href="props.user.email ? `mailto:${props.user.email}` : undefined"
           class="px-6 py-2"
           title="Send Email"
-          :disabled="!user.email"
+          :disabled="!props.user.email"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <rect x="3" y="5" width="18" height="14" rx="2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -51,11 +51,11 @@
       <h3 class="text-lg font-semibold mb-3 text-card-foreground">About Me</h3>
 
       <p class="mb-6 leading-relaxed text-base text-muted-foreground">
-        {{ user.bio || 'No bio available.' }}
+        {{ props.user.bio || 'No bio available.' }}
       </p>
 
       <p
-        v-if="user.link"
+        v-if="props.user.link"
         class="mb-4 flex items-center gap-2 text-primary hover:text-primary-foreground transition cursor-pointer"
       >
         <svg
@@ -73,12 +73,12 @@
           />
         </svg>
         <a
-          :href="user.link"
+          :href="props.user.link"
           target="_blank"
           rel="noopener noreferrer"
           class="underline font-semibold"
         >
-          {{ user.link }}
+          {{ props.user.link }}
         </a>
       </p>
 
@@ -130,31 +130,27 @@
 defineOptions({ name: 'ProfileSidebar' })
 import { ref, computed } from 'vue'
 import profileImg from '../../../public/landingPage_img/profile.png'
-import { useFollowingStore } from '@/stores/features/followingList/following'
-import { useFollowersStore } from '@/stores/features/followerList/follower'
 import { useListStore } from '../../js/stores/features/storyList/listStore'
 import FollowingList from './FollowingList.vue'
-import { useUserStore } from '@/stores/features/users/user'
 import { Button } from '@/components/ui/button'
+import type { User } from '../../js/lib/types/user'
 
-
-const userStore = useUserStore()
-
-const user = computed(() => userStore.user)
-
-const avatarUrl = computed(() => user.value.avatar || profileImg)
-const showAllFollowing = ref(false)
-const isFollowing = ref(false)
-
-const followersStore = useFollowersStore()
-const followingStore = useFollowingStore()
-
-const followerCount = computed(() => followersStore.followerCount)
-const followingCount = computed(() => followingStore.followingCount)
-const actualFollowingCount = computed(() => followingStore.following.length)
+// Define props
+const props = defineProps<{
+  user: User
+}>()
 
 const listStore = useListStore()
 const lists = computed(() => listStore.lists)
+
+const avatarUrl = ref(profileImg)
+
+const isFollowing = ref(false)
+const followerCount = ref(0)
+const followingCount = ref(0)
+const showAllFollowing = ref(false)
+const actualFollowingCount = ref(10) // Example value, adjust based on your needs
+
 
 const showUnfollowConfirm = ref(false)
 

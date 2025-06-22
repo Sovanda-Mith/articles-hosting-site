@@ -392,6 +392,10 @@
     router.push({ name: 'EditArticle', params: { id: props.id } });
   };
 
+  function navigateToUser(userId: number) {
+    router.push(`/viewer/${userId}`)
+  }
+
   onMounted(async () => {
     await getArticleAndItsCategories();
     await checkIfFollowing();
@@ -415,7 +419,7 @@
         <img :src="author?.avatar" class="w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-full" />
         <div class="flex flex-col pl-0 sm:pl-2">
           <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <span>{{ author?.name }}</span>
+            <span @click="navigateToUser(author?.id)">{{ author?.name }}</span>
             <div class="flex items-center gap-2 sm:gap-3 flex-wrap" v-if="!isOwner">
               <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
               <span
@@ -498,7 +502,7 @@
       <div class="flex gap-2 sm:gap-4">
         <img :src="author?.avatar" alt="" class="w-14 h-14 sm:w-[75px] sm:h-[75px] rounded-full" />
         <div class="flex flex-col space-y-1">
-          <span class="text-lg sm:text-2xl font-bold">{{ author?.name }}</span>
+          <span class="text-lg sm:text-2xl font-bold" @click="navigateToUser(author?.id)">{{ author?.name }}</span>
           <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
             <span class="text-gray-500 text-sm sm:text-lg"
               >{{ author?.followers_count }} Followers</span

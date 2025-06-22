@@ -120,7 +120,7 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: '/viewer',
+    path: '/viewer/:userid',
     component: () => import('../js/pages/ViewerPofilePage.vue'),
     meta: {
       title: 'User Profile',

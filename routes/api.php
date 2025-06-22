@@ -32,6 +32,7 @@ Route::get('/auth/verify', function (Request $request) {
 Route::get('articles', [ArticleController::class, 'index']);
 Route::get('articles/trending', [ArticleController::class, 'getTrending']);
 Route::get('articles/{article}', [ArticleController::class, 'show']);
+Route::get('articles/user/{userId}', [ArticleController::class, 'getArticleByUserId']);
 
 // Settings Routes
 Route::middleware('auth:sanctum')->controller(SettingController::class)->prefix('settings')->group(

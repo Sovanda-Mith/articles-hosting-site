@@ -150,6 +150,39 @@ export const useArticleStore = defineStore('article', () => {
     return response;
   };
 
+  const fetchArticleByUserId = async (userId: number, page: number = 1) => {
+    if (isLoading.value && page === 1) return;
+    if (isLoadingMore.value && page > 1) return;
+    if (page === 1) {
+      isLoading.value = true;
+    } else {
+      isLoadingMore.value = true;
+    }
+
+    try {
+      const response = await ArticleApi.getArticleByUserId(userId, page);
+
+      await nextTick(() => {
+        if (page === 1) {
+          articles.value = response.articles;
+        } else {
+          const existingIds = new Set(articles.value.map(article => article.id));
+          const newArticles = response.articles.filter(article => !existingIds.has(article.id));
+          articles.value = [...articles.value, ...newArticles];
+        }
+
+        currentPage.value = response.current_page;
+        lastPage.value = response.last_page;
+        totalArticles.value = response.total;
+      });
+
+      return response;
+    } finally {
+      isLoading.value = false;
+      isLoadingMore.value = false;
+    }
+  };
+
   const resetArticles = () => {
     articles.value = [];
     currentPage.value = 1;
@@ -183,5 +216,6 @@ export const useArticleStore = defineStore('article', () => {
     fetchTrendingArticles,
     fetchArticleById,
     formatDate,
+    fetchArticleByUserId,
   };
 });
