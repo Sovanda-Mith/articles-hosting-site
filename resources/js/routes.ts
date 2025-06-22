@@ -1,6 +1,7 @@
 import { createWebHistory, createRouter, type RouteRecordRaw } from 'vue-router';
 import NotFound from './pages/NotFound.vue';
 import { useUserStore } from './stores/features/custom-persistedstate';
+import axios from 'axios';
 
 const routes: RouteRecordRaw[] = [
   //specify type of route
@@ -209,16 +210,40 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   document.title = (to.meta.title as string) || 'Articles Hosting Site';
 
   const userStore = useUserStore();
 
   if (to.meta.requiresAuth && !userStore.user?.token) {
-    next({ path: '/login' });
-  } else {
-    next();
+    return next({ path: '/login' });
   }
+
+  if (to.name === 'EditArticle') {
+    const articleId = to.params.id;
+
+    if (!articleId) {
+      return next({ path: '/new-article' });
+    }
+
+    try {
+      const response = await axios.get('/api/articles/' + articleId, {
+        headers: {
+          Authorization: `Bearer ${userStore.user?.token}`,
+        },
+      });
+
+      const article = response.data;
+
+      if (article.user_id !== userStore.user?.id) {
+        return next({ path: '/new-article' });
+      }
+    } catch (error) {
+      return next({ name: 'NotFound' });
+    }
+  }
+
+  next();
 });
 
 export default router;
