@@ -330,7 +330,7 @@
           );
 
           if (followersResponse.status === 200) {
-            author.value.followers_count = followersResponse.data.length;
+            author.value.followers_count = followersResponse.data.data.length;
           }
         } catch (error) {
           console.error('Error fetching followers:', error);
@@ -347,7 +347,7 @@
           );
 
           if (followingResponse.status === 200) {
-            author.value.following_count = followingResponse.data.length;
+            author.value.following_count = followingResponse.data.data.length;
           }
         } catch (error) {
           console.error('Error fetching following:', error);
@@ -577,7 +577,7 @@
           :comment_id="comment.comment_id"
           :user_id="comment.user_id"
           :name="comment.user.name"
-          :avatar="comment.user.avatar"
+          :avatar="comment.user.pf_image"
           :content="comment.content"
           :timeAgo="dayjs(comment.created_at).fromNow()"
           @edit="editComment"
