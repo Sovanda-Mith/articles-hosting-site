@@ -57,7 +57,7 @@ import { useArticleStore } from '../../js/stores/features/articles/stores/Articl
 const articleStore = useArticleStore()
 
 const scrollableClass = computed(() =>
-  articleStore.articles.length > 10
+  articleStore.articles.length > 5
     ? 'max-h-[80vh] overflow-y-auto pr-2 scrollbar-hide'
     : ''
 )
