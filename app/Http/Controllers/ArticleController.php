@@ -96,6 +96,29 @@ class ArticleController extends Controller
         ]);
     }
 
+    public function getArticleByUserId(string $userId, Request $request): JsonResponse
+    {
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 10);
+
+        $articles = Article::with(['likes', 'comments'])
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->paginate($limit, ['*'], 'page', $page);
+
+        return response()->json([
+            'data' => ArticleResource::collection($articles),
+            'meta' => [
+                'current_page' => $articles->currentPage(),
+                'last_page' => $articles->lastPage(),
+                'per_page' => $articles->perPage(),
+                'total' => $articles->total(),
+                'from' => $articles->firstItem(),
+                'to' => $articles->lastItem(),
+            ],
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

@@ -101,6 +101,8 @@ import profileImg from '../../../public/landingPage_img/profile.png'
 import { useUserStore } from '../../js/stores/features/users/user'
 import { useFollowStore } from '../../js/stores/features/follows/stores/FollowStore'
 import { Button } from '../../js/components/ui/button'
+import FollowingList from './FollowingList.vue'
+import FollowerList from './FollowerList.vue'
 
 const router = useRouter()
 const userStore = useUserStore()

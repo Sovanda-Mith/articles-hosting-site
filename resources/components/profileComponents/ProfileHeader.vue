@@ -1,6 +1,7 @@
 <template>
   <div class="pl-6 relative flex items-center justify-between">
-    <p class="text-h2">{{ userStore.user.name || 'ANONYMOUS' }}</p>
+    <p v-if="props.viewType === 'profile'" class="text-h2">{{ userStore.user.name || 'ANONYMOUS' }}</p>
+    <p v-if="props.viewType === 'viewer'" class="text-h2">{{ props.name || 'ANONYMOUS' }}</p>
     <button
       @click="showMenu = !showMenu"
       class="absolute right-4 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-1 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
@@ -49,16 +50,23 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useUserStore } from '@/stores/features/users/user'
-const userStore = useUserStore()
+import { defineProps } from 'vue'
 
+const userStore = useUserStore()
 const showMenu = ref(false)
 const menuRef = ref<HTMLElement | null>(null)
+
+const props = defineProps<{
+  name?: string
+  viewType: 'profile' | 'viewer'
+}>()
 
 function handleClickOutside(event: MouseEvent) {
   if (showMenu.value && menuRef.value && !menuRef.value.contains(event.target as Node)) {
     showMenu.value = false
   }
 }
+
 
 onMounted(() => {
   document.addEventListener('mousedown', handleClickOutside)
