@@ -199,6 +199,61 @@ export const useArticleStore = defineStore('article', () => {
     });
   };
 
+  // const searchArticles = async (query: string, page: number = 1) => {
+  //   isLoading.value = true;
+  //   try {
+  //       const response = await ArticleApi.searchArticles(query, page = 10);
+        
+  //       if (page === 1) {
+  //           articles.value = response.articles;
+  //       } else {
+  //           articles.value = [...articles.value, ...response.articles];
+  //       }
+  //       console.log('Search API Response:', response);
+        
+  //       currentPage.value = response.current_page;
+  //       lastPage.value = response.last_page;
+  //       totalArticles.value = response.total;
+        
+  //       return response;
+  //   } finally {
+  //       isLoading.value = false;
+  //   }
+  // };
+  const searchArticles = async (query: string, page: number = 1) => {
+    isLoading.value = true;
+    try {
+      const response = await ArticleApi.searchArticles(query, page, 10);
+      
+      console.log('Search Store Response:', response);
+      
+      if (page === 1) {
+        articles.value = response.articles;
+      } else {
+        // Prevent duplicates
+        const existingIds = new Set(articles.value.map(article => article.id));
+        const newArticles = response.articles.filter(article => !existingIds.has(article.id));
+        articles.value = [...articles.value, ...newArticles];
+      }
+      
+      currentPage.value = response.current_page;
+      lastPage.value = response.last_page;
+      totalArticles.value = response.total;
+      
+      return response;
+    } catch (error) {
+      console.error('Search failed:', error);
+      // Reset to empty state on error
+      articles.value = [];
+      currentPage.value = 1;
+      lastPage.value = 1;
+      totalArticles.value = 0;
+      throw error; // Re-throw if you want to handle in component
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   return {
     articles,
     currArticle,
@@ -216,6 +271,7 @@ export const useArticleStore = defineStore('article', () => {
     fetchTrendingArticles,
     fetchArticleById,
     formatDate,
+    searchArticles,
     fetchArticleByUserId,
   };
 });

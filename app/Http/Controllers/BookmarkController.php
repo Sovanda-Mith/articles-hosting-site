@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class BookmarkController extends Controller
 {
@@ -46,9 +48,7 @@ class BookmarkController extends Controller
         try {
             $user = Auth::user();
 
-            $articles = $user->bookmarkedArticles()
-                            ->with(['author', 'categories']) // eager load relationships
-                            ->paginate(10);
+            $articles = $user->bookmarkedArticles()->pluck('articles.article_id');
 
             return response()->json([
                 'success' => true,
