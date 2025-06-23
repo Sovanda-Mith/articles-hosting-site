@@ -21,15 +21,9 @@
 
       <div class="flex flex-col md:flex-row justify-between gap-6">
         <div class="flex-1">
-          <h3 class="text-h5 font-bold leading-snug">{{ card.title || 'Untitled' }}</h3>
+          <h3 class="text-h5 font-bold leading-snug">{{ card.subtitle || 'Untitled' }}</h3>
 
-          <p v-if="card.subtitle" class="body-1 text-muted-foreground mb-3">
-            {{ card.subtitle }}
-          </p>
-          <p v-else class="body-1 text-muted-foreground mb-3 italic">
-            No description provided.
-          </p>
-          <div class="flex items-center text-sm text-muted-foreground space-x-6">
+          <div class="flex items-center text-sm text-muted-foreground mt-5 space-x-6">
             <span>{{ formatDate(card.created_at) }}</span>
             <span class="flex items-center gap-2">
               <i class="ri-hand-heart-line"></i> {{ card.likes_count ?? 0 }}

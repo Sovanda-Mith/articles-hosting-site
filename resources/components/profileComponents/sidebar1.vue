@@ -30,7 +30,7 @@
           class="px-4 py-2 flex items-center gap-2"
           :disabled="!user?.email"
           title="Send Email"
-          :disabled="!user.email"
+
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <rect x="3" y="5" width="18" height="14" rx="2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -177,22 +177,25 @@ defineOptions({ name: 'ProfileSidebar' })
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
 import profileImg from '../../../public/landingPage_img/profile.png'
-import { useListStore } from '../../js/stores/features/storyList/listStore'
+// import { useListStore } from '../../js/stores/features/storyList/listStore'
 import FollowingList from './FollowingList.vue'
 import { Button } from '@/components/ui/button'
 import { useUserStore } from '../../js/stores/features/users/user'
 import type { User } from '../../js/lib/types/user'
 import { useFollowStore } from '@/stores/features/follows/stores/FollowStore'
+import { useBookmarkStore } from '../../js/stores/bookmark/stores/bookmarkStore'
+import type { Bookmark } from '../../js/stores/bookmark/types/bookmark'
 
 // Define props
 const props = defineProps<{
   user: User
 }>()
 
-const listStore = useListStore()
+// const listStore = useListStore()
 const userStore = useUserStore()
 const followStore = useFollowStore()
-const lists = computed(() => listStore.lists)
+// const lists = computed(() => listStore.lists)
+const showPopup = ref(false)
 
 const avatarUrl = computed(() => props.user.avatar || profileImg)
 
@@ -205,6 +208,11 @@ const actualFollowingCount = ref(10) // Example value, adjust based on your need
 const followId = ref(null)
 
 const showUnfollowConfirm = ref(false)
+const toggleShowAllFollowing = () => (showAllFollowing.value = !showAllFollowing.value)
+const showAllFollower = ref(false)
+const toggleShowAllFollower = () => (showAllFollower.value = !showAllFollower.value)
+const actualFollowerCount = computed(() => followStore.followers.length)
+const followerList = computed(() => followStore.followers)
 
 const isOwner = computed(() => userStore.user?.id === props.user?.id);
 
@@ -353,7 +361,7 @@ const getFollowingCount = async () => {
 };
 
 const handleFollowClick = () => {
-  if (isFollowed.value) {
+  if (isFollowing.value) {
     showPopup.value = true
   } else {
     toggleFollowUser()
@@ -365,10 +373,23 @@ function confirmUnfollow() {
   showUnfollowConfirm.value = false
 }
 
+// --- Bookmarks Section ---
+const bookmarkStore = useBookmarkStore()
+const bookmarks = computed<Bookmark[]>(() => bookmarkStore.bookmarks)
+const showAllBookmarks = ref(false)
+
+const displayedBookmarks = computed(() => {
+  if (showAllBookmarks.value || bookmarks.value.length <= 10) {
+    return bookmarks.value
+  }
+  return bookmarks.value.slice(0, 5)
+})
+
 onMounted(async () => {
   // Fetch follow counts
   await getFollowersCount();
   await getFollowingCount();
+  bookmarkStore.loadBookmarks();
 
   // Only check if following when viewing someone else's profile and user is authenticated
   if (!isOwner.value && (userStore.user?.token || localStorage.getItem("auth_token"))) {

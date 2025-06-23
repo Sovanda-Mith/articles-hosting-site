@@ -135,7 +135,7 @@ const routes: RouteRecordRaw[] = [
   */
   {
     path: '/viewer/:userid',
-    component: () => import('../js/pages/ViewerPofilePage.vue'),
+    component: () => import('../js/pages/userProfilePage.vue'),
     meta: {
       title: 'User Profile',
     },

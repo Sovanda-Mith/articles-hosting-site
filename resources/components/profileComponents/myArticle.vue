@@ -6,6 +6,7 @@
         v-for="article in articleStore.articles"
         :key="article.id"
         class="flex flex-col gap-5 p-6 pl-12 border-b border-border last:border-b-0 bg-card text-card-foreground"
+        @click="router.push(`/article/${article.id}`)"
       >
         <!-- Author Info -->
         <div class="flex items-center gap-3 text-base font-semibold">
@@ -53,8 +54,10 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
 import { useArticleStore } from '../../js/stores/features/articles/stores/ArticleStore'
+import { useRouter } from 'vue-router'
 
 const articleStore = useArticleStore()
+const router = useRouter()
 
 const scrollableClass = computed(() =>
   articleStore.articles.length > 5
@@ -63,7 +66,10 @@ const scrollableClass = computed(() =>
 )
 
 onMounted(async () => {
-  await articleStore.fetchArticles(1, false)
+  const userId = localStorage.getItem('userId')
+    if (userId) {
+      await articleStore.fetchArticleByUserId(Number(userId))
+    }
 })
 
 function formatDate(dateStr?: string): string {

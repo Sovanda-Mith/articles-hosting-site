@@ -5,7 +5,7 @@
     <div class="grid md:grid-cols-3 bg-white text-black divide-x divide-gray-200 pt-15">
       <!-- Left: Main Profile Section -->
       <div class="md:col-span-2 p-6">
-        <ProfileHeader />
+        <ProfileHeader viewType="profile" />
         <TabSwitcher />
         <!-- Mobile Sidebar Open Button -->
         <div class="md:hidden flex justify-end mb-4">
