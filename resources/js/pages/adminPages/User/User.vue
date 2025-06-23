@@ -1,4 +1,7 @@
 <template>
+  <div v-if="isOpen">
+  <confirmDialog @action="deleteUser"></confirmDialog>
+  </div>
   <div class="h-full flex flex-col justify-start overflow-y-auto bg-white">
      <!-- Toolbar -->
   <div class="flex justify-between items-center p-4 bg-white shadow rounded-t-lg">
@@ -14,7 +17,7 @@
         </div>
       
       </div>
-      <div class="px-4 py-2 gap-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex shadow cursor-pointer">
+      <div class="px-4 py-2 gap-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex shadow cursor-pointer" @click="openCreateDialog">
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 -mb-1">
             <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
@@ -117,7 +120,7 @@
       <tbody class="divide-y divide-gray-100 text-sm">
         <tr v-for="user in paginatedUsers" :key="user.id" class="hover:bg-gray-50">
           <td class="px-6 py-4 flex items-center gap-3">
-            <img :src="user.avatar" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-blue-500" />
+            <img :src="user.pf_image" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-blue-500" />
             <div>
               <div class="font-semibold">{{ user.name }}</div>
               <div class="text-gray-500 text-sm">{{ user.email }}</div>
@@ -128,8 +131,8 @@
           <td class="px-6 py-4">
             <span
               :class="{
-                'text-blue-600 font-medium': user.status === 'Allowed',
-                'text-red-600 font-medium': user.status === 'Disallowed'
+                'text-blue-600 font-medium': user.status === 'allowed',
+                'text-red-600 font-medium': user.status === 'blocked'
               }"
             >
               {{ user.status }}
@@ -137,12 +140,12 @@
           </td>
           <td class="px-6 py-4">{{ formatDate(user.creationDate) }}</td>
           <td class="px-6 py-4 space-x-4">
-            <button @click="editUser(user)" class="text-blue-600 hover:text-blue-800">
+            <button @click="toggleDialog(user.id)" class="text-red-600 hover:text-red-800">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
               </svg>
             </button>
-            <button @click="deleteUser(user)" class="text-red-600 hover:text-red-800">
+            <button @click="openEditDialog(user.id)" class="text-blue-600 hover:text-blue-800" >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
               </svg>
@@ -156,139 +159,121 @@
   <!-- Pagination -->
   <div class="flex justify-between items-center p-4 bg-white rounded-b-lg border-t mt-auto">
     <button @click="prevPage" :disabled="page === 1"
-      class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50">
+      class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50 cursor-pointer">
       Previous
     </button>
     <span class="text-sm text-gray-600">Page {{ page }} of {{ totalPages }}</span>
     <button @click="nextPage" :disabled="page === totalPages"
-      class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50">
+      class="px-3 py-1 bg-gray-200 rounded disabled:opacity-50 cursor-pointer">
       Next
     </button>
   </div>
+
+  <!-- update -->
+  <EditUserDialog
+  :show="showEdit"
+   mode="edit"
+  :user="selectedUser"
+  @close="showEdit = false"
+  @save="updateUser"
+  />
+
+    <!-- Create -->
+  <EditUserDialog
+  :show="showCreate"
+   mode="create"
+  @save="createUser"
+  @close="showCreate = false"
+  />
+
   </div>
 
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-
+import axios from 'axios'
+import { ref, computed, onMounted } from 'vue'
+import confirmDialog from '../__shared__/dialog/confirm-dialog.vue'
+import EditUserDialog from '../__shared__/dialog/EditUserDialog.vue'
 interface User {
   id: number
   name: string
+  username: string
   email: string
-  avatar: string
+  pf_image: string
   gender: string
   occupation: string
   status: string
   creationDate: string
+  phone_number: string | null
+  address_line: string | null
+  city: string | null
+  country: string | null
+  dob: string | null
+  bio: string | null
 }
 
-const users = ref<User[]>([
-  {
-    id: 1,
-    name: 'John Doe 🇮🇳',
-    email: 'john.doe@gmail.com',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    gender: 'Male',
-    occupation: 'Web Developer',
-    status: 'Allowed',
-    creationDate: '2025-03-12',
-  },
-  {
-    id: 2,
-    name: 'John Doe 🇮🇳',
-    email: 'john.doe@gmail.com',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    gender: 'Male',
-    occupation: 'Web Developer',
-    status: 'Allowed',
-    creationDate: '2025-03-12',
-  },
-  {
-    id: 3,
-    name: 'John Doe 🇮🇳',
-    email: 'john.doe@gmail.com',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    gender: 'Male',
-    occupation: 'Web Developer',
-    status: 'Allowed',
-    creationDate: '2025-03-12',
-  },
-  {
-    id: 4,
-    name: 'John Doe 🇮🇳',
-    email: 'john.doe@gmail.com',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    gender: 'Male',
-    occupation: 'Web Developer',
-    status: 'Allowed',
-    creationDate: '2025-03-12',
-  },
-  {
-    id: 5,
-    name: 'John Doe 🇮🇳',
-    email: 'john.doe@gmail.com',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    gender: 'Male',
-    occupation: 'Web Developer',
-    status: 'Allowed',
-    creationDate: '2025-03-12',
-  },
-  {
-    id: 6,
-    name: 'John Doe 🇮🇳',
-    email: 'john.doe@gmail.com',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    gender: 'Male',
-    occupation: 'Web Developer',
-    status: 'Allowed',
-    creationDate: '2025-03-12',
-  },
-  {
-    id: 7,
-    name: 'John Doe 🇮🇳',
-    email: 'john.doe@gmail.com',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    gender: 'Male',
-    occupation: 'Web Developer',
-    status: 'Allowed',
-    creationDate: '2025-03-12',
-  },
-  {
-    id: 8,
-    name: 'John Doe 🇮🇳',
-    email: 'john.doe@gmail.com',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    gender: 'Male',
-    occupation: 'Web Developer',
-    status: 'Allowed',
-    creationDate: '2025-03-12',
-  },
-  {
-    id: 9,
-    name: 'John Doe 🇮🇳',
-    email: 'john.doe@gmail.com',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    gender: 'Male',
-    occupation: 'Web Developer',
-    status: 'Allowed',
-    creationDate: '2025-03-12',
-  },
-  {
-    id: 10,
-    name: 'John Doe 🇮🇳',
-    email: 'john.doe@gmail.com',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    gender: 'Male',
-    occupation: 'Web Developer',
-    status: 'Allowed',
-    creationDate: '2025-03-12',
-  },
-  
-])
-
+const users = ref<User[]>([])
 const searchQuery = ref('')
 const page = ref(1)
 const pageSize = 10
+const isOpen = ref(false);
+const selectedUserId = ref<number | null>(null);
+const showEdit = ref(false)
+const showCreate = ref(false)
+const selectedUser = ref(null)
+
+const toggleDialog = (userId: number) => {
+    selectedUserId.value = userId;
+    isOpen.value = !isOpen.value;
+
+  };
+
+function openEditDialog(id: number) {
+  selectedUser.value = users.value.find(user => user.id === id)
+  showEdit.value = true
+}
+
+function openCreateDialog() {
+  showCreate.value = true
+}
+
+
+async function fetchUsers() {
+  try {
+    const jwtToken = localStorage.getItem('auth_token');
+    if (!jwtToken) return;
+
+    const response = await axios.get('http://localhost:8000/api/admin/user', {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    });
+
+    users.value = response.data.map((r: any) => ({
+      id: r.id,
+      name: r.name,
+      username: r.username,
+      email: r.email,
+      pf_image: r.pf_image,
+      gender: r.gender,
+      occupation: r.occupation || 'N/A',
+      status: r.is_allowed === 1 ? 'allowed' : 'blocked',
+      creationDate: r.created_at,
+      phone_number: r.phone_number,
+      address_line: r.address_line,
+      city: r.city,
+      country: r.country,
+      dob: r.dob,
+      bio: r.bio
+
+    })).sort((a, b) => Number(a.id) - Number(b.id));
+  } catch (error) {
+    console.error('Failed to load users:', error);
+  }
+}
+
+onMounted(fetchUsers);
+
 
 const filteredUsers = computed(() =>
   users.value.filter(u =>
@@ -324,12 +309,100 @@ function formatDate(date: string) {
   })
 }
 
-function editUser(user: User) {
-  alert(`Edit: ${user.name}`)
+async function updateUser(user: User) {
+  
+  const jwtToken = localStorage.getItem('auth_token');
+  if (!jwtToken) return;
+
+  try {
+     const payload = {
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      occupation: user.occupation,
+      is_allowed: user.status,
+      gender: user.gender,
+      phone_number: user.phone_number,
+      address_line: user.address_line,
+      city: user.city,
+      country: user.country,
+      dob: user.dob,
+      bio: user.bio,
+      avatar_base64: user.pf_image || null,
+    };
+    console.log(payload);
+     const response = await axios.post(
+      `http://localhost:8000/api/admin/user/${user.id}`, payload,
+    {
+      headers: 
+      {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    })
+    console.log("updated user: ", response)
+    showEdit.value = false;
+    // Reload users after updating
+    await fetchUsers();
+  } catch (error) {
+    console.error('Failed to update user:', error);
+  }
 }
 
-function deleteUser(user: User) {
-  alert(`Delete: ${user.name}`)
+
+async function createUser(user: User) {
+  
+  const jwtToken = localStorage.getItem('auth_token');
+  if (!jwtToken) return;
+
+  try {
+     const payload = {
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      occupation: user.occupation,
+      is_allowed: user.status,
+      gender: user.gender,
+      phone_number: user.phone_number,
+      address_line: user.address_line,
+      city: user.city,
+      country: user.country,
+      dob: user.dob,
+      bio: user.bio,
+      avatar_base64: user.pf_image || null,
+    };
+    console.log(payload);
+     const response = await axios.post(
+      `http://localhost:8000/api/admin/user`, payload,
+    {
+      headers: 
+      {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    })
+    console.log("created user: ", response)
+    // Reload users after creation
+    await fetchUsers();
+    showCreate.value = false;
+  } catch (error) {
+    console.error('Failed to create user:', error);
+  }
 }
 
+async function deleteUser() {
+  const jwtToken = localStorage.getItem('auth_token');
+  if (!jwtToken) return;
+
+  try {
+     const response = await axios.delete(`http://localhost:8000/api/admin/user/${selectedUserId.value}`, {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    })
+    console.log(response)
+    // Reload users after delete
+    await fetchUsers();
+  } catch (error) {
+    console.error('Failed to delete user:', error);
+  }
+}
 </script>

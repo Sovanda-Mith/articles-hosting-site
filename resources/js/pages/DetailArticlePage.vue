@@ -252,8 +252,6 @@
           updated_at: response.data.updated_at,
         };
 
-        isLiked.value = article.value.likes_count > 0;
-
         timeAgo.value = dayjs(article?.value.created_at).fromNow();
 
         try {
@@ -298,6 +296,9 @@
 
           if (likeResponse.status === 200) {
             article.value.likes_count = likeResponse.data.likes_count;
+            isLiked.value = likeResponse.data.likes.some((like) => {
+              return like.user_id === userStore.user.id;
+            });
           }
         } catch (error) {
           console.error('Error fetching likes:', error);
@@ -329,7 +330,7 @@
           );
 
           if (followersResponse.status === 200) {
-            author.value.followers_count = followersResponse.data.length;
+            author.value.followers_count = followersResponse.data.data.length;
           }
         } catch (error) {
           console.error('Error fetching followers:', error);
@@ -346,7 +347,7 @@
           );
 
           if (followingResponse.status === 200) {
-            author.value.following_count = followingResponse.data.length;
+            author.value.following_count = followingResponse.data.data.length;
           }
         } catch (error) {
           console.error('Error fetching following:', error);
@@ -580,7 +581,7 @@
           :comment_id="comment.comment_id"
           :user_id="comment.user_id"
           :name="comment.user.name"
-          :avatar="comment.user.avatar"
+          :avatar="comment.user.pf_image"
           :content="comment.content"
           :timeAgo="dayjs(comment.created_at).fromNow()"
           @edit="editComment"

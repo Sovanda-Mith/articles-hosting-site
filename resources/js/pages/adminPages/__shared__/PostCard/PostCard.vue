@@ -1,10 +1,13 @@
 <template>
-  <div class="bg-white shadow rounded-lg overflow-hidden">
+  <div class="bg-white shadow rounded-lg ">
     <img :src="post.image" class="w-full max-h-48 object-cover" />
-    <div class="p-4">
-      <h3 class="font-bold text-lg mb-2">{{ post.title }}</h3>
-      <p class="text-gray-600 mb-2">{{ post.description }}</p>
-      <div class="flex items-center text-sm text-gray-500 gap-4 mb-3">
+    <div class="p-4 flex flex-col justify-between">
+      <div class="h-32 ">
+        <p class="font-bold text-lg mb-2">{{ post.title }}</p>
+        <p class="text-gray-600 mb-2">{{ post.description }}</p>
+      </div>
+
+      <div class="flex justify-start items-start text-sm text-gray-500 gap-4 mb-3">
         <div class="flex justify-center items-center">
             <span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-1">
@@ -28,8 +31,8 @@
             </span> 
             {{ post.timestamp }}</div>
       </div>
-      <div class="flex items-center gap-2">
-        <img :src="post.author.avatar" class="w-10 h-10 rounded-full" />
+      <div class="flex items-center gap-2 ">
+        <img :src="post.author.avatar" class="w-10 h-10 rounded-full " />
         <span class="text-md font-medium">{{ post.author.name }}</span>
       </div>
     </div>

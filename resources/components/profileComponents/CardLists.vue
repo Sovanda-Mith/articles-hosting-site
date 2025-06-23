@@ -9,18 +9,18 @@
       @click="navigateToArticle(card.id)"
       class="flex flex-col gap-5 p-6 pl-12 rounded-xl bg-card text-card-foreground border-b border-border cursor-pointer hover:bg-muted/50 transition-colors duration-200"
     >
+      <!-- Card Header -->
       <div class="flex items-center gap-3 text-base font-semibold">
         <img
-          src="/feedpage_img/profile1.jpg"
+          :src="card.image || '/feedpage_img/profile1.jpg'"
           alt="Avatar"
           class="w-8 h-8 rounded-full object-cover"
         />
-        <span>User ID: {{ card.user_id || 'Unknown User' }}</span>
+        <span>{{ card.title || 'Untitled' }}</span>
       </div>
 
       <div class="flex flex-col md:flex-row justify-between gap-6">
         <div class="flex-1">
-
           <h3 class="text-h5 font-bold leading-snug">{{ card.title || 'Untitled' }}</h3>
 
           <p v-if="card.subtitle" class="body-1 text-muted-foreground mb-3">
@@ -29,7 +29,6 @@
           <p v-else class="body-1 text-muted-foreground mb-3 italic">
             No description provided.
           </p>
-
           <div class="flex items-center text-sm text-muted-foreground space-x-6">
             <span>{{ formatDate(card.created_at) }}</span>
             <span class="flex items-center gap-2">
@@ -40,7 +39,6 @@
             </span>
           </div>
         </div>
-
         <div>
           <img
             :src="card.image || '/feedpage_img/img1.jpg'"
@@ -52,7 +50,6 @@
     </div>
   </div>
 </template>
-
 
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'

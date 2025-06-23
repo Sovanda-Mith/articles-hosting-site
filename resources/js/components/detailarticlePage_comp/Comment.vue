@@ -43,7 +43,7 @@
   <div class="border-b border-t-2 border-gray-100 w-full py-5 px-5">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <img :src="avatar" alt="" class="w-[60px] h-[60px] rounded-full" />
+        <img :src="props.avatar" alt="" class="w-[60px] h-[60px] rounded-full" />
         <div class="flex flex-col">
           <span>{{ props.name }}</span>
           <span>{{ props.timeAgo }}</span>
