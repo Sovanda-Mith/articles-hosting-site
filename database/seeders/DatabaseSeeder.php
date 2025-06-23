@@ -94,7 +94,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FollowSeeder::class,
         ]);
-
         // Call ReportSeeder
         $this->call([
             ReportSeeder::class,
@@ -104,6 +103,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             BanwordSeeder::class,
         ]);
-
+        //call csv seeder
+        $this->call([
+            CsvDataSeeder::class,
+        ]);
     }
 }
