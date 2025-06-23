@@ -9,13 +9,18 @@ use App\Models\Article;
 
 class ForYouController extends Controller
 {
-    public function getForYouArticles()
+    public function getForYouArticles(Request $request) : JsonResponse
     {
         $user = Auth::user();
-        
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+    
+        $page = $request->input('page', 1);
+        $limit = $request->input('limit', 10);
+
         // Get trending articles
         $trendingIds = Article::orderBy('view_count', 'desc')
-            ->take(10)
             ->pluck('article_id')
             ->toArray();
 
@@ -81,27 +86,55 @@ class ForYouController extends Controller
                 $score += 5;
             }
 
-            return [
-                'article_id' => $article->article_id,
-                'title' => $article->title,
+            return array_merge($article->toArray(), [
                 'score' => $score,
-                'categories' => $articleCategoryNames
-            ];
+                'categories' => $articleCategoryNames,
+                'likes_count' => $article->likes_count ?? 0,
+                'comments_count' => $article->comments_count ?? 0,
+                'user' => $article->user,
+                'created_at' => $article->created_at,
+                'updated_at' => $article->updated_at
+            ]);
         })->sortByDesc('score')->values();
 
+        // $paginated = ($scored)->paginate($limit, ['*'], 'page', $page);
+        $total = count($scored);
+        $lastPage = max(ceil($total / $limit), 1); // Ensure at least 1 page
+        $offset = ($page - 1) * $limit;
+        $paginatedItems = array_slice($scored->toArray(), $offset, $limit);
+
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Recommended articles retrieved successfully',
+        //     'data' => [
+        //         // 'current_page' => (int)$page,
+        //         // 'last_page' => (int)$lastPage,
+        //         // 'total' => $total,
+        //         // 'per_page' => (int)$limit,
+        //         'recommended_articles' => $scored,
+        //         'trending_articles' => $trendingIds,
+        //         'user_preferences' => [
+        //             'preferred_categories' => $preferredCategories,
+        //             'liked_categories' => $likedCategories,
+        //             'bookmarked_categories' => $bookmarkedCategories
+        //         ]
+        //     ]
+        // ]);
         return response()->json([
-            'success' => true,
-            'message' => 'Recommended articles retrieved successfully',
-            'data' => [
-                'recommended_articles' => $scored,
-                'trending_articles' => $trendingIds,
-                'user_preferences' => [
-                    'preferred_categories' => $preferredCategories,
-                    'liked_categories' => $likedCategories,
-                    'bookmarked_categories' => $bookmarkedCategories
-                ]
+            'data' => $paginatedItems,
+            'meta' => [
+                'current_page' => (int)$page,
+                'last_page' => (int)$lastPage,
+                'total' => $total,
+                'per_page' => (int)$limit
+            ],
+            'recommended_articles' => $scored,
+            'trending_articles' => $trendingIds,
+            'user_preferences' => [
+                'preferred_categories' => $preferredCategories,
+                'liked_categories' => $likedCategories,
+                'bookmarked_categories' => $bookmarkedCategories
             ]
         ]);
-    
     }
 }

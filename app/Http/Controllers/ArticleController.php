@@ -170,4 +170,72 @@ class ArticleController extends Controller
         Article::findOrFail($id)->delete();
         return response()->json(['message' => 'Article deleted successfully'], 204);
     }
+
+    public function search(Request $request)
+    {
+        // In ArticleController.php
+        $query = $request->input('q');
+        $page = $request->input('page', 1);
+        $perPage = $request->input('limit', 10);
+
+        $results = Article::where('title', 'like', "%$query%")
+        ->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+        'data' => $results->items(),
+        'meta' => [
+            'current_page' => $results->currentPage(),
+            'last_page' => $results->lastPage(),
+            'total' => $results->total(),
+            'per_page' => $perPage
+        ]
+]);
+
+        // $articles = Article::where('title', 'like', "%$query%")
+        //     ->orWhere('content', 'like', "%$query%")
+        //     ->paginate($perPage, ['*'], 'page', $page);
+
+        // return response()->json([
+        //     'data' => $articles->items(),
+        //     'meta' => [
+        //         'current_page' => $articles->currentPage(),
+        //         'last_page' => $articles->lastPage(),
+        //         'total' => $articles->total(),
+        //         'per_page' => $articles->perPage()
+        //     ]
+        // ]);
+
+
+        // $request->validate([
+        //     'q' => 'sometimes|string|max:255',
+        //     'page' => 'sometimes|integer|min:1',
+        //     'limit' => 'sometimes|integer|min:1|max:100'
+        // ]);
+    
+        // $query = Article::query()
+        //     ->with(['user:id,name,profile_image'])
+        //     ->when($request->q, function ($q) use ($request) {
+        //         $searchTerm = $request->q;
+        //         $q->where(function($query) use ($searchTerm) {
+        //             $query->where('title', 'like', "%{$searchTerm}%")
+        //                   ->orWhereHas('user', function($q) use ($searchTerm) {
+        //                       $q->where('name', 'like', "%{$searchTerm}%");
+        //                   });
+        //         });
+        //     });
+
+        // // Paginate results
+        // $perPage = $request->input('limit', 10);
+        // $results = $query->paginate($perPage);
+
+        // return response()->json([
+        //     'data' => $results->items(),
+        //     'meta' => [
+        //         'current_page' => $results->currentPage(),
+        //         'last_page' => $results->lastPage(),
+        //         'total' => $results->total(),
+        //         'per_page' => $results->perPage()
+        //     ]
+        // ]);
+    }
 }

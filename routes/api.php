@@ -44,6 +44,7 @@ Route::middleware('auth:sanctum')->controller(SettingController::class)->prefix(
         Route::get('/blockedUser', 'blockedUsers');
         Route::post('/blockedUser', 'blockUser');
         Route::delete('/unblockUser/{blockedUserId}', 'unblockUser');
+        Route::middleware('auth:sanctum')->get('/foryou', [ForYouController::class, 'getForYouArticles']);
         Route::get('/mutedUser', 'mutedUsers');
         Route::post('/mutedUser', 'muteUser');
         Route::delete('/unmuteUser/{mutedUserId}', 'unmuteUser');
@@ -88,7 +89,6 @@ Route::middleware(['auth:sanctum'])->prefix('articles')->group(function () {
     Route::put('/{article}', [ArticleController::class, 'update']);
     Route::delete('/{article}', [ArticleController::class, 'destroy']);
     Route::get('/following/{userid}', [ArticleController::class, 'followingArticle']);
-
 });
 
 // Follow Routes
@@ -162,4 +162,4 @@ Route::middleware(['auth:sanctum'])->post('/article/{article_id}/bookmark', [Boo
 Route::middleware(['auth:sanctum'])->get('/user/bookmarked-articles', [BookmarkController::class, 'getUserBookmarkedArticles']);
 
 Route::middleware('auth:sanctum')->get('/foryou', [ForYouController::class, 'getForYouArticles']);
-
+Route::get('/articles/search', [ArticleController::class, 'search']);
