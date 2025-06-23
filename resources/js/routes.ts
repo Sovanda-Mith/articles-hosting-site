@@ -1,5 +1,7 @@
 import { createWebHistory, createRouter, type RouteRecordRaw } from 'vue-router';
 import NotFound from './pages/NotFound.vue';
+import { useUserStore } from './stores/features/custom-persistedstate';
+import axios from 'axios';
 
 const routes: RouteRecordRaw[] = [
   //specify type of route
@@ -44,6 +46,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../js/pages/settingPages/Settings.vue'),
     meta: {
       title: 'Settings',
+      requiresAuth: true,
     },
     children: [
       {
@@ -110,18 +113,29 @@ const routes: RouteRecordRaw[] = [
     props: true,
     meta: {
       title: 'DetailArticle',
+      requiresAuth: true,
     },
   },
   {
     path: '/profile',
-    component: () => import('../js/pages/ProfilePage.vue'),
+    component: () => import('../js/pages/myProfilePage.vue'),
     meta: {
       title: 'My Profile',
+      requiresAuth: true,
     },
   },
+  /*
   {
-    path: '/viewer',
-    component: () => import('../js/pages/ViewerPofilePage.vue'),
+    path: '/bookmarks/:id',
+    component: () => import('../js/pages/BookmarksPage.vue'),
+    meta: {
+      title: 'Bookmarks',
+    },
+  },
+  */
+  {
+    path: '/viewer/:userid',
+    component: () => import('../js/pages/userProfilePage.vue'),
     meta: {
       title: 'User Profile',
     },
@@ -131,6 +145,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../js/pages/article/NewArticle.vue'),
     meta: {
       title: 'New Article',
+      requiresAuth: true,
     },
   },
   {
@@ -139,6 +154,7 @@ const routes: RouteRecordRaw[] = [
     name: 'EditArticle',
     meta: {
       title: 'Edit Article',
+      requiresAuth: true,
     },
   },
 
@@ -194,8 +210,39 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   document.title = (to.meta.title as string) || 'Articles Hosting Site';
+
+  const userStore = useUserStore();
+
+  if (to.meta.requiresAuth && !userStore.user?.token) {
+    return next({ path: '/login' });
+  }
+
+  if (to.name === 'EditArticle') {
+    const articleId = to.params.id;
+
+    if (!articleId) {
+      return next({ path: '/new-article' });
+    }
+
+    try {
+      const response = await axios.get('/api/articles/' + articleId, {
+        headers: {
+          Authorization: `Bearer ${userStore.user?.token}`,
+        },
+      });
+
+      const article = response.data;
+
+      if (article.user_id !== userStore.user?.id) {
+        return next({ path: '/new-article' });
+      }
+    } catch (error) {
+      return next({ name: 'NotFound' });
+    }
+  }
+
   next();
 });
 

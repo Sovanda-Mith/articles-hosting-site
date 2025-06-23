@@ -7,12 +7,7 @@
       </p>
     </header>
     <div class="space-y-3 text-base text-gray-700">
-      <p>
-        I am a history PhD, independent philosophy scholar, and essayist. My passion is making complex ideas accessible and useful.
-      </p>
-      <p>
-        With experience in marketing strategy and a busy family life, I bring a unique perspective to every topic I explore.
-      </p>
+      {{ props.aboutMe }}
     </div>
     <footer class="flex flex-col sm:flex-row gap-4 pt-4 border-t justify-between items-start sm:items-center">
       <div class="flex items-center gap-2">
@@ -24,7 +19,7 @@
             <rect x="3" y="5" width="18" height="14" rx="2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M3 7l9 6 9-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>steven.gambardella@gmail.com</span>
+          <span>{{ props.email }}</span>
         </a>
       </div>
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
@@ -39,9 +34,16 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import { defineProps } from 'vue';
 defineOptions({
   name: 'ViewerProfileAbout'
 });
+
+const props = defineProps<{
+  aboutMe: string,
+  email: string
+}>();
+
 </script>

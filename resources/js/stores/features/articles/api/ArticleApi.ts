@@ -78,6 +78,25 @@ class ArticleApi {
     return response.data;
   }
 
+  public static async getArticleByUserId(
+    userId: number,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{
+    articles: ArticleInterface[];
+    current_page: number;
+    last_page: number;
+    total: number;
+  }> {
+    const response = await axios.get(`${ArticleApi.baseUrl}/user/${userId}?page=${page}&limit=${limit}`);
+    return {
+      articles: response.data.data,
+      current_page: response.data.meta.current_page,
+      last_page: response.data.meta.last_page,
+      total: response.data.meta.total,
+    };
+  }
+
   public static async getTrendingArticles(
     page: number = 1,
     limit: number = 10

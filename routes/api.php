@@ -37,6 +37,7 @@ Route::get('/auth/verify', function (Request $request) {
 Route::get('articles', [ArticleController::class, 'index']);
 Route::get('articles/trending', [ArticleController::class, 'getTrending']);
 Route::get('articles/{article}', [ArticleController::class, 'show']);
+Route::get('articles/user/{userId}', [ArticleController::class, 'getArticleByUserId']);
 
 // Settings Routes
 Route::middleware('auth:sanctum')->controller(SettingController::class)->prefix('settings')->group(
@@ -94,11 +95,13 @@ Route::middleware(['auth:sanctum'])->prefix('articles')->group(function () {
 // Follow Routes
 Route::apiResource('follows', FollowController::class)
     ->middleware('auth:sanctum');
-Route::middleware(['auth:sanctum'])->prefix('follows')->group(function () {
-    Route::get('/getFollowers/{userId}', [FollowController::class, 'getFollowers']);
-    Route::get('/getFollowing/{userId}', [FollowController::class, 'getFollowing']);
-    Route::post('/checkIfFollowing', [FollowController::class, 'checkIfFollowing']);
+Route::prefix('follows')->group(function () {
+  Route::get('/getFollowers/{userId}', [FollowController::class, 'getFollowers']);
+  Route::get('/getFollowing/{userId}', [FollowController::class, 'getFollowing']);
 });
+Route::post('follows/checkIfFollowing', [FollowController::class, 'checkIfFollowing'])
+    ->middleware('auth:sanctum')
+    ->name('checkIfFollowing');
 
 // User Routes
 Route::get('users/', [UserController::class, 'index']);

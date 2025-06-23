@@ -36,7 +36,7 @@ CMD ["php-fpm"]
 
 # Production stage
 FROM base AS production
-RUN composer install --optimize-autoloader --no-dev
+RUN composer install --optimize-autoloader
 RUN php artisan key:generate && php artisan config:cache && php artisan route:cache && php artisan view:cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
