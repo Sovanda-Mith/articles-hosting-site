@@ -252,8 +252,6 @@
           updated_at: response.data.updated_at,
         };
 
-        isLiked.value = article.value.likes_count > 0;
-
         timeAgo.value = dayjs(article?.value.created_at).fromNow();
 
         try {
@@ -298,6 +296,9 @@
 
           if (likeResponse.status === 200) {
             article.value.likes_count = likeResponse.data.likes_count;
+            isLiked.value = likeResponse.data.likes.some((like) => {
+              return like.user_id === userStore.user.id;
+            });
           }
         } catch (error) {
           console.error('Error fetching likes:', error);
@@ -329,7 +330,7 @@
           );
 
           if (followersResponse.status === 200) {
-            author.value.followers_count = followersResponse.data.length;
+            author.value.followers_count = followersResponse.data.data.length;
           }
         } catch (error) {
           console.error('Error fetching followers:', error);
@@ -346,7 +347,7 @@
           );
 
           if (followingResponse.status === 200) {
-            author.value.following_count = followingResponse.data.length;
+            author.value.following_count = followingResponse.data.data.length;
           }
         } catch (error) {
           console.error('Error fetching following:', error);
@@ -392,6 +393,10 @@
     router.push({ name: 'EditArticle', params: { id: props.id } });
   };
 
+  function navigateToUser(userId: number) {
+    router.push(`/viewer/${userId}`)
+  }
+
   onMounted(async () => {
     await getArticleAndItsCategories();
     await checkIfFollowing();
@@ -415,7 +420,7 @@
         <img :src="author?.avatar" class="w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-full" />
         <div class="flex flex-col pl-0 sm:pl-2">
           <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <span>{{ author?.name }}</span>
+            <span @click="navigateToUser(author?.id)">{{ author?.name }}</span>
             <div class="flex items-center gap-2 sm:gap-3 flex-wrap" v-if="!isOwner">
               <i class="pi pi-circle-fill" style="font-size: 3px; color: gray"></i>
               <span
@@ -498,7 +503,7 @@
       <div class="flex gap-2 sm:gap-4">
         <img :src="author?.avatar" alt="" class="w-14 h-14 sm:w-[75px] sm:h-[75px] rounded-full" />
         <div class="flex flex-col space-y-1">
-          <span class="text-lg sm:text-2xl font-bold">{{ author?.name }}</span>
+          <span class="text-lg sm:text-2xl font-bold" @click="navigateToUser(author?.id)">{{ author?.name }}</span>
           <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
             <span class="text-gray-500 text-sm sm:text-lg"
               >{{ author?.followers_count }} Followers</span
@@ -576,7 +581,7 @@
           :comment_id="comment.comment_id"
           :user_id="comment.user_id"
           :name="comment.user.name"
-          :avatar="comment.user.avatar"
+          :avatar="comment.user.pf_image"
           :content="comment.content"
           :timeAgo="dayjs(comment.created_at).fromNow()"
           @edit="editComment"

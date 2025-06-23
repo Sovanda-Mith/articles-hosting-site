@@ -122,7 +122,7 @@ class FollowController extends Controller
             ->first();
 
         if ($follow) {
-            return response()->json(['following' => true, 'follow_id' => $follow->following_id]);
+            return response()->json(['following' => true, 'follow_id' => $follow->follow_id]);
         } else {
             return response()->json(['following' => false, 'follow_id' => null]);
         }

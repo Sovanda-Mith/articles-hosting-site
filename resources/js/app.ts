@@ -4,7 +4,7 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './routes.ts';
 import { useUserStore } from '@/stores/features/custom-persistedstate.ts';
-// import 'primeicons/primeicons.css';
+import 'primeicons/primeicons.css';
 // import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
 const pinia = createPinia();

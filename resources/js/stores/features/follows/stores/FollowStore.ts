@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type FollowInterface from "../types/FollowInterface";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { FollowingApi } from "../api/FollowApi";
 
 export const useFollowStore = defineStore("follow", () => {
@@ -18,10 +18,22 @@ export const useFollowStore = defineStore("follow", () => {
     following.value = response.follows;
   };
 
+  const fetchCountFollowers = async (userId: number) => {
+    const response = await FollowingApi.getFollowers(userId);
+    return response.total;
+  };
+
+  const fetchCountFollowing = async (userId: number) => {
+    const response = await FollowingApi.getFollowing(userId);
+    return response.total;
+  };
+
   return {
     followers,
     following,
     fetchFollowers,
     fetchFollowing,
+    fetchCountFollowers,
+    fetchCountFollowing,
   };
 });
