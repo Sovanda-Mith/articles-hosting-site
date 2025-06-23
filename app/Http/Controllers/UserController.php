@@ -22,9 +22,12 @@ class UserController extends Controller
         $users = User::all()->map(function ($user) {
             return [
                 'id' => $user->id,
+                'name' => $user->name,
                 'email' => $user->email,
                 'username' => $user->username,
+                'gender' => $user->gender,
                 'bio' => $user->bio,
+                'pf_image' => $user->pf_image,
                 'role' => $user->role_id == 1 ? 'user' : 'admin',
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at
@@ -54,6 +57,13 @@ class UserController extends Controller
             \Log::info('Validated data:', $validated);
 
             $user = $this->createNewUser($validated);
+
+            $user->settings()->create([
+              'user_id' => $user->id,
+              'notify_on_article' => true,
+              'notify_on_follow' => true,
+              'new_feature' => false
+            ]);
 
             return response()->json([
                 'message' => 'User created successfully',
@@ -118,13 +128,18 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
+        // $users = User::all();
+        
 
         // Debug: Check what data is being received
         // \Log::info('Login request data:', $validated);
 
         $user = User::where('email', $request->email)->first();
-
-
+        // return response()->json([
+        //   'message' => 'Login successful',
+        //   'user' => $users
+        // ]);
+       
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'message' => 'Invalid credentials. Wrong email or password.',

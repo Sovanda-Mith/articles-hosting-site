@@ -14,10 +14,23 @@ class FollowController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $follows = Follow::with(['follower', 'following'])->paginate(10);
-        return response()->json(FollowResource::collection($follows));
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 10);
+
+        $follows = Follow::with(['follower', 'following'])->paginate($limit);
+        return response()->json([
+            'data' => FollowResource::collection($follows),
+            'meta' => [
+                'current_page' => $follows->currentPage(),
+                'last_page' => $follows->lastPage(),
+                'per_page' => $follows->perPage(),
+                'total' => $follows->total(),
+                'from' => $follows->firstItem(),
+                'to' => $follows->lastItem(),
+            ],
+        ]);
     }
 
     /**
@@ -109,31 +122,57 @@ class FollowController extends Controller
             ->first();
 
         if ($follow) {
-            return response()->json(['following' => true, 'follow_id' => $follow->following_id]);
+            return response()->json(['following' => true, 'follow_id' => $follow->follow_id]);
         } else {
             return response()->json(['following' => false, 'follow_id' => null]);
         }
     }
 
     // get number of followers and following for a user
-    public function getFollowers(string $userId): JsonResponse
+    public function getFollowers(Request $request, string $userId): JsonResponse
     {
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 10);
+
         $followers = Follow::where('following_id', $userId)
             ->with('follower')
-            ->paginate(10);
+            ->paginate($limit, ['*'], 'page', $page);
 
-        if (!$followers) {
-            return response()->json(['message' => 'No followers found'], 404);
+        return response()->json([
+          'data' => FollowResource::collection($followers),
+          'meta' => [
+            'current_page' => $followers->currentPage(),
+            'last_page' => $followers->lastPage(),
+            'per_page' => $followers->perPage(),
+            'total' => $followers->total(),
+            'from' => $followers->firstItem(),
+            'to' => $followers->lastItem(),
+          ],
+        ]);
+    }
+    public function getFollowing(Request $request, string $userId): JsonResponse
+    {
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 10);
+
+        if (!$userId) {
+            return response()->json(['message' => 'User ID is required'], 400);
         }
 
-        return response()->json(FollowResource::collection($followers));
-    }
-    public function getFollowing(string $userId): JsonResponse
-    {
         $following = Follow::where('follower_id', $userId)
             ->with('following')
-            ->paginate(10);
+            ->paginate($limit, ['*'], 'page', $page);
 
-        return response()->json(FollowResource::collection($following));
+        return response()->json([
+          'data' => FollowResource::collection($following),
+          'meta' => [
+            'current_page' => $following->currentPage(),
+            'last_page' => $following->lastPage(),
+            'per_page' => $following->perPage(),
+            'total' => $following->total(),
+            'from' => $following->firstItem(),
+            'to' => $following->lastItem(),
+          ],
+        ]);
     }
 }

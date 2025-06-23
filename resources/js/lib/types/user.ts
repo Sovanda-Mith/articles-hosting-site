@@ -10,4 +10,5 @@ export interface User {
   gender?: string;
   role: string;
   token?: string;
+  link?: string ;
 }

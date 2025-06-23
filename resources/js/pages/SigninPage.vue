@@ -397,9 +397,15 @@
             withCredentials: true, // Include credentials for CSRF protection
           });
 
-          if (signInResponse.status === 200 || signInResponse.status === 201) {
-            const data = signInResponse.data;
-            // put in store
+          const data = response.ok ? await response.json() : signInResponse.data;
+
+          // Store token and user data
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('userId', JSON.stringify(data.user.id));
+          localStorage.setItem('role', JSON.stringify(data.user.role));
+
+          // Optional: update Pinia/Vuex store if using userStore
+          if (typeof userStore !== 'undefined' && userStore.setUserData) {
             userStore.setUserData({
               id: data.user.id,
               name: data.user.name,
@@ -411,14 +417,21 @@
               role: data.user.role,
               token: data.token,
             });
-            localStorage.setItem('auth_token', signInResponse.data.token); // Store the JWT token
-            localStorage.setItem('userId', JSON.stringify(signInResponse.data.user.id)); // Store user data
-
-            // Redirect logic here
-            setTimeout(() => {
-              router.push('/feed');
-            }, 1000);
           }
+
+          // Redirect logic
+          setTimeout(() => {
+            if (data.user.role === 'admin') {
+              router.push('/admin').then(() => {
+                window.location.reload();
+              });
+            } else {
+              router.push('/feed').then(() => {
+                window.location.reload();
+              });
+            }
+          }, 100);
+
         } catch (loginError) {
           console.error('Login Error:', loginError);
           errorMessage.value = 'Login failed. Please try again.';
