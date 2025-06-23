@@ -1,9 +1,10 @@
 <template>
   <ul class="space-y-2">
     <li
-      v-for="following in followStore.following"
+      v-for="following in displayedFollowing"
       :key="following.id"
       class="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition"
+      @click="router.push(`/viewer/${following.following?.id}`)"
     >
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center overflow-hidden">
@@ -28,20 +29,42 @@
 
 
 <script setup lang="ts">
-// import { computed } from 'vue'
-// import { useFollowingStore } from '@/stores/features/followingList/following'
+import router from '@/routes';
 import { useFollowStore } from '@/stores/features/follows/stores/FollowStore'
-import { onMounted } from 'vue'
+import { onMounted, watch, computed } from 'vue'
 
-// const props = defineProps<Props>()
+interface Props {
+  userId?: number
+  max?: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  userId: () => Number(localStorage.getItem('userId')) || 0,
+  max: undefined
+})
+
 const followStore = useFollowStore()
-const userId = Number(localStorage.getItem('userId'))
+
+const displayedFollowing = computed(() => {
+  return props.max !== undefined
+    ? followStore.following.slice(0, props.max)
+    : followStore.following
+})
 
 const getFollowingList = async () => {
-  await followStore.fetchFollowing(userId)
+  if (props.userId) {
+    await followStore.fetchFollowing(props.userId)
+  }
 }
 
 onMounted(() => {
   getFollowingList()
+})
+
+// Watch for changes in userId prop
+watch(() => props.userId, (newUserId) => {
+  if (newUserId) {
+    getFollowingList()
+  }
 })
 </script>

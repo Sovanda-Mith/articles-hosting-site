@@ -16,10 +16,11 @@
 
       <div class="mt-4 flex justify-center gap-2">
         <Button
+          v-if="!isOwner"
           @click="handleFollowClick"
           class="px-6 py-2"
         >
-          {{ isFollowing ? 'Followed' : 'Follow' }}
+          {{ isFollowing ? 'Following' : 'Follow' }}
         </Button>
         <Button
           :href="props.user.email ? `mailto:${props.user.email}` : undefined"
@@ -86,7 +87,7 @@
       <section class="mt-6">
         <p class="font-semibold text-card-foreground mb-3">Following</p>
         <div class="max-h-[480px] overflow-y-auto border border-border rounded-md p-2 scrollbar-hide">
-          <FollowingList :max="showAllFollowing ? undefined : 5" />
+          <FollowingList :userId="props.user.id" :max="showAllFollowing ? undefined : 5" />
         </div>
 
         <button
@@ -128,12 +129,15 @@
 
 <script setup lang="ts">
 defineOptions({ name: 'ProfileSidebar' })
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import axios from 'axios'
 import profileImg from '../../../public/landingPage_img/profile.png'
 import { useListStore } from '../../js/stores/features/storyList/listStore'
 import FollowingList from './FollowingList.vue'
 import { Button } from '@/components/ui/button'
+import { useUserStore } from '../../js/stores/features/users/user'
 import type { User } from '../../js/lib/types/user'
+import { useFollowStore } from '@/stores/features/follows/stores/FollowStore'
 
 // Define props
 const props = defineProps<{
@@ -141,31 +145,218 @@ const props = defineProps<{
 }>()
 
 const listStore = useListStore()
+const userStore = useUserStore()
+const followStore = useFollowStore()
 const lists = computed(() => listStore.lists)
 
-const avatarUrl = ref(profileImg)
+const avatarUrl = computed(() => props.user.avatar || profileImg)
 
 const isFollowing = ref(false)
-const followerCount = ref(0)
-const followingCount = ref(0)
+const followerCount = ref(props.user.followers_count || 0)
+const followingCount = ref(props.user.following_count || 0)
+
 const showAllFollowing = ref(false)
 const actualFollowingCount = ref(10) // Example value, adjust based on your needs
-
+const followId = ref(null)
 
 const showUnfollowConfirm = ref(false)
+
+const isOwner = computed(() => userStore.user?.id === props.user?.id);
+
+const checkIfFollowing = async () => {
+  const authToken = userStore.user?.token || localStorage.getItem("auth_token");
+
+  if (!authToken || !props.user?.id) {
+    // console.log('No auth token or user ID for follow check');
+    return;
+  }
+
+  try {
+    // console.log('Checking if following user:', props.user.id);
+    const response = await axios.post(
+      `/api/follows/checkIfFollowing`,
+      {
+        following_id: props.user.id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      // console.log('Follow check response:', response.data);
+      isFollowing.value = response.data.following || false;
+      followId.value = response.data.follow_id || null;
+    }
+  } catch (error) {
+    console.error('Error checking follow status:', error);
+    // Reset to default values on error
+    isFollowing.value = false;
+    followId.value = null;
+  }
+};
+
+const toggleFollowUser = async () => {
+  if (isFollowing.value) {
+    await unfollowUser();
+    return;
+  }
+
+  const authToken = userStore.user?.token || localStorage.getItem("auth_token");
+  if (!authToken) {
+    console.error('No auth token available for follow action');
+    return;
+  }
+
+  try {
+    console.log('Following user:', props.user.id);
+    const response = await axios.post(
+      `/api/follows`,
+      {
+        following_id: props.user.id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+    if (response.status === 201) {
+      // console.log('Follow response:', response.data);
+      isFollowing.value = true;
+      followId.value = response.data.id;
+      followerCount.value += 1;
+    }
+  } catch (error) {
+    console.error('Error following user:', error);
+  }
+};
+
+const unfollowUser = async () => {
+  const authToken = userStore.user?.token || localStorage.getItem("auth_token");
+  if (!authToken || !followId.value) {
+    console.error('No auth token or follow ID available for unfollow action');
+    return;
+  }
+
+  try {
+    console.log('Unfollowing user, follow ID:', followId.value);
+    const response = await axios.delete(`/api/follows/${followId.value}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    if (response.status === 204) {
+      console.log('Unfollow successful');
+      isFollowing.value = false;
+      followId.value = null;
+      followerCount.value -= 1;
+    }
+  } catch (error) {
+    console.error('Error unfollowing user:', error);
+  }
+};
+
+const getFollowersCount = async () => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  if (!props.user?.id) {
+    console.log('No user ID provided for followers count');
+    return;
+  }
+  try {
+    // console.log('Fetching followers count via followStore:', props.user.id);
+
+    const followerResult = await followStore.fetchCountFollowers(props.user.id);
+
+    if (followerResult !== undefined && followerResult !== null) {
+      followerCount.value = followerResult;
+      // console.log('Using follower count from store:', followerResult);
+      return;
+    }
+  } catch (error) {
+    console.error('Error fetching followers count from store:', error);
+  }
+};
+
+const getFollowingCount = async () => {
+  if (!props.user?.id) {
+    console.log('No user ID provided for following count');
+    return;
+  }
+
+  try {
+    // console.log('Fetching following count via followStore:', props.user.id);
+
+    const followingResult = await followStore.fetchCountFollowing(props.user.id);
+
+    if (followingResult !== undefined && followingResult !== null) {
+      followingCount.value = followingResult;
+      actualFollowingCount.value = followingResult;
+      // console.log('Using following count from store:', followingResult);
+      return;
+    }
+  } catch (error) {
+    console.error('Error fetching following count from store:', error);
+  }
+};
 
 function handleFollowClick() {
   if (isFollowing.value) {
     showUnfollowConfirm.value = true
   } else {
-    isFollowing.value = true
+    toggleFollowUser()
   }
 }
 
 function confirmUnfollow() {
-  isFollowing.value = false
+  unfollowUser()
   showUnfollowConfirm.value = false
 }
+
+onMounted(async () => {
+  // Fetch follow counts
+  await getFollowersCount();
+  await getFollowingCount();
+
+  // Only check if following when viewing someone else's profile and user is authenticated
+  if (!isOwner.value && (userStore.user?.token || localStorage.getItem("auth_token"))) {
+    await checkIfFollowing();
+  }
+  });
+
+  // Watch for changes in the user prop to refresh follow status
+  watch(() => props.user.id, async (newUserId, oldUserId) => {
+    if (newUserId && newUserId !== oldUserId) {
+      // Reset follow status
+      isFollowing.value = false;
+      followId.value = null;
+
+      // Update initial counts from props
+      followerCount.value = props.user.followers_count || 0;
+      followingCount.value = props.user.following_count || 0;
+
+      // Fetch updated counts
+      await getFollowersCount();
+      await getFollowingCount();
+
+      if (!isOwner.value && (userStore.user?.token || localStorage.getItem("auth_token"))) {
+        await checkIfFollowing();
+      }
+    }
+});
+
+// Watch for changes in user prop counts
+watch(() => [props.user.followers_count, props.user.following_count], ([newFollowers, newFollowing]) => {
+  if (newFollowers !== undefined) followerCount.value = newFollowers;
+  if (newFollowing !== undefined) followingCount.value = newFollowing;
+});
 
 
 </script>

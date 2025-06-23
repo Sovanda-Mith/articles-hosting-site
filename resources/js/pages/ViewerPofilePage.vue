@@ -66,9 +66,8 @@
         avatar: apiUser.avatar,
         gender: apiUser.gender,
         role: apiUser.role,
-        // Set default values for fields not provided by API
-        followers_count: 0,
-        following_count: 0,
+        // followers_count: apiUser.followers_count,
+        // following_count: apiUser.following_count,
         link: undefined
       }
     } catch (error) {
@@ -76,7 +75,6 @@
       return null
     }
   }
-
 
 
   onMounted(async () => {
