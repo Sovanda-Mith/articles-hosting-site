@@ -22,8 +22,8 @@ class UploadController extends Controller
             return response()->json(['message' => 'Failed to upload image'], 500);
         }
 
-        // Get the public URL
-        $url = Storage::disk('minio')->url($path);
+        // Generate proxy URL through Laravel
+        $url = secure_url('/storage/minio/' . $path);
 
         return response()->json(['url' => $url]);
     }
@@ -44,8 +44,8 @@ class UploadController extends Controller
             return response()->json(['message' => 'Failed to upload image'], 500);
         }
 
-        // Get the public URL
-        $url = Storage::disk('minio')->url($path);
+        // Generate proxy URL through Laravel
+        $url = secure_url('/storage/minio/' . $path);
 
         return response()->json(['url' => $url]);
     }
