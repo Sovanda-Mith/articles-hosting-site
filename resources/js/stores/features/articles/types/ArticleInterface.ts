@@ -4,6 +4,10 @@ export default interface ArticleInterface {
   subtitle?: string;
   content: string;
   user_id: number;
+  user?: {
+    name: string;
+    pf_image?: string;
+  };
   view_count: number;
   status: ArticleStatus;
   image?: string;

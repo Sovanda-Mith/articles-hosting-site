@@ -14,9 +14,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Seed roles first (they are referenced by users)
-        $this->call([
-            RoleSeeder::class,
-        ]);
+        // $this->call([
+        //     RoleSeeder::class,
+        // ]);
 
         // Get the user role ID
         $userRole = \App\Models\Role::where('name', 'user')->first();
@@ -46,8 +46,8 @@ class DatabaseSeeder extends Seeder
         collect([
             [
                 'name' => 'Admin',
-                'email' => 'admin@example.com',
-                'username' => 'admin',
+                'email' => 'superAdmin@example.com',
+                'username' => 'admin101',
                 'bio' => 'This is a test bio for admin.',
                 'gender' => 'male',
                 'pf_image' => env('APP_URL', 'http://localhost:3000/') . 'resources/assets/images/teamAvatar.png',
@@ -64,7 +64,7 @@ class DatabaseSeeder extends Seeder
             ],
         ])->each(fn ($user) => User::factory()->create($user));
 
-        // Call UserSeeder
+        Call UserSeeder
         $this->call([
             UserSeeder::class,
         ]);
@@ -98,7 +98,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ReportSeeder::class,
         ]);
-        
+
         // Call BanwordSeeder
         $this->call([
             BanwordSeeder::class,

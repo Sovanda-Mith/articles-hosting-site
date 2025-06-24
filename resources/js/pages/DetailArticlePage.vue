@@ -6,7 +6,7 @@
   import Comment from '@/components/detailarticlePage_comp/Comment.vue';
   import DetailFooter from '@/components/detailarticlePage_comp/DetailFooter.vue';
   import Recommendation from '@/components/detailarticlePage_comp/Recommendation.vue';
-  import AuthHeader from '@/components/settingPage_comp/AuthHeader.vue';
+  import Header from '../../../resources/components/landingPage_comp/Header.vue';
   import { type Category, type Article, type User } from '@/lib/types';
   import dayjs from 'dayjs';
   import relativeTime from 'dayjs/plugin/relativeTime';
@@ -404,7 +404,8 @@
 </script>
 
 <template>
-  <AuthHeader />
+  <Header />
+  <!-- <AuthHeader /> -->
   <div
     class="w-full max-w-4xl h-auto flex flex-col justify-center mx-auto mt-20 pb-5 px-4 sm:px-6 lg:px-8"
   >

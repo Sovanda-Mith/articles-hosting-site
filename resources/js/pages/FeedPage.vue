@@ -1,7 +1,7 @@
  <template>
     <AppHeader />
         <div class="flex flex-row justify-center items-start ml-72 mr-40 mt-20 mb-32 sm:ml-32  ">
-            
+
             <!-- Left Column (Main Content) -->
             <div class="flex flex-col md:w-[100%] min-w-[400px] lg:pr-8 xl:pr-32 ">
 
@@ -15,7 +15,7 @@
                         </div>
 
                         <!-- Search Toggle Button -->
-                        <button 
+                        <button
                             @click="toggleSearch"
                             class="border p-2 w-10 rounded-sm ml-2"
                             :class="{ 'bg-gray-200': showSearch }"
@@ -35,8 +35,8 @@
                             placeholder="Search by title or publisher..."
                             class="flex-1 p-2 border border-gray-300 rounded"
                         />
-                       
-                        <button 
+
+                        <button
                             @click="performSearch"
                             class="px-4 bg-blue-500 text-white rounded"
                             :disabled="isLoading"
@@ -56,7 +56,7 @@
                                 v-for="article in articleStore.articles"
                                 :key="article.id"
                                 :profile_img="'/feedpage_img/profile1.jpg'"
-                                :publisherName="`User ${article.user_id}`"
+                                :publisherName="`${article.user?.name || 'Unknown User'}`"
                                 :title="article.title"
                                 :subtitle="article.subtitle || 'No subtitle available'"
                                 :pub_date="articleStore.formatDate(article.created_at)"
@@ -66,7 +66,7 @@
                                 :viewCount="article.view_count?.toString() || '0'"
                                 :articleId="article.id"
                             />
-                            <button 
+                            <button
                                 v-if="hasMoreResults && !isLoading"
                                 @click="loadMoreResults"
                                 class="w-full py-2 my-4 bg-gray-100 hover:bg-gray-200"
@@ -94,7 +94,7 @@
                         v-for="article in articles"
                         :key="article.id"
                         :profile_img="'/feedpage_img/profile1.jpg'"
-                        :publisherName="`User ${article.user_id}`"
+                        :publisherName="`${article.user?.name || 'Unknown User'}`"
                         :title="article.title"
                         :pub_date="articleStore.formatDate(article.created_at)"
                         :clapNum="article.likes_count?.toString() || '0'"
@@ -148,7 +148,7 @@
    // Search functions
    const performSearch = async () => {
     if (!searchQuery.value.trim()) return;
-    
+
     isLoading.value = true;
     isSearching.value = true;
     try {
@@ -162,7 +162,7 @@
 
   const loadMoreResults = async () => {
     if (isLoading.value) return;
-    
+
     isLoading.value = true;
     try {
         await articleStore.searchArticles(
@@ -175,7 +175,7 @@
         isLoading.value = false;
     }
  };
-  
+
   const toggleSearch = () => {
     showSearch.value = !showSearch.value;
     if (!showSearch.value) {

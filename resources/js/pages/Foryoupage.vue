@@ -85,11 +85,11 @@
 
   // Use the article store
   const articleStore = useArticleStore();
-  // const { articles } = storeToRefs(articleStore);
-const articles = computed(() => {
-  console.log('Computed articles accessed:', articleStore.articles)
-  return articleStore.articles
-})
+  const { articles } = storeToRefs(articleStore);
+// const articles = computed(() => {
+//   console.log('Computed articles accessed:', articleStore.articles)
+//   return articleStore.articles
+// })
   // Local reactive state
   const isLoading = ref(false);
   const error = ref<string | null>(null);
@@ -125,49 +125,49 @@ const articles = computed(() => {
     }
   };
 
+  // const loadMoreArticles = async () => {
+  //   // Check local loading state
+  //   if (isLoadingMore.value || !hasMoreArticles.value) return;
+
+  //   isLoadingMore.value = true;
+  //   error.value = null;
+
+  //   try {
+  //     const nextPage = currentPage.value + 1;
+  //     const response = await articleStore.fetchArticles(nextPage, true); // append = true
+
+  //     console.log('Load More Response:', response);
+  //     currentPage.value = response.current_page;
+  //     hasMoreArticles.value = response.current_page < response.last_page;
+
+  //   } catch (err) {
+  //     error.value = err instanceof Error ? err.message : 'Unknown error occurred';
+  //     console.error('Error loading more articles:', err);
+  //   } finally {
+  //     isLoadingMore.value = false;
+  //   }
+  // };
+
+
   const loadMoreArticles = async () => {
-    // Check local loading state
     if (isLoadingMore.value || !hasMoreArticles.value) return;
 
     isLoadingMore.value = true;
     error.value = null;
 
     try {
-      const nextPage = currentPage.value + 1;
-      const response = await articleStore.fetchArticles(nextPage, true); // append = true
+      const nextPage = articleStore.currentPage + 1;
+      await articleStore.fetchArticles(nextPage, true);
 
-      console.log('Load More Response:', response);
-      currentPage.value = response.current_page;
-      hasMoreArticles.value = response.current_page < response.last_page;
-
+      // Force update if needed (rare cases)
+      await nextTick();
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Unknown error occurred';
-      console.error('Error loading more articles:', err);
+      error.value = err.message || 'Failed to load articles';
+      console.error('Error:', err);
     } finally {
       isLoadingMore.value = false;
     }
   };
-
-
-// const loadMoreArticles = async () => {
-//   if (isLoadingMore.value || !hasMoreArticles.value) return;
-  
-//   isLoadingMore.value = true;
-//   error.value = null;
-
-//   try {
-//     const nextPage = articleStore.currentPage + 1;
-//     await articleStore.fetchArticles(nextPage, true);
-    
-//     // Force update if needed (rare cases)
-//     await nextTick();
-//   } catch (err) {
-//     error.value = err.message || 'Failed to load articles';
-//     console.error('Error:', err);
-//   } finally {
-//     isLoadingMore.value = false;
-//   }
-// };
 
   // Format date
   const formatDate = (dateString: string) => {

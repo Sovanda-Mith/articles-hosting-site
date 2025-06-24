@@ -10,7 +10,7 @@
         <div>
 
             <div class="py-5 space-x-4 border-b-1 border-gray-300 flex flex-row sticky top-1/12 bg-white">
-                
+
                 <div >
                     <button class="mt-8 pr-4 " @click="goBack">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="size-6">
@@ -21,7 +21,7 @@
                 <div class="flex flex-col">
                     <div class="py-2 text-2xl font-semibold border-black">Trending</div>
                     <p class="text-sm text-gray-500 ">Trending stories from across Medium</p>
-            
+
                 </div>
             </div>
             <div >
@@ -41,7 +41,7 @@
                     v-for="article in articles"
                     :key="article.id"
                     :profile_img="'/feedpage_img/profile1.jpg'"
-                    :publisherName="`User ${article.user_id}`"
+                    :publisherName="`${article.user?.name || 'Unknown User'}`"
                     :title="article.title"
                     :subtitle="article.subtitle || 'No subtitle available'"
                     :pub_date="articleStore.formatDate(article.created_at)"

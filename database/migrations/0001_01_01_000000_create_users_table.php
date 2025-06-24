@@ -17,8 +17,8 @@ return new class () extends Migration {
             $table->timestamp('email_verified_at')->nullable();
             $table->string('username')->unique();;
             $table->string('password');
-            $table->string('occupation');
-            $table->string('gender');
+            $table->string('occupation')->default('Not Known');
+            $table->string('gender')->default('prefer not say');
             $table->integer('is_allowed')->default(1);
             $table->foreignId('role_id')->constrained('roles', 'role_id')->onDelete('restrict');
             $table->string('address_line')->nullable();

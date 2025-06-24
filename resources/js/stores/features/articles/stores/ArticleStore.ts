@@ -74,6 +74,42 @@ export const useArticleStore = defineStore('article', () => {
     }
   };
 
+  const fetchForYouArticles = async (page: number = 1, append: boolean = false) => {
+    if (isLoading.value && page === 1) return;
+    if (isLoadingMore.value && page > 1) return;
+
+    if (page === 1) {
+      isLoading.value = true;
+    } else {
+      isLoadingMore.value = true;
+    }
+
+    try {
+      const response = await ArticleApi.getForYouArticles(page);
+
+      console.log('fetchForYouArticles', response, 'page:', page);
+
+      await nextTick(() => {
+        if (page === 1 && !append) {
+          articles.value = response.articles;
+        } else {
+          const existingIds = new Set(articles.value.map(article => article.id));
+          const newArticles = response.articles.filter(article => !existingIds.has(article.id));
+          articles.value = [...articles.value, ...newArticles];
+        }
+
+        currentPage.value = response.current_page;
+        lastPage.value = response.last_page;
+        totalArticles.value = response.total;
+      });
+
+      return response;
+    } finally {
+      isLoading.value = false;
+      isLoadingMore.value = false;
+    }
+  };
+
   // Simplified - remove fetchMoreArticles since fetchArticles handles both cases
   const fetchFollowingArticles = async (user_id: number, page: number = 1, append: boolean = false) => {
     if (isLoading.value && page === 1) return;
@@ -203,18 +239,18 @@ export const useArticleStore = defineStore('article', () => {
   //   isLoading.value = true;
   //   try {
   //       const response = await ArticleApi.searchArticles(query, page = 10);
-        
+
   //       if (page === 1) {
   //           articles.value = response.articles;
   //       } else {
   //           articles.value = [...articles.value, ...response.articles];
   //       }
   //       console.log('Search API Response:', response);
-        
+
   //       currentPage.value = response.current_page;
   //       lastPage.value = response.last_page;
   //       totalArticles.value = response.total;
-        
+
   //       return response;
   //   } finally {
   //       isLoading.value = false;
@@ -224,9 +260,9 @@ export const useArticleStore = defineStore('article', () => {
     isLoading.value = true;
     try {
       const response = await ArticleApi.searchArticles(query, page, 10);
-      
+
       console.log('Search Store Response:', response);
-      
+
       if (page === 1) {
         articles.value = response.articles;
       } else {
@@ -235,11 +271,11 @@ export const useArticleStore = defineStore('article', () => {
         const newArticles = response.articles.filter(article => !existingIds.has(article.id));
         articles.value = [...articles.value, ...newArticles];
       }
-      
+
       currentPage.value = response.current_page;
       lastPage.value = response.last_page;
       totalArticles.value = response.total;
-      
+
       return response;
     } catch (error) {
       console.error('Search failed:', error);
@@ -273,5 +309,6 @@ export const useArticleStore = defineStore('article', () => {
     formatDate,
     searchArticles,
     fetchArticleByUserId,
+    fetchForYouArticles,
   };
 });

@@ -22,7 +22,25 @@ class ArticleApi {
     last_page: number;
     total: number;
   }> {
-    const response = await axios.get(`/api/foryou?page=${page}&limit=${limit}`,
+    const response = await axios.get(`${ArticleApi.baseUrl}?page=${page}&limit=${limit}`);
+    return {
+      articles: response.data.data,
+      current_page: response.data.meta.current_page,
+      last_page: response.data.meta.last_page,
+      total: response.data.meta.total,
+    };
+  }
+
+  public static async getForYouArticles(
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{
+    articles: ArticleInterface[];
+    current_page: number;
+    last_page: number;
+    total: number;
+  }> {
+    const response = await axios.get(`${ArticleApi.baseUrl}/foryou?page=${page}&limit=${limit}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -31,12 +49,8 @@ class ArticleApi {
         },
       }
     );
-    const mappedArticles = response.data.data.map((article: any) => ({
-      ...article,
-      id: article.article_id 
-    }));
     return {
-      articles: mappedArticles,
+      articles: response.data.data,
       current_page: response.data.meta.current_page,
       last_page: response.data.meta.last_page,
       total: response.data.meta.total,
@@ -156,7 +170,7 @@ class ArticleApi {
   }> {
     try {
       const response = await axios.get(`/api/articles/search`, {
-      // // const response = await axios.get(`${ArticleApi.baseUrl}/search`, {  
+      // // const response = await axios.get(`${ArticleApi.baseUrl}/search`, {
       params: {
           q: query,
           page,
