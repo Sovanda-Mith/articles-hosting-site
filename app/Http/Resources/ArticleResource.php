@@ -20,6 +20,10 @@ class ArticleResource extends JsonResource
           'subtitle' => $this->subtitle,
           'content' => $this->content,
           'user_id' => $this->user_id,
+          'user' => [
+            'name' => $this->user->name,
+            'pf_image' => $this->user->pf_image,
+          ],
           'view_count' => $this->view_count,
           'status' => $this->status,
           'image' => $this->image,

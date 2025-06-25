@@ -20,7 +20,7 @@
 
   const isMenuOpen = ref(false);
   const isAuthenticated = ref(false);
-  const user = ref({ name: '', pfp: '' });
+  const user = ref({ name: '', pf_image: '' });
   const isLoading = ref(true);
   //checking if user is authenticated
   onMounted(async () => {
@@ -82,7 +82,7 @@
         localStorage.removeItem('auth_token');
         // alert('Logged out successfully');
         isAuthenticated.value = false;
-        user.value = { name: '', pfp: '' }; // Reset user data
+        user.value = { name: '', pf_image: '' }; // Reset user data
       } else {
         console.error('Logout failed');
       }
@@ -155,11 +155,11 @@
       <div v-if="isAuthenticated" class="flex items-center gap-2 auth-buttons">
         <Router-link
           to="/profile"
-          class="flex items-center border-1 border-gray-300 rounded-lg py-1 px-2"
+          class="flex items-center justify-center gap-3 border-1 border-gray-300 rounded-lg py-1 px-3"
         >
           <img
-            v-if="user.pfp"
-            :src="user.pfp"
+            v-if="user.pf_image"
+            :src="user.pf_image"
             alt="Profile Picture"
             class="w-[40px] h-[40px] rounded-full"
           />
@@ -330,8 +330,8 @@
                 class="flex items-center border-1 border-gray-300 rounded-lg py-2 px-3 mb-2"
               >
                 <img
-                  v-if="user.pfp"
-                  :src="user.pfp"
+                  v-if="user.pf_image"
+                  :src="user.pf_image"
                   alt="Profile Picture"
                   class="w-[30px] h-[30px] rounded-full mr-2"
                 />

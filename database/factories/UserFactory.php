@@ -21,8 +21,8 @@ class UserFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    { 
-        
+    {
+
         return [
             'name' => fake()->name(),
             'username' => fake()->unique()->userName(),
@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'occupation' => "Developer",
-            'gender' => fake()->randomElement(['male', 'female']),
+            'gender' => fake()->randomElement(['male', 'female','prefer not say']),
             'remember_token' => Str::random(10),
             'created_at' => fake()->dateTimeBetween('-1 week', 'now'),
             'updated_at' => function (array $attributes) {

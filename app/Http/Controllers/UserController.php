@@ -94,6 +94,7 @@ class UserController extends Controller
             'email' => $data['email'],
             'username' => $username,
             'password' => bcrypt($data['password']),
+            'pf_image' => '/storage/placeholderPf.png',
             'bio' => $data['bio'] ?? null,
             'occupation' => $data['occupation'] ?? 'User', // Default occupation
             'gender' => $data['gender'] ?? 'prefer_not_to_say', // Default gender
@@ -131,7 +132,7 @@ class UserController extends Controller
             'password' => 'required|string',
         ]);
         // $users = User::all();
-        
+
 
         // Debug: Check what data is being received
         // \Log::info('Login request data:', $validated);
@@ -141,7 +142,7 @@ class UserController extends Controller
         //   'message' => 'Login successful',
         //   'user' => $users
         // ]);
-       
+
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'message' => 'Invalid credentials. Wrong email or password.',
