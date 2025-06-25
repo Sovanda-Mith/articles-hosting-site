@@ -96,6 +96,8 @@ class UserController extends Controller
             'password' => bcrypt($data['password']),
             'pf_image' => '/storage/placeholderPf.png',
             'bio' => $data['bio'] ?? null,
+            'occupation' => $data['occupation'] ?? 'User', // Default occupation
+            'gender' => $data['gender'] ?? 'prefer_not_to_say', // Default gender
             'role_id' => $data['role_id'] ?? 1, // Default to user role if not provided
         ]);
     }

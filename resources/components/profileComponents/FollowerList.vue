@@ -1,9 +1,10 @@
 <template>
   <ul class="space-y-2">
     <li
-      v-for="follower in followStore.followers"
+      v-for="follower in displayedFollowers"
       :key="follower.id"
       class="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition"
+      @click="router.push(`/viewer/${follower.follower?.id}`)"
     >
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center overflow-hidden">
@@ -27,18 +28,28 @@
 </template>
 
 <script setup lang="ts">
-// import { computed } from 'vue'
+import { computed } from 'vue'
 // import { useFollowingStore } from '@/stores/features/followingList/following'
 import { useFollowStore } from '@/stores/features/follows/stores/FollowStore'
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router';
 
-// const props = defineProps<Props>()
+const router = useRouter()
+const props = defineProps<{
+  userId: number,
+  max?: number,
+}>()
+
 const followStore = useFollowStore()
-const userId = Number(localStorage.getItem('userId'))
-
 const getFollowerList = async () => {
-  await followStore.fetchFollowers(userId)
+  await followStore.fetchFollowers(props.userId)
 }
+
+const displayedFollowers = computed(() => {
+  return props.max !== undefined
+    ? followStore.followers.slice(0, props.max)
+    : followStore.followers
+})
 
 onMounted(() => {
   getFollowerList()
