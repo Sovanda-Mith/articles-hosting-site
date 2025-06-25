@@ -8,12 +8,14 @@ import { nextTick } from 'vue';
 export const useArticleStore = defineStore('article', () => {
   //state
   const articles = ref<ArticleInterface[]>([]);
+  const trendingArticles = ref<ArticleInterface[]>([]);
   const currArticle = ref<ArticleInterface | null>(null);
   const currentPage = ref<number>(1);
   const lastPage = ref<number>(1);
   const totalArticles = ref<number>(0);
   const isLoading = ref(false);
   const isLoadingMore = ref(false);
+  const isTrendingLoading = ref(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let currentRequest: Promise<any> | null = null;
 
@@ -146,14 +148,9 @@ export const useArticleStore = defineStore('article', () => {
   };
 
   const fetchTrendingArticles = async (page: number = 1, append: boolean = false) => {
-    if (isLoading.value && page === 1) return;
-    if (isLoadingMore.value && page > 1) return;
+    if (isTrendingLoading.value && page === 1) return;
 
-    if (page === 1) {
-      isLoading.value = true;
-    } else {
-      isLoadingMore.value = true;
-    }
+    isTrendingLoading.value = true;
 
     try {
       const response = await ArticleApi.getTrendingArticles(page);
@@ -162,22 +159,17 @@ export const useArticleStore = defineStore('article', () => {
 
       await nextTick(() => {
         if (page === 1 && !append) {
-          articles.value = response.articles;
+          trendingArticles.value = response.articles;
         } else {
-          const existingIds = new Set(articles.value.map(article => article.id));
+          const existingIds = new Set(trendingArticles.value.map(article => article.id));
           const newArticles = response.articles.filter(article => !existingIds.has(article.id));
-          articles.value = [...articles.value, ...newArticles];
+          trendingArticles.value = [...trendingArticles.value, ...newArticles];
         }
-
-        currentPage.value = response.current_page;
-        lastPage.value = response.last_page;
-        totalArticles.value = response.total;
       });
 
       return response;
     } finally {
-      isLoading.value = false;
-      isLoadingMore.value = false;
+      isTrendingLoading.value = false;
     }
   };
   const fetchArticleById = async (id: number) => {
@@ -292,10 +284,12 @@ export const useArticleStore = defineStore('article', () => {
 
   return {
     articles,
+    trendingArticles,
     currArticle,
     currentPage,
     lastPage,
     totalArticles,
+    isTrendingLoading,
     getAllArticles,
     getFollowingArticles,
     hasMoreArticles,

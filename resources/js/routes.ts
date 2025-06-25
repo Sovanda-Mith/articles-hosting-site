@@ -238,6 +238,7 @@ router.beforeEach(async (to, from, next) => {
       if (article.user_id !== userStore.user?.id) {
         return next({ path: '/new-article' });
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return next({ name: 'NotFound' });
     }
