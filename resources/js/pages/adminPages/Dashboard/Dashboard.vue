@@ -133,7 +133,7 @@ onMounted(async () => {
     if (!jwtToken) {
     return;
     }
-    const response = await axios.get('http://localhost:8000/api/admin/dashboard', {
+    const response = await axios.get('/api/admin/dashboard', {
       headers: {
         Authorization: `Bearer ${jwtToken}`
       }
