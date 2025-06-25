@@ -15,7 +15,7 @@
             alt="Avatar"
             class="w-8 h-8 rounded-full object-cover"
           />
-          <span>{{ article.user_id || 'Unknown User' }}</span>
+          <span>{{ article.user?.name || 'Unknown User' }}</span>
         </div>
 
         <!-- Article Content -->

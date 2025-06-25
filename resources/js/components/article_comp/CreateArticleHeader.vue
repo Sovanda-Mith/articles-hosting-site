@@ -35,11 +35,17 @@
         </Router-link>
         <router-link to="/profile">
           <img
-            v-if="user.pfp"
-            :src="user.pfp"
+            v-if="user.pf_image"
+            :src="user.pf_image"
             alt="Profile"
             class="w-[35px] h-[35px] rounded-full object-cover"
           />
+          <!-- <img
+            v-else
+            src="@/assets/settingsPage_img/placeholderPf.png"
+            alt="Profile"
+            class="w-[35px] h-[35px] rounded-full object-cover"
+          /> -->
           <img
             v-else
             src="@/assets/settingsPage_img/placeholderPf.png"
@@ -108,7 +114,7 @@
   // const user = ref('Mith Sovanda');
   const user = ref({
     name: '',
-    pfp: '',
+    pf_image: '',
   });
 
   onMounted(async () => {
@@ -126,6 +132,7 @@
       if (response.status === 200) {
         user.value = response.data.user;
       }
+      console.log('User data fetched successfully:', user.value);
     } catch (error) {
       console.error('Error fetching user data:', error);
     }

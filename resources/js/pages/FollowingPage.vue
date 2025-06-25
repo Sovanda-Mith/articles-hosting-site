@@ -31,7 +31,7 @@
         v-for="article in articles"
         :key="article.id"
         :profile_img="'/feedpage_img/profile1.jpg'"
-        :publisherName="`User ${article.user_id}`"
+        :publisherName="`${article.user?.name || 'Unknown User'}`"
         :title="article.title"
         :subtitle="article.subtitle || 'No subtitle available'"
         :pub_date="articleStore.formatDate(article.created_at)"

@@ -1,18 +1,30 @@
 <template>
-
-    <div class="flex flex-row justify-center items-start mx-50  min-w-[400px]">
-        <button class="mt-8 pr-4" @click="goBack">
+    <AppHeader />
+    <div class="flex flex-row justify-center items-start mt-20 px-30 w-full min-w-[400px]">
+        <!-- <button class="mt-8 pr-4" @click="goBack">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="size-6">
                 <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
             </svg>
-        </button>
+        </button> -->
 
         <div>
-            <div class="py-5 space-x-4 border-b-1 border-gray-300 flex flex-col">
-                <div class="py-2 text-2xl font-semibold border-black">Trending</div>
-                <p class="text-sm text-gray-500 ">Trending stories from across Medium</p>
+
+            <div class="py-5 space-x-4 border-b-1 border-gray-300 flex flex-row sticky top-1/12 bg-white">
+
+                <div >
+                    <button class="mt-8 pr-4 " @click="goBack">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="size-6">
+                            <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex flex-col">
+                    <div class="py-2 text-2xl font-semibold border-black">Trending</div>
+                    <p class="text-sm text-gray-500 ">Trending stories from across Medium</p>
+
+                </div>
             </div>
-            <div class="bg-blue-50 ">
+            <div >
                 <div v-if="idLoading" class="flex items-center justify-center py-8">
                     <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
                 </div>
@@ -29,7 +41,7 @@
                     v-for="article in articles"
                     :key="article.id"
                     :profile_img="'/feedpage_img/profile1.jpg'"
-                    :publisherName="`User ${article.user_id}`"
+                    :publisherName="`${article.user?.name || 'Unknown User'}`"
                     :title="article.title"
                     :subtitle="article.subtitle || 'No subtitle available'"
                     :pub_date="articleStore.formatDate(article.created_at)"
@@ -48,6 +60,7 @@
 
 </template>
 <script setup lang="ts">
+  import AppHeader from '../../components/landingPage_comp/Header.vue';
   import preview from '../../../resources/components/feedpage_comp/preview.vue';
   import { storeToRefs } from 'pinia';
   import { useArticleStore } from '../stores/features/articles/stores/ArticleStore';
