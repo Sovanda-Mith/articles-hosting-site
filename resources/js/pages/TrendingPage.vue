@@ -34,11 +34,11 @@
                         Retry
                     </button>
                 </div>
-                <div v-else-if="articles.length === 0" class="text-gray-500 text-center py-8">
+                <div v-else-if="trendingArticles.length === 0" class="text-gray-500 text-center py-8">
                     <p>No trending articles found.</p>
                 </div>
                 <preview
-                    v-for="article in articles"
+                    v-for="article in trendingArticles"
                     :key="article.id"
                     :profile_img="'/feedpage_img/profile1.jpg'"
                     :publisherName="`${article.user?.name || 'Unknown User'}`"
@@ -67,7 +67,7 @@
   import { ref, onMounted } from 'vue';
 
   const articleStore = useArticleStore();
-  const { articles } = storeToRefs(articleStore);
+  const { trendingArticles } = storeToRefs(articleStore);
 
   const idLoading = ref(false);
   const error = ref<string | null>(null);
@@ -79,7 +79,7 @@
 
       try {
           await articleStore.fetchTrendingArticles();
-          console.log(articles.value);
+          console.log(trendingArticles.value);
       } catch (err) {
           error.value = 'Failed to load trending articles';
           console.error(err);

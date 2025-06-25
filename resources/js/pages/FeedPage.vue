@@ -8,7 +8,7 @@
                 <div class="sticky top-1/12 bg-white">
                     <div class=" flex items-center justify-between  px-4">
                         <div class=" flex flex-1 justify-center">
-                            <div class="py-5 space-x-4 text-xl ">
+                            <div class="py-5 space-x-4 text-xl">
                                 <router-link to="/feed/foryou" active-class="active-tab">For You</router-link>
                                 <router-link to="/feed/following" active-class="active-tab">Following</router-link>
                             </div>
@@ -90,20 +90,33 @@
                 </div>
 
                 <div>
-                    <trending_preview
-                        v-for="article in articles"
-                        :key="article.id"
-                        :profile_img="'/feedpage_img/profile1.jpg'"
-                        :publisherName="`${article.user?.name || 'Unknown User'}`"
-                        :title="article.title"
-                        :pub_date="articleStore.formatDate(article.created_at)"
-                        :clapNum="article.likes_count?.toString() || '0'"
-                        :commentNum="article.comments_count?.toString() || '0'"
-                        :preview_img="article.image || '/feedpage_img/img1.jpg'"
-                        :viewCount="article.view_count?.toString() || '0'"
-                        :articleId="article.id"
-                    />
-                    <router-link to="/feed/trending" active-class="active-tab" class="text-sm text-gray-500 hover:underline  ">See the full list</router-link>
+                    <!-- Loading state for trending -->
+                    <div v-if="isTrendingLoading" class="flex items-center justify-center py-4">
+                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-500"></div>
+                    </div>
+
+                    <!-- Trending articles -->
+                    <div v-else-if="trendingArticles.length > 0">
+                        <trending_preview
+                            v-for="article in trendingArticles"
+                            :key="article.id"
+                            :profile_img="'/feedpage_img/profile1.jpg'"
+                            :publisherName="`${article.user?.name || 'Unknown User'}`"
+                            :title="article.title"
+                            :pub_date="articleStore.formatDate(article.created_at)"
+                            :clapNum="article.likes_count?.toString() || '0'"
+                            :commentNum="article.comments_count?.toString() || '0'"
+                            :preview_img="article.image || '/feedpage_img/img1.jpg'"
+                            :viewCount="article.view_count?.toString() || '0'"
+                            :articleId="article.id"
+                        />
+                        <router-link to="/feed/trending" active-class="active-tab" class="text-sm text-gray-500 hover:underline">See the full list</router-link>
+                    </div>
+
+                    <!-- No trending articles -->
+                    <div v-else class="py-4 text-center text-gray-500">
+                        <p>No trending articles available</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -111,14 +124,14 @@
 
 <script setup lang="ts">
   import AppHeader from '../../components/landingPage_comp/Header.vue';
-  // import preview from "../../../resources/components/feedpage_comp/preview.vue";
+  import preview from "../../../resources/components/feedpage_comp/preview.vue";
   import trending_preview from "../../../resources/components/feedpage_comp/trending_preview.vue";
   import { useArticleStore } from '../stores/features/articles/stores/ArticleStore';
   import { storeToRefs } from 'pinia';
   import { ref, onMounted, computed } from 'vue';
 
   const articleStore = useArticleStore();
-  const { articles, currentPage, lastPage } = storeToRefs(articleStore);
+  const { trendingArticles, currentPage, lastPage, isTrendingLoading } = storeToRefs(articleStore);
 
   const idLoading = ref(false);
   const error = ref<string | null>(null);
@@ -132,11 +145,13 @@
 
   //load trending articles
   const loadTrendingArticles = async () => {
+      console.log('Loading trending articles...');
       idLoading.value = true;
       error.value = null;
 
       try {
           await articleStore.fetchTrendingArticles();
+          console.log('Trending articles loaded:', trendingArticles.value.length);
       } catch (err) {
           error.value = 'Failed to load trending articles';
           console.error(err);

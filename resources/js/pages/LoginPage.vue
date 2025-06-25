@@ -486,7 +486,7 @@
     SheetTrigger,
   } from '@/components/ui/sheet';
   import { ref } from 'vue';
-  import { useRouter } from 'vue-router';
+  // import { useRouter } from 'vue-router';
   import axios from 'axios';
   import { useUserStore } from '@/stores/features/custom-persistedstate';
 
@@ -496,7 +496,7 @@
 
   const userStore = useUserStore();
 
-  const router = useRouter();
+  // const router = useRouter();
 
   const email = ref('');
   const password = ref('');
@@ -567,9 +567,9 @@
               window.location.href = '/admin'; // Change to your actual admin route
             } else {
               // Redirect to user/feed page
-              window.location.href = '/feed'; 
+              window.location.href = '/feed';
             }
-          
+
         }, 1500);
 
       } else {

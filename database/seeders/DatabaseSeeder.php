@@ -64,7 +64,7 @@ class DatabaseSeeder extends Seeder
             ],
         ])->each(fn ($user) => User::factory()->create($user));
 
-        Call UserSeeder
+        // Call UserSeeder
         $this->call([
             UserSeeder::class,
         ]);
