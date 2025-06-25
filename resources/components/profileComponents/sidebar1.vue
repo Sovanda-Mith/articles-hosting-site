@@ -113,7 +113,7 @@
       <section class="mt-6">
           <p class="font-semibold text-card-foreground mb-3">Followers</p>
           <div class="max-h-[480px] overflow-y-auto border border-border rounded-md p-2 scrollbar-hide">
-            <FollowerList :max="showAllFollower ? undefined : 5" :followers="followerList" />
+            <FollowerList :max="showAllFollower ? undefined : 5" :followers="followerList" :userId="props.user.id"/>
           </div>
           <button
             v-if="actualFollowerCount > 5"

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Helpers\ImageUrlHelper;
 
 class Article extends Model
 {
@@ -27,6 +28,14 @@ class Article extends Model
         'image',
         'status',
     ];
+
+    /**
+     * Get the image URL with proper conversion
+     */
+    public function getImageAttribute($value)
+    {
+        return ImageUrlHelper::convertMinioUrl($value);
+    }
 
     // relationships
     /**
